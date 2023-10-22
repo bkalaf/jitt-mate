@@ -1,0 +1,24 @@
+@import './fonts-firasans';
+@import './fonts-montserrat';
+@import './fonts-opensans';
+@import './fonts-patrickhand';
+@import './fonts-raleway';
+/* @import './fonts-rubik'; */
+@import './fonts-grandstander';
+
+html,
+body,
+div,
+span,
+ul,
+li,
+button,
+section,
+aside,
+input,
+select,
+textarea,
+output,
+form {
+    font-family: 'Fira Sans' !important;
+}

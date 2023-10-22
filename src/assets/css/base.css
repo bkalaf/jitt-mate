@@ -1,0 +1,10 @@
+@tailwind base;
+
+@layer base {
+    td {
+        @apply p-0.5 font-fira-sans font-medium text-xs text-center align-middle;
+    }
+    li {
+        @apply text-xs font-normal whitespace-pre font-fira-sans !important;
+    }
+}

@@ -1,0 +1,34 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
+  "parserOptions": {
+      "ecmaFeatures": {
+          "jsx": true
+      },
+      "project": "/home/bobby/Desktop/jitt/jitt/tsconfig.json",
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+  },
+  "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/eslint-recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:import/recommended",
+      "plugin:import/electron",
+      "plugin:import/typescript",
+      "plugin:react/recommended",
+      "plugin:react/jsx-runtime",
+      "plugin:react-hooks/recommended",
+      "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "react",
+    "@typescript-eslint",
+    "react-hooks",
+    "prettier"
+  ]
+}

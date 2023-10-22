@@ -1,0 +1,15 @@
+{
+    "realm": {
+        "appID": "jittmate-zhrrc"
+    },
+    "imageRoot": "/home/bobby/Desktop/product-images",
+    "imageImportRoot": "/home/bobby/Desktop/product-images-import",
+    "badDataOutput": "/home/bobby/Desktop/bad-data.csv",
+    "labels": {
+        "output": "/home/bobby/Downloads/skus.csv",
+        "excel": "/home/bobby/Downloads/skus.xlsx"
+    },
+    "removeBgSuffix": "-removebg-preview.png",
+    "downloadsPath": "/home/bobby/Downloads",
+    "missingRemoveBG": "/home/bobby/Desktop/missing-remove-bg"
+}

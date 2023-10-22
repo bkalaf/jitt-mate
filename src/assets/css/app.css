@@ -1,0 +1,152 @@
+@import './animation.css';
+@import './fonts.css';
+@import './base.css';
+@import './components.css';
+@import './utilities.css';
+@import '../../../node_modules/@fortawesome/fontawesome-svg-core/styles.css';
+
+/* @import '../fonts/roboto/300.css';
+@import '../fonts/roboto/400.css';
+@import '../fonts/roboto/500.css';
+@import '../fonts/roboto/700.css'; */
+
+body {
+    font-family: 'Grandstander';
+    margin: auto;
+}
+
+/* .active {
+    @apply text-white border border-white bg-magenta;
+} */
+
+.font-small-caps {
+    font-variant-caps: small-caps;
+}
+
+.font-petite-caps {
+    font-variant-caps: petite-caps;
+}
+
+.rtl {
+    direction: rtl;
+}
+
+.ltr {
+    direction: ltr;
+}
+
+.icon-standard {
+    --fa-primary-color: #e879f9;
+    --fa-secondary-color: #fff;
+    --fa-secondary-opacity: 1;
+}
+
+.icon-blue {
+    background-color: #52525b;
+    --fa-primary-color: #0ea5e9;
+    --fa-secondary-color: #db2777;
+    --fa-primary-opacity: 1;
+    --fa-secondary-opacity: 0.8;
+    --fa-border-padding: 0;
+    --fa-border-width: 0.15rem;
+    --fa-border-radius: 0.375rem;
+    --fa-border-color: #e2e8f0;
+    margin: 0.25rem;
+    padding: 0.2rem;
+    /* height: 75% !important;
+    width: 75% !important; */
+    align: center;
+}
+
+.icon-red  {
+    --fa-primary-color: #1e40af;
+    --fa-secondary-color: #db2777 ;
+    --fa-primary-opacity: 1;
+    --fa-secondary-opacity: 0.7;
+    --fa-border-padding: 0;
+    --fa-border-width: 0.15rem;
+    --fa-border-radius: 0.375rem;
+    --fa-border-color: #475569;
+    background-color: #fda4af;
+    margin: 0.25rem;
+    padding: 0.2rem;
+    /* height: 50px !important; */
+    /* width: 75% !important; */
+    align: center;
+}
+
+.icon-green {
+    --fa-primary-color: #bef264;
+    --fa-secondary-color: #16a34a;
+    --fa-primary-opacity: 1;
+    --fa-secondary-opacity: 0.8;
+    --fa-border-padding: 0;
+    --fa-border-width: 0;
+    --fa-border-color: transparent;
+    background-color: #52525b;
+    margin: 0.3rem;
+    height: 0.5rem !important;
+    width: 0.5rem !important;
+    align: center;
+}
+.icon-dark {
+    --fa-primary-color: #1e40af;
+    --fa-secondary-color: #334155;
+    --fa-primary-opacity: 1;
+    --fa-secondary-opacity: 0.7;
+}
+
+.icon-off {
+    --fa-primary-color: #dc2626;
+    --fa-secondary-color: #ea580c;
+    --fa-primary-opacity: 1;
+    --fa-secondary-opacity: 0.6;
+}
+
+.icon-on {
+    --fa-primary-color: #16a34a;
+    --fa-secondary-color: #bef264;
+    --fa-primary-opacity: 1;
+    --fa-secondary-opacity: 0.6;
+    --fa-border-padding: 0;
+    --fa-border-width: 0;
+    --fa-border-color: transparent;
+    background-color: #334155;
+}
+
+.icon-key-odd {
+    --fa-primary-color: #24aae8;
+    --fa-secondary-color: #0826ea;
+    --fa-primary-opacity: 1;
+    --fa-secondary-opacity: 0.7;
+    background-color: #7dd3fc;
+    color: #000;
+    border-color: #000;
+    --fa-border-padding: 0;
+    --fa-border-width: 0.15rem;
+    margin: 0.2rem;
+    /* height: 0.5rem !important;
+    width: 0.5rem !important; */
+    align: center;
+}
+.icon-key-even {
+    --fa-primary-color: #8805df;
+    --fa-secondary-color: #db1c1c;
+    --fa-primary-opacity: 1;
+    --fa-secondary-opacity: 0.6;
+    background-color: #a3a3a3;
+    color: #000;
+    border-color: #000;
+    margin: 0.2rem;
+    /* height: 0.5rem !important;
+    width: 0.5rem !important; */
+    align: center;
+    --fa-border-padding: 0;
+    --fa-border-width: 0.15rem;
+}
+.icon-close-window {
+    --fa-primary-color: #fff;
+    --fa-secondary-color: #37383b;
+    --fa-primary-opacity: 1;
+    --fa-secondary-opacity: 0.6;
+}

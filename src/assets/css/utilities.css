@@ -1,0 +1,13 @@
+@import 'tailwindcss/utilities';
+
+@layer utilities {
+    .animated {
+        @apply transition duration-100 ease-in-out delay-150;
+    }
+    .showing-toast {
+        @apply animated animate-bounce-in-down;
+    }
+    .fading-toast {
+        @apply animated animate-fade-out-left;
+    }
+}
