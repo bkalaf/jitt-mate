@@ -1,6 +1,5 @@
 import { createContext } from 'react';
-import Realm from 'realm';
-import { useProvideRealmContext } from '../../hooks/useProvideRealmContext';
+import * as Realm from 'realm';
 
 export type IRealmContext = {
     app: Realm.App;
@@ -9,12 +8,9 @@ export type IRealmContext = {
     isAuthenticated: () => boolean;
     logOut: () => Promise<void>;
     logIn: (creds: { email: string; password: string }) => Promise<void>;
+    dbIsOpen: () => boolean;
 };
 
 export const RealmContext = createContext<IRealmContext | undefined>(undefined);
 RealmContext.displayName = 'RealmContext';
 
-export function RealmProvider({ children }: { children: Children }) {
-    const value = useProvideRealmContext();
-    return <RealmContext.Provider value={value}>{children}</RealmContext.Provider>;
-}

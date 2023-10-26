@@ -1,4 +1,3 @@
-
 export function partitionBy<T>(predicate: Predicate<T>) {
     function inner(todo: T[], left: T[] = [], right: T[] = []): [T[], T[]] {
         if (todo.length === 0) return [left, right];

@@ -1,6 +1,9 @@
 import { Brand } from './Brand';
 import { Classifier } from './Classifier';
+import { CustomItemField } from './CustomItemField';
 import { Draft } from './Draft';
+import { HashTag } from './HashTag';
+import { HashTagUsage } from './HashTagUsage';
 import { Listing } from './Listing';
 import { LocationSegment } from './LocationSegment';
 import { MercariBrand } from './MercariBrand';
@@ -11,7 +14,7 @@ import { Product } from './Product';
 import { ProductImage } from './ProductImage';
 import { Scan } from './Scan';
 import { Sku } from './Sku';
-import Realm from 'realm';
+import * as Realm from 'realm';
 
 const $$schema: Realm.ObjectClass<any>[] = [
     MercariBrand,
@@ -26,7 +29,10 @@ const $$schema: Realm.ObjectClass<any>[] = [
     Listing,
     ProductImage,
     Scan,
-    LocationSegment
+    LocationSegment,
+    HashTagUsage,
+    HashTag,
+    CustomItemField
 ];
 
 export default $$schema;

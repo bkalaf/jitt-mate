@@ -1,7 +1,6 @@
 import Realm, { BSON } from 'realm';
 import { IListing, OptObj, IDraft, $db } from './db';
 
-
 export class Listing extends Realm.Object<IListing> implements IListing {
     _id: BSON.ObjectId = new BSON.ObjectId();
     draft: OptObj<IDraft>;

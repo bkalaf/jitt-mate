@@ -1,0 +1,25 @@
+
+import * as Config from './config.json';
+import * as Realm from 'realm';
+import { catchError } from './catchError';
+import { writeBarcodeLabels } from './writeBarcodeLabels';
+const BSON = Realm.BSON;
+
+const app = new Realm.App({ id: Config.realm.appID });
+console.log(app);
+let user: Realm.User | null = null;
+let realm: Realm | null = null;
+
+const lock = app.logIn(Realm.Credentials.emailPassword({ email: 'admin@junk-in-the-trunk.com', password: 'diane1221' })).then(u => {
+    console.log('User logged in');
+    console.log(u.profile.email);
+    user = u;
+    const config: Realm.ConfigurationWithSync = {
+        schema: $$schema,
+        sync: {
+            partitionValue: user?.profile?.email!,
+            user: user!
+        }
+    };
+    return Realm.open(config).then(r => realm = r).catch(catchError);
+}).catch(catchError).finally(() => console.log('realm opened'));

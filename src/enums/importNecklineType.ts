@@ -1,4 +1,3 @@
-import { checkEnum } from './checkEnum';
 import * as NecklineTypes from './necklines.json';
 export type NecklineTypeKeys = keyof typeof NecklineTypes;
 export const NecklineTypeKeys = Object.keys(NecklineTypes);
@@ -62,6 +61,14 @@ export const TopAdornmentKeys = Object.keys(TopAdornments);
 import * as ItemGroups from './item-group.json';
 export type ItemGroupKeys = keyof typeof ItemGroups;
 export const ItemGroupKeys = Object.keys(ItemGroups);
+import * as PaginationSize from './../enums/pagination-size.json';
+export type PaginationSizeKeys = keyof typeof PaginationSize;
+export const PaginationSizeKeys = Object.keys(PaginationSize);
+import * as SizingTypes from './../enums/sizing-type.json';
+import { checkEnum } from './checkEnum';
+export type SizingTypeKeys = keyof typeof SizingTypes;
+export const SizingTypeKeys = Object.keys(SizingTypes);
+
 
 export const importNecklineTypes = checkEnum<NecklineTypeKeys>('neckline-type', NecklineTypes, NecklineTypeKeys);
 export const importColors = checkEnum<ColorKeys>('colors', Colors, ColorKeys);
@@ -69,8 +76,16 @@ export const importMaterials = checkEnum<MaterialKeys>('materials', Materials, M
 export const importOrigin = checkEnum<OriginKeys>('origin', Countries, OriginKeys);
 export const importApparelType = checkEnum<ApparelTypeKeys>('apparel-type', ApparelTypes, ApparelTypeKeys);
 export const importSleeveType = checkEnum<SleeveTypeKeys>('sleeve-type', SleeveTypes, SleeveTypeKeys);
-export const importSize = checkEnum<SizeKeys>('size', Object.fromEntries((Object.entries(Sizes) as [string, { selector: string | null, name: string; }][]).map(([k, { selector, name }]) => [k, name])), SizeKeys);
-export const importSizeSelector = checkEnum<SizeKeys>('size', Object.fromEntries((Object.entries(Sizes) as [string, { selector: string | null, name: string; }][]).map(([k, { selector, name }]) => [k, selector])), SizeKeys);
+export const importSize = checkEnum<SizeKeys>(
+    'size',
+    Object.fromEntries((Object.entries(Sizes) as [string, { selector: string | null; name: string; }][]).map(([k, { selector, name }]) => [k, name])),
+    SizeKeys
+);
+export const importSizeSelector = checkEnum<SizeKeys>(
+    'size',
+    Object.fromEntries((Object.entries(Sizes) as [string, { selector: string | null; name: string; }][]).map(([k, { selector, name }]) => [k, selector])),
+    SizeKeys
+);
 export const importAuctionSite = checkEnum('auction-site', AuctionSites, AuctionSiteKeys);
 export const importGender = checkEnum('gender', Genders, GenderKeys);
 export const importBookType = checkEnum('book-type', BookTypes, BookTypeKeys);
@@ -85,6 +100,7 @@ export const importCuffType = checkEnum<CuffTypeKeys>('cuff-type', CuffTypes, Cu
 export const importCollarType = checkEnum<CollarTypeKeys>('collar-type', CollarTypes, CollarTypeKeys);
 export const importTopAdornments = checkEnum<TopAdornmentKeys>('top-adornments', TopAdornments, TopAdornmentKeys);
 export const importItemGroups = checkEnum('ItemGroups', ItemGroups, ItemGroupKeys);
+export const importSizingType = checkEnum('SizingType', SizingTypes, SizingTypeKeys);
 
 const importEnum = {
     necklineTypes: importNecklineTypes,
@@ -107,7 +123,9 @@ const importEnum = {
     topAdornment: importTopAdornments,
     itemGroup: importItemGroups,
     sleeveType: importSleeveType,
-    size: importSize
+    size: importSize,
+    sizingType: importSizingType
+    // paginationSize: importPaginationSizeKeys
 };
 
 export {
@@ -118,6 +136,7 @@ export {
     ApparelTypes,
     AuctionSites,
     Genders,
+    SleeveTypes,
     BookTypes,
     MovieRatings,
     GameRatings,
@@ -130,5 +149,7 @@ export {
     CollarTypes,
     TopAdornments,
     ItemGroups,
-    importEnum
-}
+    importEnum,
+    PaginationSize,
+    SizingTypes
+};

@@ -1,6 +1,6 @@
 import Realm, { Types, BSON } from 'realm';
 import { getDescription } from './getDescription';
-import { IDraft, IListing, OptObj, ISku, $db, IProduct, IClassifier, ConditionKeys, EnglishWeight, LWH, ShippingService, Opt, IProductImage } from './db';
+import { IDraft, IListing, OptObj, ISku, $db, IProduct, IClassifier, ConditionKeys, EnglishWeight, LWH, ShippingService, Optional, IProductImage } from './db';
 import { checkTransaction } from '../util/checkTransaction';
 import * as Config from './../config.json';
 import * as fs from 'graceful-fs';
@@ -11,7 +11,7 @@ import { checkForFolder } from '../common/fs/checkForFolder';
 export const MAX_IMAGE_SIZE = 10485760;
 
 export class Draft extends Realm.Object<IDraft> implements IDraft {
-    recommendedPrice: Opt<number>;
+    recommendedPrice: Optional<number>;
     get getCategoryName(): string {
         const classifier = this.notNullClassifier;
         const category = classifier.getCategory();
@@ -29,13 +29,13 @@ export class Draft extends Realm.Object<IDraft> implements IDraft {
     }
     get getFullBrandFolder(): string {
         return [Config.imageRoot, this.isNoBrand ? 'no-brand' : this.getBrandFolder].join('/');
-    };
+    }
     get getFullItemFolder(): string {
         return [this.getFullBrandFolder, this.itemFolder].join('/');
-    };
+    }
     get getFullFinalFolder(): string {
         return [this.getFullItemFolder, 'ok'].join('/');
-    };
+    }
     isReadyToPost = false;
     listingBackLink!: Types.LinkingObjects<IListing, 'draft'>;
     _id: BSON.ObjectId = new BSON.ObjectId();
@@ -45,7 +45,7 @@ export class Draft extends Realm.Object<IDraft> implements IDraft {
     hashes: string[] = [];
     itemFolder = '';
     shippingPrice = 0;
-    draftId: Opt<string>;
+    draftId: Optional<string>;
     isReady = false;
     static schema: Realm.ObjectSchema = {
         name: $db.draft(),
@@ -64,7 +64,7 @@ export class Draft extends Realm.Object<IDraft> implements IDraft {
             recommendedPrice: $db.float.opt
         }
     };
-    static ctor(realm: Realm, sku: Realm.Object<ISku> & ISku, index: Opt<number>): Exclude<OptObj<IDraft>, undefined | null> {
+    static ctor(realm: Realm, sku: Realm.Object<ISku> & ISku, index: Optional<number>): Exclude<OptObj<IDraft>, undefined | null> {
         console.log('ctor');
         let result: OptObj<IDraft>;
         const SKU = realm.objects<ISku>('sku').filtered('sku == $0', sku.sku);
@@ -72,7 +72,11 @@ export class Draft extends Realm.Object<IDraft> implements IDraft {
             console.log('SKU ALREADY ENTERED SKIPPING');
             return SKU[0].linkingObjects<IDraft>('draft', 'sku')[0];
         }
-        const hashes = ([...(SKU[0].product?.brand?.hash?.split(', ') ?? []), SKU[0].product?.classifier?.mercariSubSubCategory?.hash, ...(SKU[0].product?.classifier?.hash ?? [])].filter(x => x != null) as string[]).slice(0, 3);
+        const hashes = (
+            [...(SKU[0].product?.brand?.hash?.split(', ') ?? []), SKU[0].product?.classifier?.mercariSubSubCategory?.hash, ...(SKU[0].product?.classifier?.hash ?? [])].filter(
+                (x) => x != null
+            ) as string[]
+        ).slice(0, 3);
         realm.write(() => {
             const draft = realm.create<IDraft>('draft', { _id: new BSON.ObjectId(), sku, shippingPrice: 10, hashes, isReadyToPost: false, itemFolder: '', title: '', description: '' });
             console.log(`draft`, draft);
@@ -113,7 +117,7 @@ export class Draft extends Realm.Object<IDraft> implements IDraft {
         // if (okFiles.length !== files.length) {
         //     console.log(`*** ${files.length - okFiles.length} files were omitted because they exceed the max size ***`);
         // }
-        return this.sku?.productImages?.map(image => image.effectivePath ?? '') ?? [];
+        return this.sku?.productImages?.map((image) => image.effectivePath ?? '') ?? [];
     }
     get isPostable(): boolean {
         return this.isReadyToPost && (this.draftId == null || this.draftId.length === 0);
@@ -141,16 +145,16 @@ export class Draft extends Realm.Object<IDraft> implements IDraft {
             return true;
         }
         return false;
-    };
+    }
     get getBrandName(): string | undefined {
         const product = this.notNullProduct;
         return product?.brand?.name;
-    };
+    }
     get getMercariBrandName(): string | undefined {
         const product = this.notNullProduct;
         if (this.isNoBrand) return undefined;
         return product.brand?.mercariBrand?.name;
-    };
+    }
     get getBrandFolder(): string | undefined {
         const product = this.notNullProduct;
         return product.brand?.folder?.replaceAll('/', '-');
@@ -159,29 +163,29 @@ export class Draft extends Realm.Object<IDraft> implements IDraft {
         const classifier = this.notNullClassifier;
         const category = classifier.getCategory();
         return category.id;
-    };
+    }
     get getSubCategoryId(): string {
         const classifier = this.notNullClassifier;
         const subCategory = classifier.getSubCategory();
         return subCategory.id;
-    };
+    }
     get getSubSubCategoryId(): string {
         const classifier = this.notNullClassifier;
         const subSubCategory = classifier.getSubSubCategory();
         return subSubCategory.id;
-    };
+    }
     get getCondition(): ConditionKeys {
         const sku = this.notNullSku;
         return sku.condition;
-    };
+    }
     get getColor(): ColorKeys | undefined {
         const product = this.notNullProduct;
         return product.color;
-    };
+    }
     get getMercariColor(): MercariColor | undefined {
         const color = this.getColor;
         const [colorKey, $color] = importColors(color);
-        return color != null ? $color as MercariColor : undefined;
+        return color != null ? ($color as MercariColor) : undefined;
     }
     get getWeight(): number {
         const product = this.notNullProduct;
@@ -189,7 +193,7 @@ export class Draft extends Realm.Object<IDraft> implements IDraft {
         if (weightG == null) throw new Error('no weight');
         const weightLbs = weightG / 453.6;
         return weightLbs;
-    };
+    }
     get getShipWeight(): EnglishWeight {
         const weight = this.getWeight * 1.3;
         const lbs = Math.floor(weight);
@@ -207,25 +211,25 @@ export class Draft extends Realm.Object<IDraft> implements IDraft {
         if (widthIn != null) dims.width = widthIn;
         if (heightIn != null) dims.height = heightIn;
         return dims;
-    };
+    }
     get hasDimensions(): boolean {
         const dims = this.getDimensions;
         return dims == null;
-    };
+    }
     get getShippingService(): ShippingService {
         const classifier = this.notNullClassifier;
         return classifier.mediaMail ? 'media-mail' : 'standard';
-    };
+    }
     get getCarrier(): string {
         const sku = this.notNullSku;
         const [price, carrier, carrierId] = sku.carrier();
         return carrier;
-    };
+    }
     get getCarrierId(): number {
         const sku = this.notNullSku;
         const [price, carrier, carrierId] = sku.carrier();
         return carrierId;
-    };
+    }
     autofill(realm: Realm): Realm.Object<IDraft> & IDraft {
         if (this.sku == null) throw new Error('no sku');
         if (this.sku.product == null) throw new Error('no product');
@@ -237,7 +241,7 @@ export class Draft extends Realm.Object<IDraft> implements IDraft {
         console.log(`itemFolder: ${itemFolder}`);
         const hashes = [
             ...(this.sku.product.brand?.hash?.split(', ') ?? []),
-            ...this.sku.product.classifier?.mercariSubSubCategory?.hash != null ? [this.sku.product.classifier?.mercariSubSubCategory?.hash] : [],
+            ...(this.sku.product.classifier?.mercariSubSubCategory?.hash != null ? [this.sku.product.classifier?.mercariSubSubCategory?.hash] : []),
             ...(this.sku.product.classifier?.hash ?? [])
         ].slice(0, 3);
         const func = () => {
@@ -258,5 +262,3 @@ export class Draft extends Realm.Object<IDraft> implements IDraft {
         return this;
     }
 }
-
-

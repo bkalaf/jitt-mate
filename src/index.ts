@@ -13,48 +13,49 @@ app.commandLine.appendSwitch('enable-speech-dispatcher');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
-  app.quit();
+    app.quit();
 }
 initialize();
 
 export function getDevToolsPath(id: string) {
-  const chromePath = '/home/bobby/.config/google-chrome/Default/Extensions';
-  const devPath = [chromePath, id].join('/');
-  const version = fs.readdirSync(devPath)[0];
-  return [devPath, version].join('/');
-
+    const chromePath = '/home/bobby/.config/google-chrome/Default/Extensions';
+    const devPath = [chromePath, id].join('/');
+    const version = fs.readdirSync(devPath)[0];
+    return [devPath, version].join('/');
 }
 const createWindow = () => {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    height: 600,
-    width: 800,
-    darkTheme: true,
-    webPreferences: {
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
-      nodeIntegration: true,
-      nodeIntegrationInSubFrames: true,
-      nodeIntegrationInWorker: true,
-      webSecurity: false,
-      contextIsolation: false,
-      zoomFactor: 0.8,
-      spellcheck: true
-    },
-  });
+    // Create the browser window.
+    const mainWindow = new BrowserWindow({
+        height: 600,
+        width: 800,
+        darkTheme: true,
+        webPreferences: {
+            preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+            nodeIntegration: true,
+            nodeIntegrationInSubFrames: true,
+            nodeIntegrationInWorker: true,
+            webSecurity: false,
+            contextIsolation: false,
+            zoomFactor: 0.8,
+            spellcheck: true
+        }
+    });
 
-  enable(mainWindow.webContents);
-  // and load the index.html of the app.
-  return mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY).then(() => {
-    mainWindow.webContents.openDevTools();
-    mainWindow.maximize();
-  });
+    enable(mainWindow.webContents);
+    // and load the index.html of the app.
+    return mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY).then(() => {
+        mainWindow.webContents.openDevTools();
+        mainWindow.maximize();
+    });
 };
 
-app.whenReady().then(async () => {
-  const devPath = getDevToolsPath('fmkadmapgofadopljbjfkapdkoienihi');
-  const extId = await session.defaultSession.loadExtension(devPath, { allowFileAccess: true });
-  console.log(JSON.stringify(extId));
-}).then(async () => await createWindow());
+app.whenReady()
+    .then(async () => {
+        const devPath = getDevToolsPath('fmkadmapgofadopljbjfkapdkoienihi');
+        const extId = await session.defaultSession.loadExtension(devPath, { allowFileAccess: true });
+        console.log(JSON.stringify(extId));
+    })
+    .then(async () => await createWindow());
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -65,17 +66,17 @@ app.whenReady().then(async () => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+    if (process.platform !== 'darwin') {
+        app.quit();
+    }
 });
 
 app.on('activate', () => {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
+    // On OS X it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
+    if (BrowserWindow.getAllWindows().length === 0) {
+        createWindow();
+    }
 });
 
 // In this file you can include the rest of your app's specific main process

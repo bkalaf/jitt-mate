@@ -1,7 +1,6 @@
 import { charRange } from '../common/array/charRange';
 import { createFrom } from '../common/array/createFrom';
 
-
 export function randomString(len = 12) {
     const upper = charRange('a', 'z');
     const lower = charRange('A', 'Z');

@@ -1,4 +1,3 @@
-
 export function toKVP(key: string) {
     return function (value: string | number | undefined | null) {
         if (value != null) {

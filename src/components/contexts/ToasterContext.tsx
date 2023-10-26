@@ -1,5 +1,4 @@
-import { createContext, useMemo, useRef } from 'react';
-import { randomString } from '../../util/randomString';
+import { createContext } from 'react';
 
 export type ToastType = 'info' | 'success' | 'failure' | 'error';
 
@@ -28,10 +27,6 @@ export type IToasterContext = {
 export const ToasterContext = createContext<IToasterContext | undefined>(undefined);
 ToasterContext.displayName = 'ToasterContext';
 
-console.log(`random string: ${randomString(24)}`);
-console.log(`random string: ${randomString(32)}`);
-console.log(`random string: ${randomString(20)}`);
-
 export type ToastStage = 'animating-in' | 'waiting' | 'animating-out' | 'expired';
 
 export function cycleToastStage(current: ToastStage) {
@@ -50,4 +45,3 @@ export function cycleToastStage(current: ToastStage) {
     const result = inner();
     return result;
 }
-

@@ -1,4 +1,4 @@
-@import 'tailwindcss/components';
+@tailwind components;
 
 @layer components {
     @keyframes slideindown {
@@ -219,6 +219,14 @@
     }
 
     .dd-item {
-        @apply inline-flex indent-2 border-black border text-white;
+        @apply inline-flex text-white border border-black indent-2;
+    }
+
+    tr {
+        @apply border border-black divide-x divide-black even:bg-sky-400 even:text-black odd:bg-neutral-300 odd:text-black;
+    }
+
+    td {
+        @apply indent-2.5 text-lg font-fira-sans font-normal py-0.5 px-1;
     }
 }

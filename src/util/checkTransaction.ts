@@ -1,5 +1,4 @@
-import Realm from 'realm';
-
+import * as Realm from 'realm';
 
 export function checkTransaction(realm: Realm) {
     return function (func: () => void) {

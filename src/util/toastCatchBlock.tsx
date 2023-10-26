@@ -1,4 +1,3 @@
-
 export function toastCatchBlock(createErrorToast: (s: string, t: string) => void, createFailureToast: (s: string, t: string) => void) {
     return (error: unknown) => {
         if (error instanceof Error) {

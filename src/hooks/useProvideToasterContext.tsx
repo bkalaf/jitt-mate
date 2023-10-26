@@ -1,8 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
-import { ToastElement } from '../components/contexts/ToastElement';
+import { ToastElement } from '../components/Toaster/ToastElement';
 import { IToasterContext, Toast, ToastType } from '../components/contexts/ToasterContext';
 import { randomString } from '../util/randomString';
-
 
 export function useProvideToasterContext(): IToasterContext {
     const [toasts, setToasts] = useState<React.ReactNode[]>([]);
@@ -22,7 +21,7 @@ export function useProvideToasterContext(): IToasterContext {
         },
         [createToast]
     );
-    const createInfoToast = useMemo(() => shortCut('info'), [shortCut])
+    const createInfoToast = useMemo(() => shortCut('info'), [shortCut]);
     const createSuccessToast = useMemo(() => shortCut('success'), [shortCut]);
     const createErrorToast = useMemo(() => shortCut('error'), [shortCut]);
     const createFailureToast = useMemo(() => shortCut('failure'), [shortCut]);

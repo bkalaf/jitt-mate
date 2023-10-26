@@ -5,20 +5,28 @@ export function calculateCheckDigit(bc: string) {
     if (b.startsWith('000')) {
         // console.log('isbn-10');
         const multipliers = [0, 0, 0, 10, 9, 8, 7, 6, 5, 4, 3, 2];
-        const digits = b.split('').map(x => parseInt(x, 10)).map((x, ix) => x * multipliers[ix]).reduce(sum, 0);
+        const digits = b
+            .split('')
+            .map((x) => parseInt(x, 10))
+            .map((x, ix) => x * multipliers[ix])
+            .reduce(sum, 0);
         const cd = 11 - (digits % 11);
         return cd === 10 ? 'X' : cd.toString();
     }
     // console.log('ean');
     const multipliers = [1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3];
-    const digits = b.split('').map(x => parseInt(x, 10)).map((x, ix) => x * multipliers[ix]).reduce(sum, 0);
+    const digits = b
+        .split('')
+        .map((x) => parseInt(x, 10))
+        .map((x, ix) => x * multipliers[ix])
+        .reduce(sum, 0);
     const cd = 10 - (digits % 10);
     return cd === 10 ? '0' : cd.toString();
 }
 export function doesBarcodeHaveCheckDigit(bc: string) {
     // console.log(`doesBarcodeHaveCheckDigit`);
     // console.log(JSON.stringify(bc))
-    const checkdigit = bc.split('')[bc.length - 1]
+    const checkdigit = bc.split('')[bc.length - 1];
     const barcode = bc.substring(0, bc.length - 1);
     // console.log(`bc: ${bc} barcode: ${barcode} checkdigit: ${checkdigit}`)
     const calculated = calculateCheckDigit(barcode);

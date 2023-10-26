@@ -13,7 +13,7 @@ const plugin = require('tailwindcss/plugin');
 module.exports = {
     content: ['./src/**/*.{js,jsx,ts,tsx,jsx,html,txt,ejs}'],
     presets: [],
-    important: true,
+    important: false,
     darkMode: 'media',
     corePlugins: {
         preflight: false
@@ -156,8 +156,9 @@ module.exports = {
             readonly: 'readonly="true"',
             required: 'required="true"',
             selected: 'selected="true"',
-            current: 'selected="true"',
-            'not-current': 'selected="false"'
+            current: 'current="true"',
+            'not-current': 'current="false"',
+
         },
         aspectRatio: {
             auto: 'auto',
@@ -416,18 +417,23 @@ module.exports = {
                 '"Segoe UI Symbol"',
                 '"Noto Color Emoji"'
             ],
-            'open-sans': 'Open Sans',
-            'fira-sans': 'Fira Sans',
+            rowdies: ['Rowdies'],
+            'open-sans': ['Open Sans'],
+            'pala-dark': ['Palanquin Dark'],
+            itim: ['Itim'],
+            righteous: ['Righteous'],
+            'concert-one': ['Concert One'],
+            'fira-sans': ['Fira Sans'],
             serif: ['ui-serif', 'Georgia', 'Cambria', '"Times New Roman"', 'Times', 'serif'],
             mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace']
         },
         fontSize: {
             xs: ['0.75rem', { lineHeight: '1rem' }],
             sm: ['0.875rem', { lineHeight: '1.25rem' }],
-            base: ['1rem', { lineHeight: '1.5rem' }],
-            lg: ['1.125rem', { lineHeight: '1.75rem' }],
-            xl: ['1.25rem', { lineHeight: '1.75rem' }],
-            '2xl': ['1.5rem', { lineHeight: '2rem' }],
+            base: ['1.15rem', { lineHeight: '1.5rem' }],
+            lg: ['1.25rem', { lineHeight: '1.75rem' }],
+            xl: ['1.5rem', { lineHeight: '1.75rem' }],
+            '2xl': ['1.75rem', { lineHeight: '2rem' }],
             '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
             '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
             '5xl': ['3rem', { lineHeight: '1' }],
@@ -435,6 +441,19 @@ module.exports = {
             '7xl': ['4.5rem', { lineHeight: '1' }],
             '8xl': ['6rem', { lineHeight: '1' }],
             '9xl': ['8rem', { lineHeight: '1' }]
+            // xs: ['0.75rem', { lineHeight: '1rem' }],
+            // sm: ['0.875rem', { lineHeight: '1.25rem' }],
+            // base: ['1rem', { lineHeight: '1.5rem' }],
+            // lg: ['1.125rem', { lineHeight: '1.75rem' }],
+            // xl: ['1.25rem', { lineHeight: '1.75rem' }],
+            // '2xl': ['1.5rem', { lineHeight: '2rem' }],
+            // '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
+            // '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
+            // '5xl': ['3rem', { lineHeight: '1' }],
+            // '6xl': ['3.75rem', { lineHeight: '1' }],
+            // '7xl': ['4.5rem', { lineHeight: '1' }],
+            // '8xl': ['6rem', { lineHeight: '1' }],
+            // '9xl': ['8rem', { lineHeight: '1' }]
         },
         fontWeight: {
             thin: '100',
@@ -984,7 +1003,11 @@ module.exports = {
     plugins: [
         plugin(function ({ addBase, addComponents, addUtilities, addVariant }) {
             addBase({
-                caption: { captionSide: 'top' }
+                html: { fontFamily: 'Open Sans', fontSize: '18px' },
+                caption: { captionSide: 'top' },
+                table: { tableLayout: 'auto', borderCollapse: 'seperate', borderWidth: '2px', borderColor: black, borderStyle: 'solid' },
+                th: { borderWidth: '2px', borderColor: black, padding: '2px 4px' },
+                td: { borderWidth: '2px', borderColor: black }
                 // table: { tableLayout: 'auto', borderCollapse: 'separate' },
             });
             addComponents({
@@ -996,20 +1019,21 @@ module.exports = {
                 }
             });
             addUtilities({
-                '.row-even': {
-                    backgroundColor: neutral[400],
-                    color: black,
-                    borderColor: black
-                },
-                '.row-odd': {
-                    backgroundColor: sky[300],
-                    color: black,
-                    borderColor: black
-                },
+                // '.row-even': {
+                //     backgroundColor: neutral[200],
+                //     color: black,
+                //     borderColor: black,
+                //     borderWidth: '2px'
+                // },
+                // '.row-odd': {
+                //     backgroundColor: sky[400],
+                //     color: black,
+                //     borderColor: black,
+                //     borderWidth: '2px'
+                // },
                 '.font-inherit': {
                     'font-weight': 'inherit'
                 },
-
                 '.animate-float-label': {
                     'transform-origin': '50% 0',
                     animation: '1.2s 1 linear float-label'
@@ -1110,6 +1134,7 @@ module.exports = {
             addVariant('active', '&.active');
             addVariant('dragging', '&.dragging');
             addVariant('dragged-over', '&.dragged-over');
+            addVariant('peer-not-hovered', ':merge(.peer):not(:hover) ~ &');
         })
     ]
 };

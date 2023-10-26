@@ -4,20 +4,20 @@ import { useMemo } from 'react';
 import { handleSubmitter } from './handleSubmitter';
 import { Field } from './Field';
 import { alertError } from './App';
+import { Button } from './Buttons/Button';
+import { SubmitButton } from './Buttons/SubmitButton';
 
 export function LogInPage() {
     const { logIn } = useRealmContext();
     const navigate = useNavigate();
     const onSubmit = useMemo(() => handleSubmitter(logIn, () => navigate('/'), alertError), [logIn, navigate]);
     return (
-        <div>
-            <form id='logInForm' onSubmit={onSubmit} className='grid grid-cols-2'>
-                <Field type='email' name='email' label='E-mail' required defaultValue='admin@junk-in-the-trunk.com' />
-                <Field type='password' name='password' label='Password' required />
-                <footer className='flex cols-span-2 justify-center'>
-                    <button type='submit' className='inline-flex'>
-                        Submit
-                    </button>
+        <div className='container'>
+            <form id='logInForm' onSubmit={onSubmit} className='grid w-3/4 grid-cols-2 mx-auto gap-x-3'>
+                <Field type='email' name='email' label='E-mail' required defaultValue='admin@junk-in-the-trunk.com' valueProperty='value' />
+                <Field type='password' name='password' label='Password' required defaultValue='diane1221' valueProperty='value' />
+                <footer className='flex justify-center cols-span-2'>
+                    <SubmitButton>Log In To JITT</SubmitButton>
                 </footer>
             </form>
             {/* <form.Provider>

@@ -10,13 +10,21 @@ export function useProvideRealmContext(): IRealmContext {
     const app = useMemo(() => new Realm.App(Config.realm.appID), []);
     const [currentUser, setCurrentUser] = useState<Realm.User | null>(null);
     const [db, setDB] = useState<Realm | null>(null);
+    const dbIsOpen = useCallback(() => db != null, [db])
     const isAuthenticated = useCallback(() => currentUser != null, [currentUser]);
     const { createSuccessToast, createFailureToast, createErrorToast } = useToasterContext();
+    const setGlobal = useCallback((db?: Realm) => {
+        window.$$store = db;
+        document.dispatchEvent(new CustomEvent('realm-change'))
+    }, [])
     const changeCurrentUser = useCallback((nextUser: null | Realm.User) => {
         if (nextUser == null) {
+            console.log('user null');
             setCurrentUser(null);
             setDB(null);
+            setGlobal(undefined);
         } else {
+            console.log('user', nextUser);
             setCurrentUser(nextUser);
             Realm.open({
                 schema: $$schema,
@@ -27,10 +35,12 @@ export function useProvideRealmContext(): IRealmContext {
                         mode: Realm.ClientResetMode.RecoverOrDiscardUnsyncedChanges
                     }
                 }
-            })
-                .then(setDB)
+            }).then((localRealm) => {
+                setGlobal(localRealm);
+                setDB(localRealm);
+            });
         }
-    }, []);
+    }, [setGlobal]);
     const logOut = useCallback(async () => {
         try {
             if (currentUser == null) throw new Error('no currentUser to log out');
@@ -51,7 +61,7 @@ export function useProvideRealmContext(): IRealmContext {
                 toastCatchBlock(createErrorToast, createFailureToast)(error);
             }
         },
-        [app, changeCurrentUser, createErrorToast, createFailureToast]
+        [app, changeCurrentUser, createErrorToast, createFailureToast, createSuccessToast]
     );
     return {
         app,
@@ -59,6 +69,7 @@ export function useProvideRealmContext(): IRealmContext {
         db,
         isAuthenticated,
         logOut,
-        logIn
+        logIn,
+        dbIsOpen
     };
 }

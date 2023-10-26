@@ -26,16 +26,18 @@
 //     brandFolder(): string;
 // }
 
+import { toProperFromCamel } from './common/text/toProperCase';
+
 export function toKVP(key: string) {
     return function (value: string | number | undefined | null) {
         if (value != null) {
             if (typeof value === 'string') {
-                return value.length > 0 ? [key, value].join(': ') : undefined;
+                return value.length > 0 ? [toProperFromCamel(key).toUpperCase(), value].join(': ') : undefined;
             }
             if (Number.isInteger(value)) {
-                return [key, value.toFixed(0)].join(': ');
+                return [toProperFromCamel(key).toUpperCase(), value.toFixed(0)].join(': ');
             }
-            return [key, value.toFixed(2)].join(': ');
+            return [toProperFromCamel(key).toUpperCase(), value.toFixed(2)].join(': ');
         }
         return undefined;
     };

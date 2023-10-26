@@ -1,7 +1,6 @@
 import { IScan } from './db';
-import Realm from 'realm';
+import * as Realm from 'realm';
 import { Scan } from './Scan';
-
 
 export function nextScan(scan: IScan, realm: Realm, barcodes: string[]): [IScan, string[]] | never[] {
     if (barcodes.length === 0) return [];

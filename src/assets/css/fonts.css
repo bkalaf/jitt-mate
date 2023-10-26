@@ -2,9 +2,14 @@
 @import './fonts-montserrat';
 @import './fonts-opensans';
 @import './fonts-patrickhand';
+@import './fonts-righteous';
 @import './fonts-raleway';
+@import './fonts-concert-one';
 /* @import './fonts-rubik'; */
 @import './fonts-grandstander';
+@import './fonts-rowdies';
+@import './fonts-itim';
+@import './fonts-palanquin-dark';
 
 html,
 body,
@@ -20,5 +25,5 @@ select,
 textarea,
 output,
 form {
-    font-family: 'Fira Sans' !important;
+    font-family: 'Open Sans' !important;
 }

@@ -1,18 +1,22 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { $cn } from '../../util/$cn';
-import { faBug, faNewspaper, faThumbsUp, faTrafficCone } from '@fortawesome/pro-solid-svg-icons';
+import { faBug, faNewspaper, faSquare, faThumbsUp, faTrafficCone } from '@fortawesome/pro-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useToggler } from '../../hooks/useToggler';
-import { Toast, ToastStage, cycleToastStage, toastColors } from './ToasterContext';
+import { Toast, ToastStage, cycleToastStage } from '../contexts/ToasterContext';
 import { randomString } from '../../util/randomString';
 
 export function ToastElement({ message, title, toastType, prune }: Toast) {
     const [stage, setStage] = useState<ToastStage>('animating-in');
     const triggerCycler = useCallback(() => setStage(cycleToastStage), []);
-    const onAnimationEnd = useCallback(() => setStage((prev) => {
-        if (prev === 'animating-in' || prev === 'animating-out') return cycleToastStage(prev);
-        return prev;
-    }), []);
+    const onAnimationEnd = useCallback(
+        () =>
+            setStage((prev) => {
+                if (prev === 'animating-in' || prev === 'animating-out') return cycleToastStage(prev);
+                return prev;
+            }),
+        []
+    );
     const [isPinned, togglePinned] = useToggler(false);
     const triggerCallback = useCallback(() => {
         token.current = setTimeout(() => {
@@ -32,13 +36,13 @@ export function ToastElement({ message, title, toastType, prune }: Toast) {
                 {} as { className?: string },
                 {
                     animate__bounceInDown: stage === 'animating-in',
-                    animate__fadeOutLeft: stage === 'animating-out',
+                    animate__fadeOutLeft: stage === 'animating-out'
                     // hidden: stage === 'expired' || stage === 'initialize',
                 },
-                'flex animate__animated w-full flex-row',
-                toastColors[toastType]
+                'flex animate__animated w-full flex-row pointer-events-auto',
+                'bg-slate-700 text-white'
             ),
-        [stage, toastType]
+        [stage]
     );
     console.log(`props`, className);
     const token = useRef<NodeJS.Timeout | undefined>(undefined);
@@ -73,19 +77,31 @@ export function ToastElement({ message, title, toastType, prune }: Toast) {
             selfDestruct();
         }
     }, [selfDestruct, stage]);
-    const icon = toastType === 'success' ? faThumbsUp : toastType === 'error' ? faBug : toastType === 'info' ? faNewspaper : toastType === 'failure' ? faTrafficCone : undefined;
-
+    const icon = useMemo(() => (toastType === 'success' ? faThumbsUp : toastType === 'error' ? faBug : toastType === 'info' ? faNewspaper : toastType === 'failure' ? faTrafficCone : faSquare), [toastType]);
     const inputId = useMemo(() => randomString(24), []);
+    const spanProps = useMemo(
+        () =>
+            $cn(
+                { className: 'inline-flex p-0.5 items-center' },
+                {
+                    'bg-red-500 text-white': toastType === 'error',
+                    'bg-orange-500 text-white': toastType === 'failure',
+                    'bg-lime-500 text-white': toastType === 'success',
+                    'bg-cyan-500 text-white': toastType === 'info'
+                }
+            ),
+        [toastType]
+    );
     return (
         <div ref={ref} className={className} onAnimationEnd={onAnimationEnd} onClick={onClick}>
-            <span className='inline-flex p-0.5 items-center'>
-                <FontAwesomeIcon className='object-scale-down inline-block w-16 h-16' icon={icon} />
+            <span {...spanProps}>
+                <FontAwesomeIcon className='inline-block object-scale-down w-12 h-12' icon={icon} />
             </span>
-            <span className='inline-flex flex-grow w-full flex-col'>
-                <header className='flex items-center justify-center uppercase font-extrabold font-grandstander text-2xl text-white bg-black'>{title}</header>
-                <p className='items-center justify-start flex w-full p-0.5 border border-black px-1.5 text-lg'>{message}</p>
-                <span className='flex justify-start ml-2 w-full'>
-                    <label className='inline-flex text-lg text-black font-grandstander' htmlFor={inputId}>
+            <span className='flex flex-col flex-grow w-full'>
+                <header className='flex items-center justify-center w-full text-lg font-extrabold text-white uppercase bg-black border-2 border-white font-open-sans'>{title}</header>
+                <p className='items-center justify-start flex w-full flex-grow px-1.5 text-base font-open-sans font-medium'>{message}</p>
+                <span className='flex flex-row justify-start w-full indent-2'>
+                    <label className='inline-flex text-sm text-black font-open-sans' htmlFor={inputId}>
                         SAVE and PIN this toast.
                     </label>
                     <input className='inline-flex text-lg' type='checkbox' defaultChecked={isPinned} onChange={togglePinned} id={inputId} />

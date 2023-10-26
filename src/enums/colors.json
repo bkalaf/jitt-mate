@@ -11,7 +11,7 @@
     "silver": "silver",
     "white": "white",
     "black": "black",
-    "grey": "grey", 
+    "grey": "grey",
     "burgundy": "red",
     "aqua": "blue",
     "cyan": "blue",
@@ -19,5 +19,5 @@
     "cream": "white",
     "tan": "beige",
     "navy": "blue",
-    "beige": "beige"    
+    "beige": "beige"
 }

@@ -6,10 +6,13 @@ import { writeBadData } from './writeBadData';
 export const ApparelGroupKeys = Object.keys(ApparelGroupTypes);
 export type ApparelGroupKeys = keyof typeof ApparelGroupTypes;
 
-export interface ISizeEntry { key: string; name: string; selector: string; }
+export interface ISizeEntry {
+    key: string;
+    name: string;
+    selector: string;
+}
 
 export type SizeEntries = Partial<Record<ApparelGroupKeys, Partial<Record<GenderKeys, Partial<Record<SizeKeys, ISizeEntry>>>>>>;
-
 
 const sizeMap = SizeMap as SizeEntries;
 
@@ -25,5 +28,5 @@ export function importAllSizes(apparelGroup: ApparelGroupKeys, gender: GenderKey
             writeBadData(...data);
         }
         return level3;
-    }
+    };
 }

@@ -12,6 +12,6 @@ export function splitAt(predicate: (x: string) => boolean) {
         }
         const chars = str.split('');
         const result = inner(chars);
-        return result.map(x => capitalize(x.join(''))).join('');
+        return result.map((x) => capitalize(x.join(''))).join('');
     };
 }

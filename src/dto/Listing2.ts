@@ -1,16 +1,15 @@
 import { BSON } from 'realm';
-import { IListing2, OptObj, ISku, Opt, $db } from './db';
-
+import { IListing2, OptObj, ISku, Optional, $db } from './db';
 
 export class Listing extends Realm.Object<IListing2> implements IListing2 {
     _id: BSON.ObjectId = new BSON.ObjectId();
     sku: OptObj<ISku>;
-    listingId: Opt<string>;
+    listingId: Optional<string>;
     title: string = '';
     description: string = '';
     hashes: string[] = [];
     shippingPrice: number = 0;
-    itemFolder: Opt<string>;
+    itemFolder: Optional<string>;
 
     static schema: Realm.ObjectSchema = {
         name: $db.listing(),
@@ -47,10 +46,10 @@ export class Listing extends Realm.Object<IListing2> implements IListing2 {
     color(): string | undefined {
         return this.sku?.color() ?? undefined;
     }
-    weight(): { lb?: number; oz?: number; } {
-        return (this.sku?.weight())!;
+    weight(): { lb?: number; oz?: number } {
+        return this.sku?.weight()!;
     }
-    dims(): { length?: number; width?: number; height?: number; } | undefined {
+    dims(): { length?: number; width?: number; height?: number } | undefined {
         return this.sku?.dims();
     }
     hasDims(): boolean {
@@ -83,5 +82,4 @@ export class Listing extends Realm.Object<IListing2> implements IListing2 {
     brandFolder(): string {
         return this.sku?.product?.brand?.folder ?? 'no-brand';
     }
-
 }

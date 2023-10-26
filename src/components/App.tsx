@@ -1,41 +1,36 @@
-import { Route, RouterProvider, createHashRouter, createRoutesFromElements, useNavigate, useParams } from 'react-router-dom';
+import { Route, RouterProvider, createHashRouter, createRoutesFromElements, useLoaderData, useParams } from 'react-router-dom';
 import { ErrorBoundary } from './ErrorBoundary';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { RealmProvider } from './contexts/RealmContext';
+import { RealmProvider } from './Providers/RealmProvider';
 import { catchError } from './catchError';
 import { LogInPage } from './LogInPage';
-import { ToasterProvider } from './contexts/ToasterProvider';
+import { ToasterProvider } from './Providers/ToasterProvider';
 import { AppRoot } from './AppRoot';
+import { collectionLoader } from '../routes/loaders/collectionLoader';
+import { CollectionView } from './CollectionView';
 
 const TestEl = () => {
     const { collection } = useParams();
-    return <div className='text-3xl'>{collection}</div>;
+    const loadedData = useLoaderData();
+    console.log('loadedData', loadedData);
+    return (
+        <div className='text-3xl'>
+            <span className='flex'>{collection}</span>
+            <span className='flex'>{(loadedData != null && 'length' in (loadedData as Record<string, any>) ? (loadedData as any).length : 0).toFixed(0)}</span>
+        </div>
+    );
 };
+
 export const router = createHashRouter(
     createRoutesFromElements(
         <Route path='/' errorElement={<ErrorBoundary />} element={<AppRoot />}>
             <Route path='data'>
-                <Route path=':collection'>
-                    <Route index element={<TestEl />}/>
-                </Route>
+                <Route id='collectionRoute' path=':collection' loader={collectionLoader} element={<CollectionView />}></Route>
             </Route>
             <Route path='login' element={<LogInPage />}></Route>
         </Route>
     )
 );
-
-export function Button(props: { children: string; onClick?: () => void; route?: string; condition: () => boolean }) {
-    const { children, onClick, condition, route } = props;
-    const navigate = useNavigate();
-    const $onClick = onClick ? onClick : () => navigate(route);
-    return condition() ? (
-        <button
-            className='bg-blue-500 text-white border border-white rounded-md uppercase text-2xl font-bold font-grandstander p-0.5 items-center justify-center inline-flex m-0.5 mx-2'
-            onClick={$onClick}>
-            <span>{children}</span>
-        </button>
-    ) : null;
-}
 
 export function alertError(err: unknown) {
     alert((err as Error).message);

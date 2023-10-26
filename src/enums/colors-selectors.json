@@ -1,0 +1,16 @@
+{
+	"black": "itemColorId-1",
+	"grey": "itemColorId-2",
+	"white": "itemColorId-3",
+	"beige": "itemColorId-4",
+	"red": "itemColorId-5",
+	"pink": "itemColorId-6",
+	"purple": "itemColorId-7",
+	"blue": "itemColorId-8",
+	"green": "itemColorId-9",
+	"yellow": "itemColorId-10",
+	"orange": "itemColorId-11",
+	"brown": "itemColorId-12",
+	"gold": "itemColorId-13",
+	"silver": "itemColorId-14"
+}

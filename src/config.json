@@ -11,5 +11,13 @@
     },
     "removeBgSuffix": "-removebg-preview.png",
     "downloadsPath": "/home/bobby/Downloads",
-    "missingRemoveBG": "/home/bobby/Desktop/missing-remove-bg"
+    "missingRemoveBG": "/home/bobby/Desktop/missing-remove-bg",
+    "UI": {
+        "button": {
+            "icon&label": [
+                "icon",
+                "label"
+            ]
+        }
+    }
 }

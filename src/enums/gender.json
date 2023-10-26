@@ -1,9 +1,9 @@
 {
-    "M": "mens",
-    "F": "womens",
-    "B": "boys",
-    "G": "girls",
-    "I": "infant",
-    "T": "toddler",
-    "U": "unisex"
+    "M": "Men's",
+    "F": "Women's",
+    "B": "Boys'",
+    "G": "Girls'",
+    "I": "Infant",
+    "T": "Toddler",
+    "U": "Unisex"
 }

@@ -5,14 +5,8 @@
 @import './utilities.css';
 @import '../../../node_modules/@fortawesome/fontawesome-svg-core/styles.css';
 
-/* @import '../fonts/roboto/300.css';
-@import '../fonts/roboto/400.css';
-@import '../fonts/roboto/500.css';
-@import '../fonts/roboto/700.css'; */
-
 body {
-    font-family: 'Grandstander';
-    margin: auto;
+    font-family: 'Open Sans';
 }
 
 /* .active {
