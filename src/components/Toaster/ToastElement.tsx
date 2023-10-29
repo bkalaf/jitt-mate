@@ -3,7 +3,7 @@ import { $cn } from '../../util/$cn';
 import { faBug, faNewspaper, faSquare, faThumbsUp, faTrafficCone } from '@fortawesome/pro-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useToggler } from '../../hooks/useToggler';
-import { Toast, ToastStage, cycleToastStage } from '../contexts/ToasterContext';
+import { Toast, ToastStage, cycleToastStage } from '../Contexts/ToasterContext';
 import { randomString } from '../../util/randomString';
 
 export function ToastElement({ message, title, toastType, prune }: Toast) {

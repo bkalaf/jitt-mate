@@ -1,8 +1,12 @@
-import { Column } from '@tanstack/react-table';
+import { Column, ColumnDef } from '@tanstack/react-table';
 import { useMemo } from 'react';
 
-export function useColumnMeta<T>(column: Column<T, any>) {
-    if (column.columnDef.meta == null) throw new Error('meta null');
+export function useColumnMeta<T>(column: Column<T, any> | ColumnDef<T, any>) {
+    const meta = 'meta' in column ? column.meta : 'columnDef' in column ? column.columnDef.meta : undefined;
+    if (meta == null) {
+        console.error('no meta', column);
+        throw new Error('meta null');
+    }
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return useMemo(() => column.columnDef.meta!, [column.columnDef.meta]);
+    return useMemo(() => meta, [meta]);
 }

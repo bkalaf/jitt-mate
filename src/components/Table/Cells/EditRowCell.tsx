@@ -1,14 +1,18 @@
 import { useCallback, useMemo } from 'react';
 import { CellContext } from '@tanstack/react-table';
-import { useCollectionViewContext } from '../../useCollectionViewContext';
-import { faFloppyDisk, faPenCircle } from '@fortawesome/pro-solid-svg-icons';
+import { useCollectionViewContext } from '../../../hooks/useCollectionViewContext';
+import { faFloppyDisk, faPenCircle, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Button } from '../../Buttons/Button';
-import { $tagIs } from '../../../dto/is';
 import { FALSE } from '../../../common/FALSE';
+import { useDeleteOne } from '../../Contexts/useDeleteOne';
+import { useGetRowId } from '../../../schema/useGetRowId';
+import { $tagIs } from '../../../dal/is';
 
 export function EditRowCell<T extends EntityBase>(props: CellContext<T, any>) {
-    const { setEdittingRow, isEdittable, isInEditMode } = useCollectionViewContext<T>();
-    const showSave = useMemo(() => isEdittable(props.row), [isEdittable, props.row]);
+    const context = useCollectionViewContext<T>();
+    if (context == null) throw new Error('null context');
+    const { setRowEdittable, isRowEdittable } = context;
+    const showSave = useMemo(() => isRowEdittable(props.row), [isRowEdittable, props.row]);
     const onClick = useCallback(() => {
         if (showSave) {
             if (document.activeElement != null) {
@@ -16,11 +20,11 @@ export function EditRowCell<T extends EntityBase>(props: CellContext<T, any>) {
                     document.activeElement.blur();
                 }
             } 
-            setEdittingRow(undefined);
+            setRowEdittable(undefined);
         } else {
-            setEdittingRow(props.row);
+            setRowEdittable(props.row);
         }
-    }, [props.row, setEdittingRow, showSave]);
+    }, [props.row, setRowEdittable, showSave]);
     const icon = useMemo(() => (showSave ? faFloppyDisk : faPenCircle), [showSave]);
     return (
         <Button type='button' disabledCondition={FALSE} onClick={onClick} icon={icon} />
@@ -28,4 +32,13 @@ export function EditRowCell<T extends EntityBase>(props: CellContext<T, any>) {
         //     <Button type='button' disabledCondition={FALSE} onClick={onClick} icon={icon} />
         // </span>
     );
+}
+
+export function DeleteRowCell<T extends EntityBase>(props: CellContext<T, any>) {
+    const deleteOne = useDeleteOne();
+    const getRowId = useGetRowId();    
+    const onClick = useCallback(() => {
+        deleteOne(getRowId(props.row.original));
+    }, [deleteOne, getRowId, props.row.original]);
+    return <Button type='button' disabledCondition={FALSE} onClick={onClick} icon={faTrashCan} />;
 }

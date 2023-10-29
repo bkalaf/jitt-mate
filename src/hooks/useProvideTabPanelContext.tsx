@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { ITabPanelContext } from '../components/contexts/TabPanelContext';
+import { ITabPanelContext } from '../components/Contexts/TabPanelContext';
 
 function toIsCurrent(func: StateSetter<string | undefined>, predicate: Predicate<string | undefined>, key?: string | undefined) {
     return {

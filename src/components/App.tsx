@@ -1,36 +1,13 @@
-import { Route, RouterProvider, createHashRouter, createRoutesFromElements, useLoaderData, useParams } from 'react-router-dom';
-import { ErrorBoundary } from './ErrorBoundary';
+import { RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RealmProvider } from './Providers/RealmProvider';
 import { catchError } from './catchError';
-import { LogInPage } from './LogInPage';
 import { ToasterProvider } from './Providers/ToasterProvider';
-import { AppRoot } from './AppRoot';
-import { collectionLoader } from '../routes/loaders/collectionLoader';
-import { CollectionView } from './CollectionView';
-
-const TestEl = () => {
-    const { collection } = useParams();
-    const loadedData = useLoaderData();
-    console.log('loadedData', loadedData);
-    return (
-        <div className='text-3xl'>
-            <span className='flex'>{collection}</span>
-            <span className='flex'>{(loadedData != null && 'length' in (loadedData as Record<string, any>) ? (loadedData as any).length : 0).toFixed(0)}</span>
-        </div>
-    );
-};
-
-export const router = createHashRouter(
-    createRoutesFromElements(
-        <Route path='/' errorElement={<ErrorBoundary />} element={<AppRoot />}>
-            <Route path='data'>
-                <Route id='collectionRoute' path=':collection' loader={collectionLoader} element={<CollectionView />}></Route>
-            </Route>
-            <Route path='login' element={<LogInPage />}></Route>
-        </Route>
-    )
-);
+import { OverlayContextProvider } from './Contexts/OverlayContext';
+import { LocalForageProvider } from './Providers/LocalForageProvider';
+import { router } from './router';
+import { SpinnerProvider } from './Contexts/SpinnerContext';
+import { ReactQueryDevtools } from 'react-query/devtools';
 
 export function alertError(err: unknown) {
     alert((err as Error).message);
@@ -84,12 +61,19 @@ export const $$queryClient = new QueryClient({
 
 export function App() {
     return (
-        <QueryClientProvider client={$$queryClient}>
-            <ToasterProvider>
-                <RealmProvider>
-                    <RouterProvider router={router} />
-                </RealmProvider>
-            </ToasterProvider>
-        </QueryClientProvider>
+        <LocalForageProvider>
+            <QueryClientProvider client={$$queryClient}>
+                <SpinnerProvider>
+                    <ToasterProvider>
+                        <RealmProvider>
+                            <OverlayContextProvider>
+                                <RouterProvider router={router} />
+                            </OverlayContextProvider>
+                        </RealmProvider>
+                    </ToasterProvider>
+                    <ReactQueryDevtools initialIsOpen={true} />
+                </SpinnerProvider>
+            </QueryClientProvider>
+        </LocalForageProvider>
     );
 }

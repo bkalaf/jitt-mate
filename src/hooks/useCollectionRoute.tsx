@@ -1,7 +1,10 @@
 import { useParams } from 'react-router';
 
-export function useCollectionRoute() {
+export function useCollectionRoute(objectType?: string) {
     const result = useParams<{ collection: string }>().collection;
-    if (result == null) throw new Error('no collection name');
+    if (result == null) {
+        if (objectType == null) throw new Error('no collection name');
+        return objectType;
+    }
     return result;
 }

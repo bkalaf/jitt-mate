@@ -3,14 +3,14 @@ import { OIDTableCell } from '../components/Table/Cells/OIDTableCell';
 import { StringTableCell } from '../components/Table/Cells/StringTableCell';
 import { ofOID } from '../routes/loaders/ofOID';
 import { BSON } from 'realm';
-import { IMercariBrand, IBrand } from '../dto/types';
+import { IMercariBrand, IBrand } from '../dal/types';
 
 const $helpers = {
     mercariBrand: createColumnHelper<IMercariBrand>(),
     brand: createColumnHelper<IBrand>()
 };
 
-const $_id = function <T extends { _id: BSON.ObjectId }>(key: keyof typeof $helpers) {
+const $_id = function <T extends EntityBase>(key: keyof typeof $helpers) {
     const $$ = $helpers[key];
     return ($$.accessor as any)((row: T) => ofOID(row._id), {
         header: 'ID',

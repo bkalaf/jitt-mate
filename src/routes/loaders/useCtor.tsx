@@ -1,4 +1,4 @@
-import $$schema from '../../dto';
+import $$schema from '../../dal';
 
 export function useCtor<T extends EntityBase>(objectType: string) {
     const $$ctors = $$schema as any as EntityConstructor<T>[];

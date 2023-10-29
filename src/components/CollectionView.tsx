@@ -1,98 +1,130 @@
-import {
-    HeaderContext,
-    Renderable,
-    Table,
-    createColumnHelper,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    useReactTable
-} from '@tanstack/react-table';
+import { Table, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
 import { useCollectionRoute } from '../hooks/useCollectionRoute';
-import { useEffect, useMemo, useRef } from 'react';
-import { usePagination } from './usePagination';
-import { BSON } from 'realm';
-import { useColumnDefs } from './useColumnDefs';
-import { useDefaults } from './useDefaults';
-import { useGetRowId } from '../schema/useGetRowId';
-import { CollectionViewProvider } from './CollectionViewContext';
-import { DefaultTableCell } from './Table/Cells/DefaultTableCell';
-import { useQuery } from '@tanstack/react-query';
-import { useRealmContext } from '../hooks/useRealmContext';
-import { toProperFromCamel } from '../common/text/toProperCase';
-import { useRenderSubComponent } from '../dto/useRenderSubComponent';
-import { PaginationFooter } from './Table/PaginationFooter';
+import { useCallback, useLayoutEffect, useMemo, useReducer, useRef } from 'react';
+import { useColumnDefs } from '../hooks/useColumnDefs';
+import { CollectionViewProvider } from './Providers/CollectionViewProvider';
+import { DefaultTableBodyCell } from './Table/Cells/DefaultTableBodyCell';
 import { ReactTable } from './Table/ReactTable';
-
-export function TableHead({ def, ctxt, table }: { def: Renderable<HeaderContext<any, unknown>>; ctxt: HeaderContext<any, unknown>; table: Table<any> }): JSX.Element {
-    return <></>;
-}
+import { DefaultTableFooterCell } from './Table/Cells/DefaultTableFooterCell';
+import { DefaultTableHeaderCell } from './Table/Cells/DefaultTableHeaderCell';
+import { createPortal } from 'react-dom';
+import { PaginationFooter } from './Table/PaginationFooter';
+import { compR } from '../common/functions/composeR';
+import { useLoadInsertForm } from './Table/Cells/useLoadInsertForm';
+import { DeleteSelectionButton } from './DeleteSelectionButton';
+import { InsertRecordButton } from './InsertRecordButton';
+import { useFetchAll } from './useFetchData';
+import { getRowIdFromOID } from '../schema/getRowId';
+import { createSubComponent } from '../dal/createSubComponent';
+import { is } from '../dal/is';
 
 export type PaginationButtonProps = [() => boolean, () => void];
 
-export function DefaultFooter<T extends { _id: BSON.ObjectId }>(p: HeaderContext<T, any>): JSX.Element {
-    return <>{p.column.id}</>;
+export function addIndex<T>(arr: T[]) {
+    return arr.map((x, ix) => [ix, x] as [number, T]);
 }
-export function DefaultHeader<T extends { _id: BSON.ObjectId }>(p: HeaderContext<T, any>): JSX.Element {
-    return <>{toProperFromCamel(p.column.id)}</>;
+export function collectionToArray<TValue>(coll: DBList<TValue> | DBDictionary<TValue> | DBSet<TValue>) {
+    if (is.dbDictionary(coll)) return Object.entries(coll);
+    if (is.dbList(coll)) return addIndex<TValue>(Array.from(coll.values())).map(([k, v]) => [k.toFixed(0), v] as [string, TValue]);
+    if (is.dbSet(coll)) return addIndex<TValue>(Array.from(coll.values())).map(([k, v]) => [k.toFixed(0), v] as [string, TValue]);
+    return [];
 }
-export function CollectionView<T extends { _id: BSON.ObjectId }>() {
-    // const loaderData = useRouteLoaderData('collectionRoute') as any[];
-    // const { data, pagination, pageCount, gotoFirstPage, gotoLastPage, gotoPreviousPage, gotoNextPage, initialState, setSpecificPage, setSpecificPageSize, setData } = usePagination<T>(0, 250);
-    const columns = useColumnDefs<T>(createColumnHelper<T>());
-    const handleResults = useDefaults<T>();
-    const { db } = useRealmContext();
+export function RealmObjectView<T extends EntityBase>() {
     const collectionName = useCollectionRoute();
-    if (db == null) throw new Error('no db');
-    const { data } = useQuery({ queryKey: [collectionName], queryFn: () => Promise.resolve(handleResults(db.objects<T>(collectionName ?? ''))) });
-    const view = useMemo(() => (data == null ? [] : Array.from(data ?? [])), [data]);
-    const getRowId = useGetRowId<T>();
-    const { getRowCanExpand, visibility: columnVisibility } = useRenderSubComponent();
+    const { columns, getRowCanExpand, schema, subComponentTabPanels, visibility: columnVisibility } = useColumnDefs<T>(collectionName);
+    const data = useFetchAll<T>(collectionName);
+    const getRowId = getRowIdFromOID;
     const table = useReactTable<T>({
-        data: view,
+        data,
         columns,
         defaultColumn: {
-            cell: DefaultTableCell,
-            footer: DefaultFooter,
-            header: DefaultHeader
+            cell: DefaultTableBodyCell,
+            footer: DefaultTableFooterCell,
+            header: DefaultTableHeaderCell
         },
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
         debugAll: true,
-        getRowId: getRowId,
-        getRowCanExpand: getRowCanExpand,
+        getRowId,
+        getRowCanExpand,
+        meta: {
+            collectionName: collectionName,
+            scope: 'top-level',
+            schema: schema.schema
+        },
         initialState: {
-            columnVisibility, 
+            columnVisibility,
             pagination: {
                 pageIndex: 0,
                 pageSize: 25
             }
         }
-        // initialState: {
-        //     pagination: {
-        //         pageIndex: 0,
-        //         pageSize: 250
-        //     }
-        // }
-    });    
-    const memoized = useRef(collectionName);
-    useEffect(() => {
-        if (collectionName !== memoized.current) {
-            table.resetPageIndex();
-            table.resetPageSize();
+    });
+    useLayoutEffect(() => {
+        table.resetPageIndex();
+        table.resetPageSize();
+    }, [collectionName, table]);
+
+    const rerender = useReducer(() => ({}), {})[1];
+    const delayedRerender = useCallback(() => {
+        setTimeout(rerender, 400);
+    }, [rerender]);
+    const portal = useRef<React.ReactPortal | null>(null);
+    const pageIndex = table.getState().pagination.pageIndex;
+    const pageSize = table.getState().pagination.pageSize;
+    const maxPage = table.getPageCount();
+    const page = pageIndex + 1;
+    const maxPageIndex = maxPage - 1;
+    const previousPage = compR<void, void>(table.previousPage)(delayedRerender);
+    const nextPage = compR<void, void>(table.nextPage)(delayedRerender);
+    const canNotGoForward = !table.getCanNextPage();
+    const canNotGoBackward = !table.getCanPreviousPage();
+    const onSizeChange = useCallback(
+        (ev: React.ChangeEvent<HTMLSelectElement>) => {
+            table.setPageSize(parseInt(ev.target.selectedOptions[0].value, 10));
+            delayedRerender();
+        },
+        [delayedRerender, table]
+    );
+    const setPage = compR(table.setPageIndex)(delayedRerender);
+    const firstPage = useCallback(() => compR(table.setPageIndex)(delayedRerender)(0), [delayedRerender, table.setPageIndex]);
+    const lastPage = useCallback(() => compR(table.setPageIndex)(delayedRerender)(table.getPageCount() - 1), [delayedRerender, table]);
+    const SubComponent = useMemo(() => createSubComponent(subComponentTabPanels), [subComponentTabPanels]);
+    useLayoutEffect(() => {
+        const el = document.getElementById('pagination-root');
+        if (el != null) {
+            portal.current = createPortal(
+                <PaginationFooter
+                    setPage={setPage}
+                    firstPage={firstPage}
+                    lastPage={lastPage}
+                    onSizeChange={onSizeChange}
+                    pageIndex={pageIndex}
+                    pageSize={pageSize}
+                    maxPage={maxPage}
+                    maxPageIndex={maxPageIndex}
+                    canNotGoBackward={canNotGoBackward}
+                    canNotGoForward={canNotGoForward}
+                    previousPage={previousPage}
+                    nextPage={nextPage}
+                    page={page}
+                />,
+                el
+            );
         }
-        memoized.current = collectionName;
-    }, [collectionName, table])
+    }, [canNotGoBackward, canNotGoForward, firstPage, lastPage, maxPage, maxPageIndex, nextPage, onSizeChange, page, pageIndex, pageSize, previousPage, setPage, table]);
+
+    const onInsert = useLoadInsertForm(collectionName, table, getRowId);
     return (
-        <CollectionViewProvider>
-            <section className='flex flex-col w-full h-full'>
-                <ReactTable table={table} />
-                <PaginationFooter table={table} />
-            </section>
+        <CollectionViewProvider param={collectionName}>
+            <div className='flex items-center justify-start w-full space-x-3'>
+                <InsertRecordButton table={table} onInsert={onInsert} />
+                <DeleteSelectionButton table={table} />
+            </div>
+            <ReactTable getId={getRowId} table={table} SubComponent={SubComponent} />
+            {portal.current}
         </CollectionViewProvider>
     );
 }
-

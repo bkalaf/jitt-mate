@@ -1,5 +1,5 @@
 import { useProvideToasterContext } from '../../hooks/useProvideToasterContext';
-import { ToasterContext } from '../contexts/ToasterContext';
+import { ToasterContext } from '../Contexts/ToasterContext';
 
 export function ToasterProvider({ children }: { children: Children }) {
     const value = useProvideToasterContext();

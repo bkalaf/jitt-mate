@@ -1,6 +1,6 @@
 import { Button } from './Button';
-import { not } from '../../dto/not';
 import { TRUE } from '../../common/TRUE';
+import { not } from '../../dal/not';
 
 export interface ISubmitButtonProps {
     children?: string;

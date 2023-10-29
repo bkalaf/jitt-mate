@@ -6,11 +6,13 @@ import { Field } from './Field';
 import { alertError } from './App';
 import { Button } from './Buttons/Button';
 import { SubmitButton } from './Buttons/SubmitButton';
+import { useSpinnerContext } from './Contexts/useSpinnerContext';
 
 export function LogInPage() {
     const { logIn } = useRealmContext();
     const navigate = useNavigate();
-    const onSubmit = useMemo(() => handleSubmitter(logIn, () => navigate('/'), alertError), [logIn, navigate]);
+    const { setSpinner } = useSpinnerContext();    
+    const onSubmit = useMemo(() => handleSubmitter(setSpinner(logIn), () => navigate('/'), alertError), [logIn, navigate, setSpinner]);
     return (
         <div className='container'>
             <form id='logInForm' onSubmit={onSubmit} className='grid w-3/4 grid-cols-2 mx-auto gap-x-3'>

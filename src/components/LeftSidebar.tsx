@@ -1,7 +1,10 @@
+import { Table } from '@tanstack/react-table';
 import { useRealmContext } from '../hooks/useRealmContext';
 import { SidebarListItem } from './SidebarListItem';
+import { PaginationFooter } from './Table/PaginationFooter';
+import { useTable } from './Table/ReactTable';
 
-export function LeftSidebar() {
+export function LeftSidebar<T extends EntityBase>() {
     const { isAuthenticated } = useRealmContext();
     return (
         <div className='flex resize-x border border-red-500 text-cyan-500 pl-1 pr-2 overflow-auto z-10 min-w-[20%] font-pala-dark flex-col'>
@@ -25,6 +28,8 @@ export function LeftSidebar() {
                     </ul>
                 </>
             )}
+            <div id='pagination-root'></div>
+            {/* {table && <PaginationFooter table={table} />} */}
         </div>
     );
 }

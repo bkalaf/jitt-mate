@@ -1,53 +1,62 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { BSON } from 'realm';
 import { useGetRowId } from '../schema/useGetRowId';
 import { Row } from '@tanstack/react-table';
-import { ICollectionViewContext } from './CollectionViewContext';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useRealmContext } from '../hooks/useRealmContext';
-import { useCollectionRoute } from '../hooks/useCollectionRoute';
-import { toOID } from '../dto/toOID';
-import { checkTransaction } from '../util/checkTransaction';
+import { ICollectionViewContext } from './Contexts/CollectionViewContext';
+import { useUpdateRecord } from './useUpdateRecord';
+import { useInsertRecord } from './useInsertRecord';
+import { useCollectionViewContext } from '../hooks/useCollectionViewContext';
+import { useLog } from './Contexts/useLogger';
+import { fromOID } from '../dal/fromOID';
 
-export function useProvideCollectionViewContext<T extends { _id: BSON.ObjectId }>(): ICollectionViewContext<T> {
+export function useProvideCollectionViewContext<T extends EntityBase>(param: any): ICollectionViewContext<T> {
+    const log = useLog('view');
+    log('NEW PARAM', `\t[${param}]`)
+    const context = useCollectionViewContext();
+    const depth = (context?.depth ?? -1) + 1;
+    const params = useMemo(() => [...(context?.params ?? []), param], [context?.params, param]);
+    log('DEPTH', '\t'.concat(depth.toFixed(0)));
+    log('PARAMS', '\t'.concat(JSON.stringify(params, null, '\t')))
     const getRowId = useGetRowId<T>();
-    const { db } = useRealmContext();
-    const [edittingRow, _setEdittingRow] = useState<string | undefined>();
-    const isInEditMode = useCallback(() => edittingRow != null, [edittingRow]);
-    const setEdittingRow = useCallback(
-        (row: Row<T> | undefined) => {
-            _setEdittingRow(row != null ? getRowId(row.original) : undefined);
+    const [edittingRow, _setEdittingRow] = useState<OID | undefined>();
+    const setRowEdittable = useCallback(
+        (row?: Row<T>) => {
+            _setEdittingRow((prev) => {
+                const current = row != null ? getRowId(row.original) : undefined;
+                if (current === prev) {
+                    return undefined;
+                }
+                return current;
+            });
         },
         [getRowId]
     );
-    const isEdittable = useCallback((row: Row<T>) => getRowId(row.original) === edittingRow, [edittingRow, getRowId]);
-    if (db == null) throw new Error('no db');
-    const collectionName = useCollectionRoute();
-    const queryClient = useQueryClient();
-    const { mutate } = useMutation({
-        mutationFn: ({ id, propertyName, value }: { id: string; propertyName: string; value?: any }) => {
-            const func = () => {
-                const original = db.objectForPrimaryKey(collectionName ?? '', toOID(id));
-                if (original == null) throw new Error('could not find realm.object');
-                original[propertyName] = value;
-            };
-            checkTransaction(db)(func);
-            return Promise.resolve();
+    const isRowEdittable = useCallback(
+        (row: Row<T>) => {
+            return getRowId(row.original) === fromOID(edittingRow);
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: [collectionName ?? '']
-            });
-            queryClient.refetchQueries({
-                queryKey: [collectionName ?? '']
-            });
-        }
-    });
+        [edittingRow, getRowId]
+    );
+    const updateRecord = useUpdateRecord<T>();
+    const insertRecord = useInsertRecord<T>();
+
+    // const { mutate: updateOne } = useMutation({
+    //     mutationFn: ({ id, propertyName, value }: { id: OID; propertyName: string; value?: any }) => {
+    //         const func = () => {
+    //             const original = db.objectForPrimaryKey(collectionName ?? '', toOID(id));
+    //             if (original == null) throw new Error('could not find realm.object');
+    //             original[propertyName] = value;
+    //         };
+    //         checkTransaction(db)(func);
+    //         return Promise.resolve();
+    //     },
+    //     ...invalidator
+    // });
     return {
-        edittingRow,
-        isInEditMode,
-        setEdittingRow,
-        isEdittable,
-        mutate
+        depth,
+        params,
+        isRowEdittable,
+        setRowEdittable,
+        updateRecord
     };
 }

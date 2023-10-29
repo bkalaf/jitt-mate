@@ -91,3 +91,7 @@ typings/
 # Electron-Forge
 out/
 mongodb-realm
+.vscode
+src/config.json
+.gitignore
+src/fsinfo.json

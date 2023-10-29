@@ -36,7 +36,7 @@ const createWindow = () => {
             nodeIntegrationInWorker: true,
             webSecurity: false,
             contextIsolation: false,
-            zoomFactor: 0.8,
+            zoomFactor: 1.0,
             spellcheck: true
         }
     });

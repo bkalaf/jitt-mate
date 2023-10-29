@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { PaginationButtonProps } from './CollectionView';
 import { Table } from '@tanstack/react-table';
-import { not } from '../dto/not';
+import { not } from '../dal/not';
 
 export function usePagination<T>(initialPageIndex = 0, initialPageSize = 250) {
     const getPageIndex = useCallback((table: Table<T>) => table.getState().pagination.pageIndex, []);

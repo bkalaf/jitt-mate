@@ -4,7 +4,10 @@
         <meta charset="UTF-8" />
         <title>Hello World!</title>
     </head>
-    <body class="m-0">
-        <div id="app-root" class="w-screen h-screen overflow-hidden bg-slate-300"></div>
+    <body class="relative w-screen h-screen m-0 overflow-hidden text-white bg-slate-500">
+        <div id="app-root" class="static flex p-0.5 w-screen h-screen overflow-hidden"></div>
+        <div id="modal-root" class="absolute inset-0 z-30 flex items-center justify-center w-auto h-auto p-5 bg-transparent pointer-events-none"></div>
+        <div id="spinner-root" class="absolute inset-0 z-40 flex items-center justify-center w-auto h-auto p-10 bg-transparent pointer-events-none"></div>
+        <div id="form-root" class="invisible pointer-events-none" />
     </body>
 </html>

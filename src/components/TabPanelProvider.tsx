@@ -1,4 +1,4 @@
-import { TabPanelContext } from './contexts/TabPanelContext';
+import { TabPanelContext } from './Contexts/TabPanelContext';
 import { useProvideTabPanelContext } from '../hooks/useProvideTabPanelContext';
 
 

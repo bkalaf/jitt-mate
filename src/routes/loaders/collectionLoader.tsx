@@ -2,7 +2,7 @@ import { ColumnDef, createColumnHelper, getCoreRowModel, useReactTable } from '@
 import { Params, json } from 'react-router';
 import { SortDescriptor } from 'realm';
 import $defs from '../../schema';
-import $$schema from '../../dto';
+import $$schema from '../../dal';
 
 export function handleSorted<T>(results: Realm.Results<T>, sort?: SortDescriptor[]) {
     return sort != null ? results.sorted(sort) : results;

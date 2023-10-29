@@ -32,5 +32,7 @@ import { App } from './components/App';
 
 console.log('👋 This message is being logged by "renderer.js", included via webpack');
 
-const root = createRoot(document.getElementById('app-root'));
+const el = document.getElementById('app-root');
+if (el == null) throw new Error('no el');
+const root = createRoot(el);
 root.render(<App />);

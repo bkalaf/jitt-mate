@@ -1,5 +1,5 @@
 import { useProvideRealmContext } from '../../hooks/useProvideRealmContext';
-import { RealmContext } from '../contexts/RealmContext';
+import { RealmContext } from '../Contexts/RealmContext';
 
 export function RealmProvider({ children }: { children: Children }) {
     const value = useProvideRealmContext();

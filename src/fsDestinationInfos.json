@@ -1,0 +1,175 @@
+{
+	"cell": [
+		"components/Table/Cells",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/TableBodyCell.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/TableCell.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/TableHeaderCell.tsx"
+		]
+	],
+	"context": [
+		"components/Contexts",
+		[]
+	],
+	"control": [
+		"components/Forms/Controls",
+		[]
+	],
+	"form": [
+		"components/Forms",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/components/InsertForm.tsx"
+		]
+	],
+	"hook": [
+		"hooks",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/useDeleteOne.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/useFormContext.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/useLogger.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/useOverlayContext.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/useProvideFormContext.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/useProvideSpinnerContext.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/useSpinnerContext.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/useTableControlsContext.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/Cells/useDropDownQuery.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/Cells/useLoadInsertForm.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/Cells/usePropertyInfo.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/Cells/useTableMeta.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/useDefaults.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/useFetchData.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/useInsertRecord.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/useInvalidator.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/usePagination.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/useProvideCollectionViewContext.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/useRealmSchema.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/useTableScope.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/useUpdateRecord.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/useFieldInfos.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/useGetRowCanExpand.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/useRenderSubComponent.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/hoooks/useCreateDropdownOption.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/routes/loaders/useCtor.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/routes/loaders/useFindAll.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/routes/loaders/useLocalRealm.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/routes/loaders/useObjectType.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/schema/useGetRowId.tsx"
+		]
+	],
+	"mutation": [
+		"fetch/mutation",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/dal/updateProduct.tsx"
+		]
+	],
+	"of": [
+		"util/of",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/routes/loaders/ofOID.tsx"
+		]
+	],
+	"from": [
+		"util/from",
+		[]
+	],
+	"page": [
+		"components/Pages",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/components/LogInPage.tsx"
+		]
+	],
+	"provider": [
+		"contexts/Providers",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/FormProvider.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Providers/CollectionViewProvider.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Providers/LocalForageProvider.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Providers/RealmProvider.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Providers/ToasterProvider.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/TabPanelProvider.tsx"
+		]
+	],
+	"query": [
+		"fetch/query",
+		[]
+	],
+	"to": [
+		"util/to",
+		[]
+	],
+	"tablePart": [
+		"components/Table",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/components/TableHead.tsx"
+		]
+	],
+	"view": [
+		"components/Views",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/components/CollectionPropertyView.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/CollectionView.tsx"
+		]
+	],
+	"enum": [
+		"DTO/enums",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/apparelGroups.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/apparelType.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/backlineTypes.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/bookTypes.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/collarTypes.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/cuffTypes.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/gameRating.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/genders.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/itemGroups.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/legTypes.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/movieRating.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/necklineTypes.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/sizingTypes.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/sleeveTypes.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/topAdornments.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/enums/gender.json",
+			"/home/bobby/Desktop/jitt/jitt/src/enums/importNecklineType.ts"
+		]
+	],
+	"realmClass": [
+		"DTO",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/dal/CustomItemField.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/Draft.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/HashTag.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/HashTagUsage.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/Listing.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/ProductImage.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/Sku.ts"
+		]
+	],
+	"function": [
+		"common/functions",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/common/comparator/toSortingFunction.tsx"
+		]
+	],
+	"button": [
+		"components/Button",
+		[]
+	],
+	"interface": [
+		"types",
+		[]
+	],
+	"loader": [
+		"routing/loaders",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/routes/loaders/collectionLoader.tsx"
+		]
+	],
+	"action": [
+		"routing/actions",
+		[]
+	],
+	"route": [
+		"routing/routes",
+		[]
+	]
+}

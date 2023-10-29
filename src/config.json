@@ -19,5 +19,25 @@
                 "label"
             ]
         }
+    },
+    "settings": {
+        "page-size": 25,
+        "hidden-columns": [],
+        "column-order": [],
+        "rows-selected": [],
+        "sort": [],
+        "filter": [],
+        "global-filter": null,
+        "pinned-left": [],
+        "pinned-right": [],
+        "column-size": {},
+        "max-page-index": 1,
+        "page-index": 0,
+        "edittable-row": null
+    },
+    "localForage": {
+        "description": "JITT UI settings",
+        "name": "jitt-matt-forager",
+        "version": 1
     }
 }

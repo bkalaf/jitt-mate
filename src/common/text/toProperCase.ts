@@ -7,7 +7,8 @@ export const toProperCase = (str: string) => {
     return splitAt((x) => x === ' ' || x === '-')(str);
 };
 export const toProperFromCamel = (str: string) => {
-    return splitWhen((x) => charRange('A', 'Z').includes(x))(str)
+    const s = str.startsWith('$') ? str.substring(1) : str;
+    return splitWhen((x) => charRange('A', 'Z').includes(x))(s)
         .map((x) => capitalize(x.join('')))
         .join(' ')
         .replaceAll('Sub ', 'Sub');

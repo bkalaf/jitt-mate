@@ -1,10 +1,10 @@
 import { useCallback, useMemo, useState } from 'react';
 import Realm from 'realm';
 import Config from '../config.json';
-import $$schema from '../dto';
-import { IRealmContext } from '../components/contexts/RealmContext';
+import { IRealmContext } from '../components/Contexts/RealmContext';
 import { useToasterContext } from './useToasterContext';
 import { toastCatchBlock } from '../util/toastCatchBlock';
+import $$schema from '../dal';
 
 export function useProvideRealmContext(): IRealmContext {
     const app = useMemo(() => new Realm.App(Config.realm.appID), []);

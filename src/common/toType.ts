@@ -1,5 +1,3 @@
-import { IRealmType } from '../dto/db';
-
 export const toType = (name: string) => {
     const result: IRealmType = (() => {
         return name;
