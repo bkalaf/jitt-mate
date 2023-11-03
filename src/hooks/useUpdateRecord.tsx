@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { checkTransaction } from '../util/checkTransaction';
 import Realm from 'realm';
-import { useSpinnerContext } from './Contexts/useSpinnerContext';
+import { useSpinnerContext } from '../components/Contexts/useSpinnerContext';
 import { useLocalRealm } from '../routes/loaders/useLocalRealm';
 import { useInvalidator } from './useInvalidator';
 import { toNotNullOID } from '../dal/toOID';
@@ -10,7 +10,7 @@ import { toNotNullOID } from '../dal/toOID';
 export function useUpdateRecord<T extends EntityBase>(objectType?: string) {
     const { setSpinner } = useSpinnerContext();
     const db = useLocalRealm();
-    const { onSuccess } = useInvalidator(objectType ?? '')
+    const { onSuccess } = useInvalidator(objectType ?? '');
     const submitter = useCallback(
         (db: Realm, collectionName: string) => (args: { payload: Partial<T> & AnyObject; dirtyProperties: string[]; id: OID }) => {
             const func = () => {

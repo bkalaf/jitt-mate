@@ -4,7 +4,7 @@ import Realm from 'realm';
 const BSON = Realm.BSON;
 import * as fs from 'graceful-fs';
 import $$schema from './dal';
-import { IClassifier } from './dal/types';
+import { IClassifier, ILocationSegment, IProduct, ISku } from './dal/types';
 import { toClassifierName } from './dal/toClassifierName';
 
 const app = new Realm.App({ id: Config.realm.appID });
@@ -49,6 +49,18 @@ lock.then(() => {
         console.log(`currentName: ${currentName}`);
         console.log('');
     })
+    // realm!.write(() => {
+    //     realm!.objects<ILocationSegment>('locationSegment').forEach((c) => {
+    //         c._barcode = c.barcode;
+    //     });
+    //     realm!.objects<ISku>('sku').forEach(c => {
+    //         c._barcode = c.sku;
+    //     });
+    //     realm!.objects<IProduct>('product').forEach(c => {
+    //         c._barcodes = c.upcs;
+    //     });
+    // })
+    
     return realm!.syncSession
         ?.uploadAllLocalChanges()
         .finally(() => console.log('DONE!'));

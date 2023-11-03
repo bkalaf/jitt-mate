@@ -4,6 +4,14 @@ import { ColumnDef, ColumnHelper, ColumnMeta, DeepKeys, IdentifiedColumnDef } fr
 import { fromOID } from './fromOID';
 import { dateFromNow } from './dateFromNow';
 import { capitalize, decapitalize } from '../common/text/capitalize';
+import { toDollarString } from './toDollarString';
+import { toDateString } from './toDateString';
+import { ofNumber } from './ofNumber';
+import { toPercentageString } from './toPercentageString';
+import { ofDate } from './ofDate';
+import { is } from './is';
+import { identity } from '../common/functions/identity';
+import { toProperFromCamel } from '../common/text/toProperCase';
 
 export class Def<T, TValue = any> {
     backing: [DeepKeys<T>, JITTColumnDef<T, TValue>];
@@ -14,7 +22,16 @@ export class Def<T, TValue = any> {
         return new Def<T, TValue>(name, datatype);
     }
     $$(helper: ColumnHelper<T>): DefinedColumn {
-        return helper.accessor(...this.backing);
+        const spread = this.backing[1].meta.accessorFn == null ? this.backing : [this.backing[1].meta.accessorFn, { ...this.backing[1], id: this.backing[0] }] as [any, any]
+        return helper.accessor(...spread);
+    }
+    $(helper: ColumnHelper<T>): DefinedColumn {
+        return helper.accessor((x: any) => this.backing[1].meta.accessorFn(x[this.backing[0]]), { ...this.backing[1], id: this.backing[0], header: `# ${toProperFromCamel(this.backing[0] as string ?? '')}` });
+    }
+    addToArray<TKey extends keyof ColumnMeta<T, TValue>, TArrayValue>(metaProperty: TKey, ...items: TArrayValue[]): Def<any, any> {
+        const next = [...(this.backing[1].meta[metaProperty] ?? []), ...items];
+        this.backing[1].meta[metaProperty] = next;
+        return this;
     }
     addToMeta<TKey extends keyof ColumnMeta<T, TValue>>(metaProperty: TKey, value: ColumnMeta<T, TValue>[TKey]): Def<any, any> {
         this.backing[1].meta[metaProperty] = value;
@@ -25,7 +42,7 @@ export class Def<T, TValue = any> {
         return this;
     }
 
-    setDataType(datatype: RealmTypes): Def<any, any> {
+    setDataType(datatype: RealmTypes | 'linkingObjects'): Def<any, any> {
         this.backing[1].meta.datatype = datatype;
         return this;
     }
@@ -50,24 +67,33 @@ export class Def<T, TValue = any> {
     enumMap<TKey extends string>(enumMap: EnumMap<TKey>): Def<any, any> {
         return this.addToMeta('enumMap', enumMap);
     }
-    objectType(ot: RealmObjects): Def<any, any> {
-        return this.addToMeta('objectType', $db[ot]() as RealmObjects);
+    objectType(ot: RealmTypes | RealmObjects): Def<any, any> {
+        console.log(`objectType`, ot);
+        return this.addToMeta('objectType', is.realmType.primitive(ot) ? ot : ($db[ot as RealmObjects]() as RealmObjects));
     }
     asLookup(objectType?: RealmObjects): Def<any, any> {
         const result = this.setDataType('object');
         if (objectType == null) return result.objectType(this.backing[0] as RealmObjects);
         return result.objectType(objectType);
     }
-    asEnum<TKey extends string>(enumMap: EnumMap<TKey>): Def<any, any> {
-        return this.setDataType('enum').enumMap(enumMap);
+    labelBy(label: string) {
+        return this.addToMeta('labelProperty', label);
+    }
+    setLookupProperty(key: string) {
+        return this.addToMeta('lookupProperty', key);
+    }
+    asEnum<TValue, TKey extends string = string, TKey2 extends string = string>(enumMap: EnumMap<TKey, TValue>, extraKey?: TKey2): Def<any, any> {
+        const extra = extraKey ? (x: Def<any, any>) => x.setLookupProperty(extraKey) : (x: Def<any, any>) => x;
+        return extra(this.setDataType('enum').enumMap(enumMap as any));
     }
     inputType(inputType: React.HTMLInputTypeAttribute): Def<any, any> {
         return this.addToMeta('inputType', inputType);
     }
-    validator(...validator: Validator<TValue | undefined>[]): Def<any, any> {
-        const [_, curr2] = this.backing as [any, DefinedColumn];
-        const currArray = curr2.meta?.validators;
-        return this.addToMeta('validators', [...(currArray ?? []), ...validator]);
+    checkbox(defaultValue = false) {
+        return this.addToMeta('defaultValue', defaultValue).inputType('checkbox').setDataType('bool');
+    }
+    validator(...validators: Validator<TValue | undefined>[]): Def<any, any> {
+        return this.addToArray('validators', ...validators);
     }
     min(min: number): Def<any, any> {
         const [_, curr2] = this.backing as [any, DefinedColumn];
@@ -103,11 +129,49 @@ export class Def<T, TValue = any> {
     multiplier(multi: number): Def<any, any> {
         return this.addToMeta('multiplier', multi);
     }
-    formatter(func: (x: any) => string): Def<any, any> {
+    formatter(func: (x?: StringOr<TValue>) => string | undefined): Def<any, any> {
         return this.addToMeta('formatString', func);
     }
     bool(defValue = false): Def<any, any> {
         return this.setDataType('bool').defaultValue(defValue).inputType('checkbox');
+    }
+    collectionOf(collectionType: RealmCollectionTypes, ofType: RealmTypes | RealmObjects) {
+        const func =
+            collectionType === 'list'
+                ? (x: DBList<any>) => x.length
+                : collectionType === 'dictionary'
+                ? (x: DBDictionary<any>) => Array.from(x.keys()).length
+                : collectionType === 'set'
+                ? (x: DBSet<any>) => x.size
+                : (x: DBBacklink<any>) => x.length;
+        return this.setDataType(collectionType).accessorFn(func).objectType(ofType).readonly();
+    }
+    accessorFn(func: (x: T) => TValue) {
+        const [curr, curr2] = this.backing;
+
+        return this.addToMeta('accessorFn', func);
+    }
+    list(ofType: RealmTypes | RealmObjects) {
+        return this.collectionOf('list', ofType)
+            .disableEditing();;
+    }
+    dictionary(ofType: RealmTypes | RealmObjects) {
+        return this.collectionOf('dictionary', ofType)
+            .disableEditing();;
+    }
+    enableEditing() {
+        return this.addToMeta('enableEditing', true);
+    }
+
+    disableEditing() {
+        return this.addToMeta('enableEditing', false);
+    }
+    set(ofType: RealmTypes | RealmObjects) {
+        return this.collectionOf('set', ofType)
+            .disableEditing();
+    }
+    backlink(ofType: RealmTypes | RealmObjects) {
+        return this.collectionOf('linkingObjects', ofType);
     }
     url(): Def<any, any> {
         return this.setDataType('string').inputType('url');
@@ -115,26 +179,40 @@ export class Def<T, TValue = any> {
     email(): Def<any, any> {
         return this.setDataType('string').inputType('email');
     }
+    pre<TInput, TOutput>(...pre: PreProcessFunction<TInput, TOutput>[]) {
+        return this.addToArray('preprocess', ...pre);
+    }
     tel(): Def<any, any> {
         return this.setDataType('string').inputType('tel');
     }
     // zipcode() {}
     barcode() {
-        return this.setDataType('string').max(12).min(12).pattern(/^[0-9]{12}$/).inputType('text');
+        return this.setDataType('string')
+            .max(13)
+            .min(13)
+            .pattern(/^[0-9]{13}$/)
+            .formatter((x: string) => {
+                const ch = x.split('');
+                return [ch[0], ch[1], ch.slice(2, 7).join(''), ch.slice(7, 12).join(''), ch[12]].join('-')
+            })
+            .inputType('text');
     }
     asDate(dateOnly = false, initialNow = false) {
         const result = this.setDataType('date')
             .inputType(dateOnly ? 'date' : 'datetime-local')
-            .formatter((x: Date) => (dateOnly ? x.toLocaleDateString() : x.toLocaleString()));
+            .pre(ofDate)
+            .formatter(toDateString);
         return initialNow ? result.initializer(dateFromNow) : result;
     }
     percentage(min?: number, max?: number): Def<any, any> {
-        const result = this.float(0, 4)
-            .multiplier(100)
-            .formatter((x: number) => `${x.toFixed(2)}%`);
+        const result = this.float(0, 4).multiplier(100).pre(ofNumber).formatter(toPercentageString);
         const apply1 = min ? (x: Def<any, any>) => x.min(min) : (x: Def<any, any>) => x;
         const apply2 = max ? (x: Def<any, any>) => x.max(max) : (x: Def<any, any>) => x;
         return apply1(apply2(result));
+    }
+    dollar(canBeNegative = false) {
+        const result = canBeNegative ? this : this.min(0);
+        return result.setDataType('float').precision(2).pre(ofNumber).formatter(toDollarString);
     }
     static OID<T>(helper: ColumnHelper<any>): DefinedColumn {
         return helper.accessor((x) => fromOID(x._id), {

@@ -1,10 +1,10 @@
+import { $cn } from '../../util/$cn';
 
-export function TableCell({ children }: { children?: Children; }) {
+export function TableCell({ children, ...remain }: { children?: Children; className?: string }) {
+    const $spread = $cn(remain, {}, 'flex w-full h-full whitespace-nowrap');
     return (
         <td className='text-base font-medium border border-black font-open-sans'>
-            <span className='flex w-full h-full whitespace-nowrap'>
-                {children}
-            </span>
+            <span {...$spread}>{children}</span>
         </td>
     );
 }

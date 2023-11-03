@@ -29,6 +29,12 @@ body {
     direction: ltr;
 }
 
+.icon-superscript {
+    --fa-primary-color: #ffffff;
+    --fa-secondary-color: #e11d48;
+    --fa-primary-opacity: 1;
+    --fa-secondary-opacity: 0.6;
+}
 .icon-standard {
     --fa-primary-color: #e879f9;
     --fa-secondary-color: #fff;

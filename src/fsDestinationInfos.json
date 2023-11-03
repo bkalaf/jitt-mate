@@ -1,5 +1,89 @@
 {
-	"cell": [
+	"isAtom": [
+		"components/atoms",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/components/Buttons/Button.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Buttons/LabelOrIcon.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Buttons/SubmitButton.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contents/LabelContents.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/DeleteSelectionButton.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/InsertRecordButton.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/Cells/TextFieldInput.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/Controls/DropdownSelect.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/Controls/TextFieldInput.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/checkIfIdSelector.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/locationLabelColors.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/enums/colors-selectors.json"
+		]
+	],
+	"isMolecule": [
+		"components/molecules",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/TableControlsContext.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/useTableControlsContext.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Field.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/Cells/TextFieldInput.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/Controls/TextFieldInput.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/CustomItemField.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/useFieldInfos.ts"
+		]
+	],
+	"isOrganism": [
+		"components/organism",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/common/comparator/comparableToEquatable.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/CollectionPropertyView.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/CollectionView.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/CollectionViewContext.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/FormContext.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/FormProvider.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/TableControlsContext.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/useFormContext.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/useProvideFormContext.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/useTableControlsContext.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/FormFooter.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/InsertForm.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/LeftSidebar.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Providers/CollectionViewProvider.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/SidebarListItem.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/Cells/DefaultTableBodyCell.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/Cells/DefaultTableFooterCell.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/Cells/DefaultTableHeaderCell.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/Cells/EnumTableCell.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/Cells/LookupTableCell.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/Cells/OIDTableCell.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/Cells/StringTableCell.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/Cells/useLoadInsertForm.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/Cells/useTableMeta.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/ReactTable.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/TableBodyCell.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/TableCell.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/TableHeaderCell.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/TableRow.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/TableHead.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/TopBarAuthSegment.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/useProvideCollectionViewContext.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/useTableScope.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/hooks/useCollectionViewContext.tsx"
+		]
+	],
+	"isTemplate": [
+		"components/templates",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/Overlay.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/OverlayContext.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/useOverlayContext.tsx"
+		]
+	],
+	"isAction": [
+		"routing/actions",
+		[]
+	],
+	"isButton": [
+		"components/Button",
+		[]
+	],
+	"isCell": [
 		"components/Table/Cells",
 		[
 			"/home/bobby/Desktop/jitt/jitt/src/components/Table/TableBodyCell.tsx",
@@ -7,21 +91,63 @@
 			"/home/bobby/Desktop/jitt/jitt/src/components/Table/TableHeaderCell.tsx"
 		]
 	],
-	"context": [
+	"isContext": [
 		"components/Contexts",
 		[]
 	],
-	"control": [
+	"isControl": [
 		"components/Forms/Controls",
 		[]
 	],
-	"form": [
+	"isEnum": [
+		"DTO/enums",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/apparelGroups.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/apparelType.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/backlineTypes.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/bookTypes.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/collarTypes.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/cuffTypes.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/gameRating.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/genders.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/itemGroups.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/legTypes.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/movieRating.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/necklineTypes.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/sizingTypes.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/sleeveTypes.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/topAdornments.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/enums/importNecklineType.ts"
+		]
+	],
+	"isFolder": [
+		"",
+		[]
+	],
+	"isFor": [
+		"util/for",
+		[]
+	],
+	"isForm": [
 		"components/Forms",
 		[
 			"/home/bobby/Desktop/jitt/jitt/src/components/InsertForm.tsx"
 		]
 	],
-	"hook": [
+	"isFrom": [
+		"util/from",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/fromString.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/fromOID.ts"
+		]
+	],
+	"isFunction": [
+		"common/functions",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/common/comparator/toSortingFunction.tsx"
+		]
+	],
+	"isHook": [
 		"hooks",
 		[
 			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/useDeleteOne.tsx",
@@ -44,6 +170,7 @@
 			"/home/bobby/Desktop/jitt/jitt/src/components/useProvideCollectionViewContext.tsx",
 			"/home/bobby/Desktop/jitt/jitt/src/components/useRealmSchema.tsx",
 			"/home/bobby/Desktop/jitt/jitt/src/components/useTableScope.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/useUpdate.tsx",
 			"/home/bobby/Desktop/jitt/jitt/src/components/useUpdateRecord.tsx",
 			"/home/bobby/Desktop/jitt/jitt/src/dal/useFieldInfos.ts",
 			"/home/bobby/Desktop/jitt/jitt/src/dal/useGetRowCanExpand.ts",
@@ -56,29 +183,35 @@
 			"/home/bobby/Desktop/jitt/jitt/src/schema/useGetRowId.tsx"
 		]
 	],
-	"mutation": [
+	"isInterface": [
+		"@types",
+		[]
+	],
+	"isLoader": [
+		"routing/loaders",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/routes/loaders/collectionLoader.tsx"
+		]
+	],
+	"isMutation": [
 		"fetch/mutation",
 		[
 			"/home/bobby/Desktop/jitt/jitt/src/dal/updateProduct.tsx"
 		]
 	],
-	"of": [
+	"isOf": [
 		"util/of",
 		[
 			"/home/bobby/Desktop/jitt/jitt/src/routes/loaders/ofOID.tsx"
 		]
 	],
-	"from": [
-		"util/from",
-		[]
-	],
-	"page": [
-		"components/Pages",
+	"isPage": [
+		"components/pages",
 		[
 			"/home/bobby/Desktop/jitt/jitt/src/components/LogInPage.tsx"
 		]
 	],
-	"provider": [
+	"isProvider": [
 		"contexts/Providers",
 		[
 			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/FormProvider.tsx",
@@ -89,50 +222,11 @@
 			"/home/bobby/Desktop/jitt/jitt/src/components/TabPanelProvider.tsx"
 		]
 	],
-	"query": [
+	"isQuery": [
 		"fetch/query",
 		[]
 	],
-	"to": [
-		"util/to",
-		[]
-	],
-	"tablePart": [
-		"components/Table",
-		[
-			"/home/bobby/Desktop/jitt/jitt/src/components/TableHead.tsx"
-		]
-	],
-	"view": [
-		"components/Views",
-		[
-			"/home/bobby/Desktop/jitt/jitt/src/components/CollectionPropertyView.tsx",
-			"/home/bobby/Desktop/jitt/jitt/src/components/CollectionView.tsx"
-		]
-	],
-	"enum": [
-		"DTO/enums",
-		[
-			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/apparelGroups.ts",
-			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/apparelType.ts",
-			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/backlineTypes.ts",
-			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/bookTypes.ts",
-			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/collarTypes.ts",
-			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/cuffTypes.ts",
-			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/gameRating.ts",
-			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/genders.ts",
-			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/itemGroups.ts",
-			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/legTypes.ts",
-			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/movieRating.ts",
-			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/necklineTypes.ts",
-			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/sizingTypes.ts",
-			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/sleeveTypes.ts",
-			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/topAdornments.ts",
-			"/home/bobby/Desktop/jitt/jitt/src/enums/gender.json",
-			"/home/bobby/Desktop/jitt/jitt/src/enums/importNecklineType.ts"
-		]
-	],
-	"realmClass": [
+	"isRealmClass": [
 		"DTO",
 		[
 			"/home/bobby/Desktop/jitt/jitt/src/dal/CustomItemField.ts",
@@ -144,32 +238,61 @@
 			"/home/bobby/Desktop/jitt/jitt/src/dal/Sku.ts"
 		]
 	],
-	"function": [
-		"common/functions",
-		[
-			"/home/bobby/Desktop/jitt/jitt/src/common/comparator/toSortingFunction.tsx"
-		]
-	],
-	"button": [
-		"components/Button",
-		[]
-	],
-	"interface": [
-		"types",
-		[]
-	],
-	"loader": [
-		"routing/loaders",
-		[
-			"/home/bobby/Desktop/jitt/jitt/src/routes/loaders/collectionLoader.tsx"
-		]
-	],
-	"action": [
-		"routing/actions",
-		[]
-	],
-	"route": [
+	"isRoute": [
 		"routing/routes",
+		[]
+	],
+	"isTablePart": [
+		"components/Table",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/components/TableHead.tsx"
+		]
+	],
+	"isTabs": [
+		"components/Tabs",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/TabPanelContext.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Contexts/TableControlsContext.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/TabPanelProvider.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/TableBodyCell.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/TableCell.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/TableHeaderCell.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/Table/TableRow.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/TableHead.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/Tab.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/TabPanel.tsx"
+		]
+	],
+	"isTo": [
+		"util/to",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/common/comparator/toSortingFunction.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/common/text/toProperCase.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/common/toInstanceOf.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/common/toType.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/common/toTypeOf.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/enums/topAdornments.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/toClassifierName.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/dal/toOID.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/posting/toKVP.ts",
+			"/home/bobby/Desktop/jitt/jitt/src/routes/loaders/toTitleCase.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/toKVP.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/util/toastCatchBlock.tsx"
+		]
+	],
+	"isView": [
+		"components/Views",
+		[
+			"/home/bobby/Desktop/jitt/jitt/src/components/CollectionPropertyView.tsx",
+			"/home/bobby/Desktop/jitt/jitt/src/components/CollectionView.tsx"
+		]
+	],
+	"name": [
+		"",
+		[]
+	],
+	"fullname": [
+		"",
 		[]
 	]
 }

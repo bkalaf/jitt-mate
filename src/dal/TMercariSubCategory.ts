@@ -9,12 +9,13 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { checkTransaction } from '../util/checkTransaction';
 import { HashTag } from './HashTag';
 import { Def } from './Def';
+import { gatherReport } from './gatherReport';
 
 export const helper = createColumnHelper<IMercariSubCategory>();
 export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implements IMercariSubCategory {
     shipWeightPercent: Optional<number>;
     gather(this: IMercariSubCategory) {
-        const { hashTags: parentHashTags, gender, shipWeightPercent, categoryId, itemGroup, categoryName } = { ...this.parent?.gather() };
+        const { hashTags: parentHashTags, gender, shipWeightPercent, categoryId, itemGroup, categoryName,} = { ...this.parent?.gather() };
         const gathered = {
             itemGroup: this.itemGroup ?? itemGroup,
             hashTags: Array.from([...(parentHashTags ?? []), ...this.hashTags.values()]),
@@ -27,7 +28,7 @@ export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implem
             subCategoryName: this.name,
             shipWeightPercent: this.shipWeightPercent ?? shipWeightPercent
         };
-        return gathered;
+        return gatherReport('mercariSubCategory', gathered);
     }
 
     get $selector(): string {
@@ -41,12 +42,13 @@ export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implem
     itemGroup: Optional<keyof ItemGroups>;
     hashTags: DBSet<IHashTag> = [] as any;
     _id: BSON.ObjectId = new BSON.ObjectId();
-    update(this: IMercariSubCategory, realm: Realm): IMercariSubCategory {
-        const result = this.parent?.gather.bind(this.parent)() ?? {};
+    update<T>(this: T, realm: Realm): T {
+        const $this = this as IMercariSubCategory;
+        const result = $this.parent?.gather.bind($this.parent)() ?? {};
         const { itemGroup } = result;
         const func = () => {
-            this.itemGroup = itemGroup;
-            HashTag.update(realm, ...this.hashTags.values());
+            $this.itemGroup = itemGroup;
+            HashTag.update(realm, ...$this.hashTags.values());
         };
         checkTransaction(realm)(func);
         return this;

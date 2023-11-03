@@ -3,6 +3,17 @@ import { ColumnDef } from '@tanstack/react-table';
 import { UseMutateFunction } from '@tanstack/react-query';
 
 declare global {
+    export type Equals<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? true : false;
+    export type Not<A extends boolean> = A extends true ? false : true;
+    // export type Or<A extends boolean, B extends boolean> = A extends true ? true : B extends true ? true : false;
+    export type IsReadonly<O extends Record<any, any>, P extends keyof O> = Not<Equals<{ [_ in P]: O[P] }, { -readonly [_ in P]: O[P] }>>;
+
+    export type GetReadOnlyProperties<A extends Record<string, any>> = Exclude<{ [P in keyof A]: IsReadonly<A, P> extends true ? P : never }[keyof A], undefined>;
+    export type GetNonReadOnlyProperties<A extends Record<string, any>> = Exclude<{ [P in keyof A]: IsReadonly<A, P> extends true ? never : P }[keyof A], undefined>;
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    export type FunctionProperties<T> = { [P in keyof T]: T[P] extends Function ? P : never }[keyof T]
+    export type WithoutAccessors<T> = Pick<T, Exclude<Exclude<keyof T, FunctionProperties<T>>, GetReadOnlyProperties<T>>>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     export type OID = BSON.ObjectId | string;
     export type Updater<T> = (x: T) => T;
     export type Len1<TArr extends any[]> = ((...args: TArr) => any) extends (...[x, ...args]: [any, ...infer R]) => any ? R['length'] : never;
@@ -10,7 +21,7 @@ declare global {
     export type EntityBase = { _id: OID };
     export type RealmTypes = 'objectId' | 'uuid' | 'string' | 'int' | 'double' | 'float' | 'decimal128' | 'bool' | 'object' | 'date' | 'data' | 'list' | 'dictionary' | 'set' | 'enum';
     export type CompareResult = -1 | 0 | 1;
-    export type EnumMap<TKey extends string = string> = Record<TKey, string>;
+    export type EnumMap<TKey extends string = string, TValue = string> = Record<TKey, TValue>;
     export type MonoidFunction = <T, TResult>(left: T) => (right: T) => TResult;
     export type CompareFunction<T> = MonoidFunction<T, CompareResult>;
     export type EqualityFunction<T> = MonoidFunction<T, boolean>;
@@ -51,7 +62,8 @@ declare global {
         | 'hashTag'
         | 'hashTagUsage'
         | 'rn'
-        | 'customItemField';
+        | 'customItemField'
+        | 'barcode';
     export type ContentsTypes = 'icon' | 'label';
     export type ProductAttribute<T = string> = [isSkipped: boolean, text: string | undefined, kvp: string | undefined, selector: string | undefined, value?: T];
     export type TableInfo = { defaultSort?: SortDescriptor[]; defaultFilter?: [string, any[]]; columns?: ColumnDef<any, any>[] };
@@ -212,14 +224,20 @@ declare global {
     export type TableScope = 'top-level' | 'links' | 'list' | 'selection';
     export type SubComponentFunction<T> = React.FunctionComponent<{ row: Row<T>; collectionName: string; table: Table<T> }>;
     export type DefinedColumn = ColumnDef<any, any>;
-    export type DefinedColumns = DefinedColumn[];   
+    export type DefinedColumns = DefinedColumn[];
+    export type StringOr<T = string> = string | T | undefined;
+    export type PreProcessFunction<TInput, TOutput> = (x?: TInput) => TOutput;
+    export type RealmCollectionTypes = 'list' | 'dictionary' | 'set' | 'linkingObjects';
+    export type RealmCollections<T> = DBSet<T> | DBDictionary<T> | DBList<T>;
 }
 
 declare module '@tanstack/table-core' {
     interface ColumnMeta<TData extends RowData, TValue> {
+        accessorFn?: (x: TData) => TValue;
         datatype: RealmTypes;
         objectType?: RealmObjects | RealmTypes;
         labelProperty?: string;
+        lookupProperty?: string;
         defaultValue?: ReturnType<RealmInitializer> | RealmInitializer;
         enumMap?: EnumMap;
         readonly?: boolean;
@@ -231,11 +249,13 @@ declare module '@tanstack/table-core' {
         maxLength?: number;
         minLength?: number;
         pattern?: RegExp;
+        enableEditing?: boolean;
         step?: number;
         multiple?: boolean;
         multiplier?: number;
         precision?: number;
-        formatString?: (x: TValue) => string;
+        preprocess?: PreProcessFunction<any, any>[];
+        formatString?: (x?: StringOr<TValue>) => StringOr;
     }
     interface TableMeta<TData extends RowData> {
         collectionName: string;
@@ -246,4 +266,12 @@ declare module '@tanstack/table-core' {
     }
 }
 
+declare module '@tanstack/table-core' {
+    interface FilterFns {
+        fuzzy: FilterFn<unknown>;
+    }
+    interface FilterMeta {
+        itemRank: RankingInfo;
+    }
+}
 export const i = 1;

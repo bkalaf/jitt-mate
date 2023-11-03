@@ -14,6 +14,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { Def } from './Def';
 import { HashTag } from './HashTag';
 import { toClassifierName } from './toClassifierName';
+import { gatherReport } from './gatherReport';
 
 type GatherReturn = {
     subSubCategoryId?: string | undefined;
@@ -37,19 +38,23 @@ type GatherReturn = {
 
 export const helper = createColumnHelper<IClassifier>();
 export class Classifier extends Realm.Object<IClassifier> implements IClassifier {
+    get athletic(): Optional<string> {
+        return this.isAthletic ? 'athletic' : undefined;
+    }
     shipWeightPercent: Optional<number>;
-    update(this: IClassifier, realm: Realm): IClassifier {
-        const name = toClassifierName(this);
+    update<T>(this: T, realm: Realm): T {
+        const $this = this as IClassifier;
+        const name = toClassifierName($this);
         const func = () => {
-            this.name = name;
-            HashTag.update(realm, ...this.hashTags.values());
+            $this.name = name;
+            HashTag.update(realm, ...$this.hashTags.values());
         };
         checkTransaction(realm)(func);
         return this;
     }
     gather(this: IClassifier) {
         const { hashTags: parentHashTags, customItemFields, ...remain } = { ...this.mercariSubSubCategory?.gather() };
-        return {
+        const gathered = {
             ...remain,
             hashTags: Array.from([...(parentHashTags ?? []), ...this.hashTags.values()]),
             apparelType: this.apparelType,
@@ -59,10 +64,13 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
             sizingType: this.sizingType,
             sleeveType: this.sleeveType,
             legType: this.legType,
+            athletic: this.athletic,
             customItemFields: customItemFields ?? []
         };
+        return gatherReport('classifier', gathered);
     }
     name = '';
+    isAthletic = false;
     mercariSubSubCategory: OptObj<IMercariSubSubCategory>;
     gender: Optional<keyof Genders>;
     apparelType: Optional<keyof ApparelTypes>;
@@ -92,6 +100,7 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
             itemGroup: $db.string.opt,
             hashTags: $db.hashTag.set,
             topAdornment: $db.string.opt,
+            isAthletic: $db.bool.false,
             sleeveType: $db.string.opt,
             sizingType: $db.string.opt,
             shipWeightPercent: { type: $db.float() as any, default: 0.3, optional: true }
@@ -103,6 +112,7 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
         Def.OID(helper),
         Def.ctor<IClassifier>('name').$$(helper),
         Def.ctor<IClassifier>('mercariSubSubCategory').asLookup().$$(helper),
+        Def.ctor('isAtheltic').checkbox().$$(helper),
         Def.ctor<IClassifier>('apparelType').asEnum(ApparelTypes).$$(helper),
         Def.ctor<IClassifier>('legType').asEnum(LegTypes).$$(helper),
         Def.ctor<IClassifier>('itemGroup').asEnum(ItemGroups).$$(helper),

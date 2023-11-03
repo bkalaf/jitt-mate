@@ -14,13 +14,13 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { cleanup, is } from './is';
 import { HashTag } from './HashTag';
 import { Def } from './Def';
-
+import { gatherReport } from './gatherReport';
 
 const ifList = (s: string): string | PropertySchema => (is.realmType.list(s) ? { type: 'list', objectType: cleanup(s) } : s);
 const ifOpt = (s: string): string | PropertySchema => (is.realmType.optional(s) ? { type: cleanup(s) as Realm.PropertyTypeName, optional: true } : s);
 const ifDictionary = (s: string): string | PropertySchema => (is.realmType.dictionary(s) ? { type: 'dictionary', objectType: cleanup(s) } : s);
 const ifSet = (s: string): string | PropertySchema => (is.realmType.set(s) ? { type: 'set', objectType: cleanup(s) } : s);
-const ifPrimitive = (s: string): PropertySchema | string => is.realmType.primitive(s) ? { type: s as PropertyTypeName, optional: false } : s;
+const ifPrimitive = (s: string): PropertySchema | string => (is.realmType.primitive(s) ? { type: s as PropertyTypeName, optional: false } : s);
 
 const handleIf = (func: (s: string) => string | PropertySchema) => (item: string | PropertySchema) => is.string(item) ? func(item) : item;
 
@@ -34,7 +34,8 @@ export class MercariSubSubCategory extends Realm.Object<IMercariSubSubCategory> 
     shipWeightPercent: Optional<number>;
     gather(this: IMercariSubSubCategory) {
         const { hashTags: parentHashTags, apparelGroup, apparelType, itemGroup, categoryId, subCategoryId, gender, shipWeightPercent, categoryName, subCategoryName } = { ...this.parent?.gather() };
-        return {
+
+        const gathered = {
             categoryId,
             subCategoryId,
             subSubCategoryId: this.$selector,
@@ -53,6 +54,7 @@ export class MercariSubSubCategory extends Realm.Object<IMercariSubSubCategory> 
             subSubCategoryName: this.name,
             shipWeightPercent: this.shipWeightPercent ?? shipWeightPercent
         };
+        return gatherReport('mercariSubSubCategory', gathered);
     }
     name = '';
     id = '';
@@ -71,12 +73,13 @@ export class MercariSubSubCategory extends Realm.Object<IMercariSubSubCategory> 
         return $css.id(this.id);
     }
     _id: BSON.ObjectId = new BSON.ObjectId();
-    update(this: IMercariSubSubCategory, realm: Realm): IMercariSubSubCategory {
-        const { categoryName, subCategoryName, subSubCategoryName } = this.gather();
+    update<T>(this: T, realm: Realm): T {
+        const $this = this as IMercariSubSubCategory;
+        const { categoryName, subCategoryName, subSubCategoryName } = $this.gather();
         const fullname = [categoryName, subCategoryName, subSubCategoryName].join('::');
         const func = () => {
-            this.fullname = fullname;
-            HashTag.update(realm, ...this.hashTags.values());
+            $this.fullname = fullname;
+            HashTag.update(realm, ...$this.hashTags.values());
         };
         checkTransaction(realm)(func);
         return this;

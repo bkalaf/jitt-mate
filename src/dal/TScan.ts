@@ -92,7 +92,7 @@ export class Scan extends Realm.Object<IScan> implements IScan {
     timestamp: Date = dateFromNow();
 
     static ctor(fixture?: ILocationSegment, shelf?: ILocationSegment, bin?: ILocationSegment) {
-        return { timestamp: dateFromNow(), fixture, shelf, bin  } as IScan;
+        return { timestamp: dateFromNow(), fixture, shelf, bin } as IScan;
     }
     static schema: Realm.ObjectSchema = {
         name: $db.scan(),
@@ -103,17 +103,13 @@ export class Scan extends Realm.Object<IScan> implements IScan {
             bin: $db.locationSegment.opt,
             timestamp: $db.date()
         }
-    };   
+    };
     static labelProperty: keyof IScan = 'bin';
-    static defaultSort: Realm.SortDescriptor[] = [
-        'fixture',
-        'shelf',
-        'bin'
-    ] 
+    static defaultSort: Realm.SortDescriptor[] = ['fixture', 'shelf', 'bin'];
     static columns: DefinedColumns = [
-        Def.ctor('fixture').asLookup().$$(helper),
-        Def.ctor('shelf').asLookup().$$(helper),
-        Def.ctor('bin').asLookup().$$(helper),
+        Def.ctor('fixture').asLookup('locationSegment').$$(helper),
+        Def.ctor('shelf').asLookup('locationSegment').$$(helper),
+        Def.ctor('bin').asLookup('locationSegment').$$(helper),
         Def.ctor('timestamp').asDate(false, true).$$(helper)
-    ]
+    ];
 }

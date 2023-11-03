@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { useLocalRealm } from '../../../routes/loaders/useLocalRealm';
-import { useFindAll } from '../../../routes/loaders/useFindAll';
-import { useCreateDropdownOption } from '../../../hoooks/useCreateDropdownOption';
+import { useLocalRealm } from '../routes/loaders/useLocalRealm';
+import { useFindAll } from '../routes/loaders/useFindAll';
+import { useCreateDropdownOption } from '../hoooks/useCreateDropdownOption';
 
 export function useDropDownQuery<T>(objectType: string, getId: (x: T) => string): [boolean, DropDownOptionInfo<T>[] | undefined] {
     const db = useLocalRealm();
@@ -11,11 +11,11 @@ export function useDropDownQuery<T>(objectType: string, getId: (x: T) => string)
         queryKey: [objectType, 'dropdown'],
         queryFn: () => {
             const objs = db.objects<T>(objectType ?? '');
-            const result = queryModify(objs)
+            const result = objs
                 .map(toOption)
                 .filter((x) => x != null) as DropDownOptionInfo<T>[];
             return Promise.resolve(result);
         }
     });
-    return [isLoading, data];
+    return [!isLoading, data];
 }

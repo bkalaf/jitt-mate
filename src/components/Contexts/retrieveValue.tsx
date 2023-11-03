@@ -1,6 +1,7 @@
 
 export function retrieveValue(type: DataElementType, el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) {
     if (type === 'checkbox') {
+        console.error(`checked: ${(el as HTMLInputElement).checked}`);
         return (el as HTMLInputElement).checked;
     }
     if (type === 'select') {

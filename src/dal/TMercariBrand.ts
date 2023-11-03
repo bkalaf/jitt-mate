@@ -11,16 +11,17 @@ import { HashTag } from './HashTag';
 
 const helper = createColumnHelper<IMercariBrand>();
 export class MercariBrand extends Realm.Object<IMercariBrand> implements IMercariBrand {
-    update(this: IMercariBrand, realm: Realm): IMercariBrand {
-        const hashTags = findHashTag(realm)(this.name);
+    update<T>(this: T, realm: Realm): T {
+        const $this = this as IMercariBrand;
+        const hashTags = findHashTag(realm)($this.name);
         if (hashTags.length > 0) {
             const func = () => {
-                if (is.dbSet(this.hashTags)) {
-                    this.hashTags.add(hashTags[0]);
+                if (is.dbSet($this.hashTags)) {
+                    $this.hashTags.add(hashTags[0]);
                 } else {
-                    this.hashTags = [hashTags[0]] as any;
+                    $this.hashTags = [hashTags[0]] as any;
                 }
-                HashTag.update(realm, ...this.hashTags.values());
+                HashTag.update(realm, ...$this.hashTags.values());
             };
             checkTransaction(realm)(func);
         }

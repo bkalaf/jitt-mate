@@ -1,11 +1,11 @@
 import { Column, ColumnDef, Header, Table, flexRender } from '@tanstack/react-table';
 import { useEffect, useMemo } from 'react';
-import { usePropertyInfo } from '../Cells/usePropertyInfo';
+import { usePropertyInfo } from '../../../hooks/usePropertyInfo';
 import { useFormContext } from '../../Contexts/useFormContext';
 import { render } from '../Cells/render';
 import { identity } from '../../../common/functions/identity';
 
-export function TextFieldInput<T>(props: { expected?: RealmTypes, table: Table<T>; column: Column<T, any>; initialValue?: string; noLabel?: boolean }) {
+export function TextFieldInput<T>(props: { expected?: RealmTypes; table: Table<T>; column: Column<T, any>; initialValue?: string; noLabel?: boolean }) {
     const { table, column, initialValue, noLabel } = props;
     const { fieldName, defaultValue, initializer, readonly, required, datatype, validators, inputType } = usePropertyInfo(table, column, props.expected ?? 'string');
     const { setValue, getValue, hasErrors, getError, formID, setInitialValue } = useFormContext();
@@ -22,7 +22,13 @@ export function TextFieldInput<T>(props: { expected?: RealmTypes, table: Table<T
         <div className='flex flex-col w-full'>
             {!noLabel && (
                 <label id={labelId} htmlFor={inputId}>
-                    {render(column.columnDef.header, { column })}
+                    {flexRender(
+                        column.columnDef.header,
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        table
+                            .getFlatHeaders()
+                            .find((x: any) => x.column.columnDef.accessorKey ?? x.column.columnDef.id === (column.columnDef as any).accessorKey ?? column.columnDef.id)!.getContext()
+                    )}
                 </label>
             )}
             <input

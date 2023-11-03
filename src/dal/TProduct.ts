@@ -4,27 +4,28 @@ import { IBrand, IClassifier, IHashTag, IProduct } from './types';
 import { ObjectId } from 'mongodb';
 
 export class Product extends Realm.Object<IProduct> implements IProduct {
+    _barcodes: string[] = [];
     brand: OptObj<IBrand>;
     circa: Optional<string>;
     classifier: OptObj<IClassifier>;
     color: Optional<'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'pink' | 'brown' | 'gold' | 'silver' | 'white' | 'black' | 'grey' | 'beige' | 'burgundy' | 'aqua' | 'cyan' | 'teal' | 'cream' | 'tan' | 'navy'>;
     cutNo: Optional<string>;
     descriptiveText: Optional<string>;
-    features: string[];
-    hashTags: DBSet<IHashTag>;
+    features: string[] = [];
+    hashTags: DBSet<IHashTag> = [] as any;
     heightIn: Optional<number>;
-    isRare: boolean;
-    isVintage: boolean;
-    madeOf: Partial<Record<'A' | 'C' | 'CS' | 'D' | 'E' | 'H' | 'K' | 'L' | 'M' | 'N' | 'OC' | 'P' | 'R' | 'U' | 'W' | 'X', number>>;
+    isRare =  false;
+    isVintage = false;
+    madeOf: Partial<Record<'A' | 'C' | 'CS' | 'D' | 'E' | 'H' | 'K' | 'L' | 'M' | 'N' | 'OC' | 'P' | 'R' | 'U' | 'W' | 'X', number>> = {};
     modelNo: Optional<string>;
     notes: Optional<string>;
     styleNo: Optional<string>;
-    upcs: string[];
+    upcs: string[] = []
     weightG: Optional<number>;
     widthIn: Optional<number>;
     _id: BSON.ObjectId = new BSON.ObjectId()
-    update(this: IProduct, realm: Realm): IProduct {
-        throw new Error('Method not implemented.');
+    update<T>(this: T, realm: Realm): T {
+        return this;
     }
     chestIn: Optional<number>;
     neckIn: Optional<number>;
@@ -94,6 +95,7 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
             _id: $db.objectId,
             brand: $db.brand.opt,
             classifier: $db.classifier.opt,
+            _barcodes: $db.string.list,
             upcs: $db.string.list,
             modelNo: $db.string.opt,
             styleNo: $db.string.opt,

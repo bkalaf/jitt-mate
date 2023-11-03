@@ -1,29 +1,32 @@
 import Realm, { BSON } from 'realm';
 import { $db } from './db';
-import { ILocationSegment } from './types';
+import { IBarcode, ILocationSegment } from './types';
 import { checkTransaction } from '../util/checkTransaction';
 import { Def } from './Def';
 import { createColumnHelper } from '@tanstack/react-table';
 import { LocationKinds } from './enums/locationKinds';
 import { LocationLabelColors } from './enums/locationLabelColors';
 import { LocationTypes } from './enums/locationTypes';
+import { BarcodeTypes } from './enums/barcodeTypes';
 
 const helper = createColumnHelper();
 export class LocationSegment extends Realm.Object<LocationSegment> implements ILocationSegment {
+    _barcode = '';
+    update<T>(this: T, realm: Realm): T {
+        const t = this as ILocationSegment;
+        // const func = () => {
+        //     t.barcode = t.barcode.padStart(12, '0');
+        // };
+        checkTransaction(realm)(() => { return; });
+        return this;
+    }
     type: Optional<keyof LocationTypes>;
     color: Optional<keyof LocationLabelColors>;
     notes: Optional<string>;
     kind: Optional<keyof LocationKinds>;
 
-    update(this: ILocationSegment, realm: Realm): ILocationSegment {
-        const func = () => {
-            this.barcode = this.barcode.padStart(12, '0');
-        };
-        checkTransaction(realm)(func);
-        return this;
-    }
     _id: BSON.ObjectId = new BSON.ObjectId();
-    barcode = '';
+    barcode: Optional<IBarcode>;
     name = '';
 
     static schema: Realm.ObjectSchema = {
@@ -31,7 +34,8 @@ export class LocationSegment extends Realm.Object<LocationSegment> implements IL
         primaryKey: '_id',
         properties: {
             _id: $db.objectId,
-            barcode: $db.string.empty,
+            barcode: $db.barcode.opt,
+            _barcode: $db.string.empty,
             name: $db.string.empty,
             type: $db.string.empty,
             color: $db.string.opt,
@@ -39,17 +43,12 @@ export class LocationSegment extends Realm.Object<LocationSegment> implements IL
             kind: $db.string.opt
         }
     };
-    static labelProperty: keyof ILocationSegment = 'barcode';
-    static defaultSort: Realm.SortDescriptor[] = [['barcode', false], 'name'];
+    static labelProperty: keyof ILocationSegment = 'name';
+    static defaultSort: Realm.SortDescriptor[] = ['barcode.rawValue', 'name'];
     static columns: DefinedColumns = [
         Def.OID(helper),
-        Def.ctor('barcode')
-            .barcode()
-            .required()
-            .formatter((x: string) => {
-                const arr = x.padStart(12, '0').split('');
-                return [[...arr.slice(0, 2)].join(''), [...arr.slice(2, 7)].join(''), [...arr.slice(7)].join('')].join('-');
-            }).$$(helper),
+        Def.ctor('barcode.type').readonly().asEnum(BarcodeTypes).displayName('Barcode Type').$$(helper),
+        Def.ctor('barcode.rawValue').barcode().displayName('UPC').$$(helper),
         Def.ctor('name').max(50).required().$$(helper),
         Def.ctor('type').asEnum(LocationTypes).$$(helper),
         Def.ctor('color').asEnum(LocationLabelColors).$$(helper),

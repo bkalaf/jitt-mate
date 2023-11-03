@@ -3,7 +3,7 @@ import { useTabPanelContext } from '../hooks/useTabPanelContext';
 import { useMemo } from 'react';
 import { checkTransaction } from '../util/checkTransaction';
 import Realm from 'realm';
-import { CollectionPropertyView } from '../components/CollectionPropertyView';
+import { CollectionPropertyView } from '../components/Views/CollectionPropertyView';
 
 export function collectionMutation<TValue>(db: Realm, func: (newItem: TValue | [string, TValue]) => void) {
     return function (newItem: TValue | [string, TValue]) {

@@ -1,12 +1,11 @@
 import { ColumnDef } from '@tanstack/table-core';
-import { useCollectionRoute } from '../hooks/useCollectionRoute';
 import { useCallback, useMemo } from 'react';
 import Realm, { SortDescriptor } from 'realm';
 import $$schema from '../dal';
+import { useOptionalCollectionRoute } from '../hooks/useOptionalCollectionRoute';
 
 export function useDefaults<T extends EntityBase>($collectionName: string): (result: Realm.Results<RealmObj<T>>) => Realm.Results<RealmObj<T>> {
-    const _collectionName = useCollectionRoute();
-    const collectionName = $collectionName ?? _collectionName;
+    const collectionName = useOptionalCollectionRoute($collectionName);
     const result = useMemo(
         () =>
             ($$schema as any as { schema: Realm.ObjectSchema; columns: ColumnDef<T, any>[]; defaultSort?: SortDescriptor[]; defaultFilters?: [string, any[]][] }[]).find(

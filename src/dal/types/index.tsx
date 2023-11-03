@@ -9,7 +9,6 @@ import {
     MaterialKeys,
     MovieRatingKeys,
     NecklineTypeKeys,
-    OriginKeys,
     SizeKeys,
     WaistTypeKeys
 } from '../../enums/importNecklineType';
@@ -24,12 +23,13 @@ import { SizingTypesKey } from '../enums/sizingTypes';
 import { LocationTypesKey } from '../enums/locationTypes';
 import { LocationLabelColorsKey } from '../enums/locationLabelColors';
 import { LocationKindsKey } from '../enums/locationKinds';
+import { BarcodeTypesKey } from '../enums/barcodeTypes';
 
 export type AttributeObject = Record<string, any>;
 
-export interface IRealmEntity<T> {
-    _id: BSON.ObjectId;
-    update(this: T, realm: Realm): T;
+export interface IRealmEntity {
+    _id: OID;
+    update<T>(this: T, realm: Realm): T;
 }
 export interface IGather<T extends { hashTags: DBSet<IHashTag> }, TKeys extends string = 'hashTags'> {
     gather(this: T): { [P in TKeys | 'hashTags']?: T[P & keyof T] extends never ? any : P extends 'hashTags' ? IHashTag[] : T[P & keyof T] extends DBList<infer R> ? R[] : T[P & keyof T] };
@@ -39,7 +39,7 @@ export interface IHashTagUsage {
     count: number;
 }
 
-export interface IHashTag extends IRealmEntity<IHashTag> {
+export interface IHashTag extends IRealmEntity {
     name: string;
     usage: DBList<IHashTagUsage>;
     readonly $highestUsage: Optional<IHashTagUsage>;
@@ -51,12 +51,12 @@ export interface IHashTag extends IRealmEntity<IHashTag> {
     addUsage(realm: Realm, count?: number): IHashTag;
 }
 
-export interface IMercariBrand extends IRealmEntity<IMercariBrand>, IGather<IMercariBrand, 'mercariBrandName'> {
+export interface IMercariBrand extends IRealmEntity, IGather<IMercariBrand, 'mercariBrandName'> {
     name: string;
     hashTags: DBSet<IHashTag>;
 }
 
-export interface IBrand extends IRealmEntity<IBrand>, IGather<IBrand, 'brandName' | 'brandFolder' | 'mercariBrandName'> {
+export interface IBrand extends IRealmEntity, IGather<IBrand, 'brandName' | 'brandFolder' | 'mercariBrandName'> {
     name: string;
     mercariBrand: OptObj<IMercariBrand>;
     website: Optional<string>;
@@ -64,7 +64,7 @@ export interface IBrand extends IRealmEntity<IBrand>, IGather<IBrand, 'brandName
     parent: OptObj<IBrand>;
     hashTags: DBSet<IHashTag>;
 }
-export interface IMercariCategory extends IRealmEntity<IMercariCategory>, IGather<IMercariCategory, 'categoryId' | 'gender' | 'itemGroup' | 'categoryName' | 'shipWeightPercent'> {
+export interface IMercariCategory extends IRealmEntity, IGather<IMercariCategory, 'categoryId' | 'gender' | 'itemGroup' | 'categoryName' | 'shipWeightPercent'> {
     name: string;
     id: string;
     gender: Optional<GendersKey>;
@@ -74,7 +74,7 @@ export interface IMercariCategory extends IRealmEntity<IMercariCategory>, IGathe
     readonly $selector: string;
 }
 export interface IMercariSubCategory
-    extends IRealmEntity<IMercariSubCategory>,
+    extends IRealmEntity,
         IGather<IMercariSubCategory, 'gender' | 'categoryId' | 'subCategoryId' | 'apparelType' | 'apparelGroup' | 'itemGroup' | 'categoryName' | 'subCategoryName' | 'shipWeightPercent'> {
     name: string;
     id: string;
@@ -95,7 +95,7 @@ export interface ICustomItemField {
 }
 
 export interface IMercariSubSubCategory
-    extends IRealmEntity<IMercariSubSubCategory>,
+    extends IRealmEntity,
         IGather<
             IMercariSubSubCategory,
             | 'subSubCategoryId'
@@ -136,7 +136,7 @@ export interface IMercariSubSubCategory
 }
 
 export interface IClassifier
-    extends IRealmEntity<IClassifier>,
+    extends IRealmEntity,
         IGather<
             IClassifier,
             | 'subSubCategoryId'
@@ -156,11 +156,13 @@ export interface IClassifier
             | 'apparelGroup'
             | 'itemGroup'
             | 'categoryName'
+            | 'athletic'
             | 'subCategoryName'
             | 'subSubCategoryName'
             | 'isMediaMail'
         > {
     name: string;
+    isAthletic: boolean;
     mercariSubSubCategory: OptObj<IMercariSubSubCategory>;
     gender: Optional<GendersKey>;
     shipWeightPercent: Optional<number>;
@@ -173,10 +175,12 @@ export interface IClassifier
     sleeveType: Optional<SleeveTypesKey>;
     sizingType: Optional<SizingTypesKey>;
     readonly isMediaMail: boolean;
+    readonly athletic: Optional<string>;
 }
 
-export interface ILocationSegment extends IRealmEntity<ILocationSegment> {
-    barcode: string;
+export interface ILocationSegment extends IRealmEntity {
+    barcode: Optional<IBarcode>;
+    _barcode: string;
     name: string;
     type: Optional<LocationTypesKey>;
     color: Optional<LocationLabelColorsKey>;
@@ -232,7 +236,7 @@ export interface IMeasurements {
     torsoIn: Optional<number>;
     waistIn: Optional<number>;
 }
-export interface IProduct extends IRealmEntity<IProduct>, IMeasurements {
+export interface IProduct extends IRealmEntity, IMeasurements {
     // IApparelDetails,
     // IMediaDetails,
     // IVideoDetails,
@@ -295,12 +299,32 @@ export interface IProduct extends IRealmEntity<IProduct>, IMeasurements {
     // origin: Optional<OriginKeys>;
     styleNo: Optional<string>;
     upcs: string[];
+    _barcodes: string[];        
     weightG: Optional<number>;
     widthIn: Optional<number>;
 }
 
-export interface ISku extends IRealmEntity<ISku> {
+export interface IBarcode {
+    update(realm: Realm): IBarcode;
+    rawValue: string;
+    type: Optional<BarcodeTypesKey>;
+    valid: boolean;
+    equalTo(value: string): boolean;
+    equalToWithoutCheckdigit(value: string): boolean;
+    scanEqual(value: string): boolean;
+    readonly ordinal: number;
+    readonly checkdigit: string;
+    readonly barcode: string;
+    readonly scanValue: string; // padded to 17 with checkdigt
+    readonly isUPC: boolean;
+    readonly isISBN: boolean;
+    readonly isLocator: boolean;
+    readonly isSKU: boolean;
+    readonly isTruncated: boolean;
+};
+export interface ISku extends IRealmEntity {
     sku: string;
+    _barcode: Optional<string>;
     product: OptObj<IProduct>;
     price: number;
     condition: ConditionKeys;
@@ -308,18 +332,17 @@ export interface ISku extends IRealmEntity<ISku> {
     skuPrinted: boolean;
     scans: DBList<IScan>;
     productImages: DBBacklink<IProductImage>;
-    $markForPrinting(realm: Realm): ISku;
-    $unmarkForPrinting(realm: Realm): ISku;
+    markForPrinting(realm: Realm): ISku;
+    unmarkForPrinting(realm: Realm): ISku;
     appendScan(realm: Realm, fixture?: ILocationSegment, shelf?: ILocationSegment, bin?: ILocationSegment): ISku;
 }
 
-export interface IProductImage extends IRealmEntity<IProductImage> {
+export interface IProductImage extends IRealmEntity {
     _id: BSON.ObjectId;
     filename: string;
     sku: OptObj<ISku>;
     readonly $sku: ISku;
     readonly $barcode: string;
-    readonly $brandFolder: string;
     readonly $paths: {
         originalSource: (index: number) => string;
         removeBgSource: string;

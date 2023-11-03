@@ -1,9 +1,9 @@
 import { Column, Table } from '@tanstack/react-table';
 import { useEffect, useMemo } from 'react';
-import { usePropertyInfo } from '../Cells/usePropertyInfo';
+import { usePropertyInfo } from '../../../hooks/usePropertyInfo';
 import { useFormContext } from '../../Contexts/useFormContext';
 import { identity } from '../../../common/functions/identity';
-import { ControlLabel } from '../Cells/TextFieldInput';
+import { ControlLabel } from './ControlLabel';
 
 export function DropdownSelect<T>({ noLabel, table, column, initialValue }: { table: Table<T>; column: Column<T, any>; initialValue?: string; noLabel?: boolean }) {
     const { datatype, fieldName, initializer, defaultValue, readonly, required, validators, enumMap } = usePropertyInfo(table, column, 'enum');
@@ -19,7 +19,7 @@ export function DropdownSelect<T>({ noLabel, table, column, initialValue }: { ta
     }, []);
     return (
         <div className='flex flex-col w-full'>
-            <ControlLabel column={column} labelID={labelId} inputID={selectId} renderCondition={!noLabel} />
+            <ControlLabel column={column} labelID={labelId} inputID={selectId} renderCondition={!noLabel} table={table} />
             <select
                 id={selectId}
                 name={fieldName}

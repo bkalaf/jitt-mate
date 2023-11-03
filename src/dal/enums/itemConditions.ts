@@ -1,11 +1,11 @@
 export interface ItemConditions {
-    1: string;
-    2: string;
-    3: string;
-    4: string;
-    5: string;
+    '1': string;
+    '2': string;
+    '3': string;
+    '4': string;
+    '5': string;
 }
-export const ItemCondition: ItemConditions = {
+export const ItemConditions: EnumMap<keyof ItemConditions> = {
     '1': '[data-testid="ConditionNew"]',
     '2': '[data-testid="ConditionLikeNew"]',
     '3': '[data-testid="ConditionGood"]',

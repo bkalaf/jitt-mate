@@ -95,3 +95,4 @@ mongodb-realm
 src/config.json
 .gitignore
 src/fsinfo.json
+.vscode

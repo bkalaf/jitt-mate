@@ -15,6 +15,7 @@ import { ProductImage } from './ProductImage';
 import { Scan } from './TScan';
 import { Sku } from './Sku';
 import * as Realm from 'realm';
+import { Barcode } from './TBarcode';
 
 const $$schema: Realm.ObjectClass<any>[] = [
     MercariBrand,
@@ -32,7 +33,8 @@ const $$schema: Realm.ObjectClass<any>[] = [
     LocationSegment,
     HashTagUsage,
     HashTag,
-    CustomItemField
+    CustomItemField,
+    Barcode
 ];
 
 export default $$schema;

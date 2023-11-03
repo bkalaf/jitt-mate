@@ -1,10 +1,9 @@
 import { Column, ColumnDef, Table } from '@tanstack/react-table';
-import { useColumnMeta } from '../../../hooks/useColumnMeta';
-import { useTableMeta } from './useTableMeta';
-import { subExpected } from './subExpected';
-import { useLogger } from '../../Contexts/useLogger';
-import { normalizeSchemaProperty } from '../../../dal/TMercariSubSubCategory';
-import { is } from '../../../dal/is';
+import { useColumnMeta } from './useColumnMeta';
+import { subExpected } from '../components/Table/Cells/subExpected';
+import { useLogger } from '../components/Contexts/useLogger';
+import { normalizeSchemaProperty } from '../dal/TMercariSubSubCategory';
+import { is } from '../dal/is';
 
 export function usePropertyInfo<T>(table: Table<T>, column: Column<T, any> | ColumnDef<T, any>, expectedType: RealmTypes) {
     const fieldName = 'columnDef' in column ? (column.columnDef as any).accessorKey ?? column.columnDef.id : column.id;
@@ -13,7 +12,6 @@ export function usePropertyInfo<T>(table: Table<T>, column: Column<T, any> | Col
         console.error('no fieldname', column);
         throw new Error('cannot find fieldName');
     }
-    const meta = useTableMeta(table);
     const lookup = fieldName.split('.').reverse()[0];
     logger(`LOOKUP: ${lookup}`, 'data');
     const {
@@ -32,7 +30,7 @@ export function usePropertyInfo<T>(table: Table<T>, column: Column<T, any> | Col
             : {})
     };
 
-    const { datatype, defaultValue: defaultValue2, enumMap, labelProperty, readonly, required: req2, validators, objectType: ot, inputType } = useColumnMeta(column);
+    const { datatype, defaultValue: defaultValue2, enumMap, lookupProperty, labelProperty, readonly, required: req2, validators, objectType: ot, inputType } = useColumnMeta(column);
 
     const required = !(optional ?? false);
     const required2 = req2 ?? false;
@@ -47,6 +45,7 @@ export function usePropertyInfo<T>(table: Table<T>, column: Column<T, any> | Col
     return {
         inputType,
         datatype,
+        lookupProperty,
         defaultValue: defaultValue2 != null ? (is.func(defaultValue2) ? defaultValue : defaultValue2) : defaultValue,
         fieldName,
         required: required ?? required2,

@@ -1,13 +1,12 @@
 import { useCallback } from 'react';
 import Realm from 'realm';
 import { checkTransaction } from '../util/checkTransaction';
-import { useCollectionRoute } from './useCollectionRoute';
 import { useLocalRealm } from '../routes/loaders/useLocalRealm';
-import { useInvalidator } from '../components/useInvalidator';
+import { useInvalidator } from './useInvalidator';
 import { useMutation } from '@tanstack/react-query';
 import { toOID } from '../dal/toOID';
 
-export function useDeleteMany() {
+export function useDeleteMany(collectionName: string) {
     const submitter = useCallback((db: Realm, collectionName: string) => {
         return (args: { payload: OID[] }) => {
             const func = () => {
@@ -19,7 +18,6 @@ export function useDeleteMany() {
         };
     }, []);
     const db = useLocalRealm();
-    const collectionName = useCollectionRoute();
     const { onSuccess } = useInvalidator(collectionName);
     const { mutate } = useMutation({
         mutationFn: submitter(db, collectionName),

@@ -18,6 +18,8 @@ export interface ICollectionViewContext<T> {
     isRowEdittable: (row: Row<T>) => boolean;
     setRowEdittable: (row?: Row<T>) => void;
     updateRecord: UpdateRecordMutation<T>;
+    toggleFiltering: () => void;
+    filteringEnabled: () => boolean;
     // insertRecord: InsertRecordMutation<T>;
 };
 

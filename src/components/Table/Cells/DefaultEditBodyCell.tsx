@@ -1,4 +1,4 @@
-import { CellContext } from '@tanstack/react-table';
+import { CellContext, flexRender } from '@tanstack/react-table';
 import { TextFieldInput } from '../Controls/TextFieldInput';
 import { LookupDatalist } from '../Controls/LookupDatalist';
 import { DropdownSelect } from '../Controls/DropdownSelect';
@@ -20,7 +20,7 @@ export function DefaultEditBodyCell(noLabel = false) {
         const initialValue = props.getValue ? props.getValue<any> : () => null;
         switch (props.column.columnDef?.meta?.datatype) {
             case undefined:
-                return <Wrapper />;
+                return <Wrapper>{flexRender(props.column.columnDef.cell, props.cell?.getContext() as any)}</Wrapper>;
             case 'string':
                 return (
                     <Wrapper>

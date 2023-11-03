@@ -8,6 +8,7 @@ import { Genders } from './enums/genders';
 import { Def } from './Def';
 import { HashTag } from './HashTag';
 import { checkTransaction } from '../util/checkTransaction';
+import { gatherReport } from './gatherReport';
 
 const helper = createColumnHelper<IMercariCategory>();
 
@@ -16,7 +17,7 @@ export class MercariCategory extends Realm.Object<IMercariCategory> implements I
     gender: Optional<keyof Genders>;
     itemGroup: Optional<keyof ItemGroups>;
     gather(this: IMercariCategory) {
-        return {
+        const result = {
             hashTags: Array.from(this.hashTags.values()),
             itemGroup: this.itemGroup,
             gender: this.gender,
@@ -24,13 +25,15 @@ export class MercariCategory extends Realm.Object<IMercariCategory> implements I
             categoryName: this.name,
             shipWeightPercent: this.shipWeightPercent
         };
+        return gatherReport('mercariCategory', result);
     }
     get $selector(): string {
         return $css.id(this.id);
     }
-    update(this: IMercariCategory, realm: Realm): IMercariCategory {
+    update<T>(this: T, realm: Realm): T {
+        const $this = this as IMercariCategory;
         const func = () => {
-            HashTag.update(realm, ...this.hashTags.values());
+            HashTag.update(realm, ...$this.hashTags.values());
         }
         checkTransaction(realm)(func);
         return this;

@@ -7,6 +7,9 @@ import { IProductImage, ISku } from './types';
 import { checkForFolder } from '../common/fs/checkForFolder';
 
 export class ProductImage extends Realm.Object<IProductImage> implements IProductImage {
+    update<T>(this: T, realm: Realm): T {
+        return this;
+    }
     moveOriginal(index: number): Promise<void> {
         return fs.promises.rename(this.$paths.originalSource(index), this.$paths.originalDestination);
     }
@@ -24,8 +27,8 @@ export class ProductImage extends Realm.Object<IProductImage> implements IProduc
         return {
             originalSource: (index: number) => [Config.imageImportRoot, index.toFixed(0), this.filename].join('/'),
             removeBgSource: [Config.downloadsPath, this.$removeBgFilename].join('/'),
-            originalDestination: [Config.imageRoot, this.$brandFolder, this.$sku, this.filename].join('/'),
-            removeBgDestination: [Config.imageRoot, this.$brandFolder, this.$sku, this.$removeBgFilename].join('/')
+            originalDestination: [Config.imageRoot, '', this.$sku, this.filename].join('/'),
+            removeBgDestination: [Config.imageRoot, '', this.$sku, this.$removeBgFilename].join('/')
         };
     }
     get $sku(): ISku {
@@ -34,9 +37,6 @@ export class ProductImage extends Realm.Object<IProductImage> implements IProduc
     }
     get $barcode(): string {
         return this.$sku.sku;
-    }
-    get $brandFolder(): string {
-        return this.$sku.$brandFolder;
     }
     get $removeBgFilename(): string {
         return path.basename(this.filename, path.extname(this.filename)).concat(Config.removeBgSuffix);

@@ -1,21 +1,23 @@
 import { ColumnDef, Row, Table, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
-import { useCollectionRoute } from '../hooks/useCollectionRoute';
-import { useCallback, useLayoutEffect, useMemo, useReducer, useRef } from 'react';
-import { CollectionViewProvider } from './Providers/CollectionViewProvider';
-import { DefaultTableBodyCell } from './Table/Cells/DefaultTableBodyCell';
-import { ReactTable } from './Table/ReactTable';
-import { DefaultTableFooterCell } from './Table/Cells/DefaultTableFooterCell';
-import { DefaultTableHeaderCell } from './Table/Cells/DefaultTableHeaderCell';
+import { useCollectionRoute } from '../../hooks/useCollectionRoute';
+import { useCallback, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { CollectionViewProvider } from '../Providers/CollectionViewProvider';
+import { DefaultTableBodyCell } from '../Table/Cells/DefaultTableBodyCell';
+import { ReactTable } from '../Table/ReactTable';
+import { DefaultTableFooterCell } from '../Table/Cells/DefaultTableFooterCell';
+import { DefaultTableHeaderCell } from '../Table/Cells/DefaultTableHeaderCell';
 import { createPortal } from 'react-dom';
-import { PaginationFooter } from './Table/PaginationFooter';
-import { compR } from '../common/functions/composeR';
-import { getRowIdFromIndex } from '../schema/getRowId';
-import { collectionToArray } from './CollectionView';
-import { useLog } from './Contexts/useLogger';
-import { normalizeSchemaProperty } from '../dal/TMercariSubSubCategory';
-import { createSubComponent } from '../dal/createSubComponent';
-import { is } from '../dal/is';
-import { useNestedColumnDefs } from '../hooks/useNestedColumnDefs';
+import { PaginationFooter } from '../Table/PaginationFooter';
+import { compR } from '../../common/functions/composeR';
+import { getRowIdFromIndex } from '../../schema/getRowId';
+import { collectionToArray } from '../CollectionView';
+import { useLog } from '../Contexts/useLogger';
+import { normalizeSchemaProperty } from '../../dal/TMercariSubSubCategory';
+import { createSubComponent } from '../../dal/createSubComponent';
+import { is } from '../../dal/is';
+import { useNestedColumnDefs } from '../../hooks/useNestedColumnDefs';
+import { AddRelationshipButton } from './commands/AddRelationshipButton';
+import { fuzzyFilter } from '../Table/fuzzy';
 
 export function CollectionPropertyView<T extends EntityBase, TValue>({ parentTable, row, propertyName }: { row: Row<T>; parentTable: Table<T>; propertyName: keyof T & string; }) {
     const { objectType: $collType, type: $listType } = normalizeSchemaProperty(parentTable.options.meta?.schema.properties[propertyName] ?? '');
@@ -41,6 +43,10 @@ export function CollectionPropertyView<T extends EntityBase, TValue>({ parentTab
         getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
         debugAll: true,
+        filterFns: {
+            fuzzy: fuzzyFilter
+        },
+        globalFilterFn: fuzzyFilter,
         getRowId,
         getRowCanExpand,
         meta: {
@@ -109,16 +115,21 @@ export function CollectionPropertyView<T extends EntityBase, TValue>({ parentTab
             );
         }
     }, [canNotGoBackward, canNotGoForward, firstPage, lastPage, maxPage, maxPageIndex, nextPage, onSizeChange, page, pageIndex, pageSize, previousPage, setPage, table]);
+    const [children, setChildren] = useState<JSX.Element | null>(null);
 
     // const onInsert = useLoadInsertForm(collectionName, table);
     return (
         <CollectionViewProvider param={collectionName}>
-            <div className='flex items-center justify-start w-full space-x-3'>
-                {/* <InsertRecordButton table={table} onInsert={onInsert} />
+            <div className='flex flex-col'>
+                <div className='flex items-center justify-start w-full space-x-3'>
+                    <AddRelationshipButton listType={$listType} listOf={$collType ?? ''} property={propertyName} original={row.original[propertyName] as RealmCollections<EntityBase>} row={row as any} />
+                    {/* <InsertRecordButton table={table} onInsert={onInsert} />
             <DeleteSelectionButton table={table} /> */}
+                </div>
+                <ReactTable setChildren={setChildren} getId={getRowId} table={table} SubComponent={SubComponent} />
+                {portal.current}
             </div>
-            <ReactTable getId={getRowId} table={table} SubComponent={SubComponent} />
-            {portal.current}
         </CollectionViewProvider>
     );
 }
+

@@ -1,8 +1,9 @@
 import { CellContext } from '@tanstack/react-table';
-import { usePropertyInfo } from './usePropertyInfo';
+import { usePropertyInfo } from '../../../hooks/usePropertyInfo';
+import { convertToLookup } from '../../../dal/enums/convertToLookup';
 
 export function EnumTableCell<T>(props: CellContext<T, any>) {
-    const { enumMap } = usePropertyInfo(props.table, props.column, 'enum');
+    const { enumMap, lookupProperty } = usePropertyInfo(props.table, props.column, 'enum');
     // const { isRowEdittable, updateOne } = useCollectionViewContext<T>();
     // const { enumMap } = useColumnMeta<T>(props.column);
     // console.log(`meta`, props.column.columnDef.meta)
@@ -16,5 +17,7 @@ export function EnumTableCell<T>(props: CellContext<T, any>) {
     //     updateOne({ id: getRowId(props.row.original), propertyName: props.column.id, value: ev.target.selectedOptions[0].value });
     // }, [getRowId, updateOne, props.column.id, props.row.original]);
     const value = props.getValue();
-    return value == null ? null : (enumMap ?? {})[value as string];
+    const lookup = convertToLookup(enumMap ?? {}, lookupProperty as any);
+    return value == null ? null : lookup(value) as string;
 }
+

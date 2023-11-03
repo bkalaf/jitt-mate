@@ -1,8 +1,5 @@
-import { Table } from '@tanstack/react-table';
 import { useRealmContext } from '../hooks/useRealmContext';
 import { SidebarListItem } from './SidebarListItem';
-import { PaginationFooter } from './Table/PaginationFooter';
-import { useTable } from './Table/ReactTable';
 
 export function LeftSidebar<T extends EntityBase>() {
     const { isAuthenticated } = useRealmContext();

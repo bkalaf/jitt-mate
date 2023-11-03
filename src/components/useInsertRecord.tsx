@@ -3,12 +3,16 @@ import { useMutation } from '@tanstack/react-query';
 import { useCollectionRoute } from '../hooks/useCollectionRoute';
 import { checkTransaction } from '../util/checkTransaction';
 import { useLocalRealm } from '../routes/loaders/useLocalRealm';
-import { useInvalidator } from './useInvalidator';
+import { useInvalidator } from '../hooks/useInvalidator';
 import Realm from 'realm';
 import { useSpinnerContext } from './Contexts/useSpinnerContext';
+import { IRealmEntity } from '../dal/types';
+import { combineEvents } from './Contexts/combineEvents';
+import { useUpdate } from './useUpdate';
 
-export function useInsertRecord<T>(objectType?: string) {
+export function useInsertRecord<T extends IRealmEntity>(objectType?: string) {
     const { setSpinner } = useSpinnerContext();
+    const triggerUpdate = useUpdate();
     const submitter = useCallback((db: Realm, collectionName: string) => {
         return (args: { payload: T }) => {
             let result: RealmObj<T> | undefined;
@@ -25,7 +29,9 @@ export function useInsertRecord<T>(objectType?: string) {
     const { onSuccess } = useInvalidator(collectionName);
     const { mutate } = useMutation({
         mutationFn: setSpinner(submitter(db, collectionName)),
-        onSuccess
+        onSuccess: combineEvents(onSuccess, triggerUpdate)
     });
-    return mutate;
+    return useCallback((payload: T) => {
+        mutate({ payload })
+    }, [mutate]);
 }

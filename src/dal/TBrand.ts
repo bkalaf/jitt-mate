@@ -43,11 +43,12 @@ export class Brand extends Realm.Object<IBrand> implements IBrand {
     parent: OptObj<IBrand>;
     hashTags!: DBSet<IHashTag>;
     _id: ObjectId = new BSON.ObjectId();
-    update(this: IBrand, realm: Realm) {
-        addDefaultHash<IBrand>('name', updateFunction).bind(this);
+    update<T>(this: T, realm: Realm): T {
+        const $this = this as IBrand;
+        addDefaultHash<IBrand>('name', updateFunction).bind($this);
         const func = () => {
-            this.folder = normalizeStringForFS('-')(this.name);
-            HashTag.update(realm, ...this.hashTags.values());
+            $this.folder = normalizeStringForFS('-')($this.name);
+            HashTag.update(realm, ...$this.hashTags.values());
         };
         checkTransaction(realm)(func);
         return this;
@@ -71,10 +72,11 @@ export class Brand extends Realm.Object<IBrand> implements IBrand {
     static columns: DefinedColumns = [
         Def.OID(helper),
         Def.ctor('name').required().max(100).$$(helper),
-        Def.ctor('mercariBrand').asLookup().$$(helper),
+        Def.ctor('mercariBrand').asLookup().labelBy('name').$$(helper),
         Def.ctor('website').url().max(150).$$(helper),
         Def.ctor('folder').validator().$$(helper),
-        Def.ctor('parent').asLookup('brand').$$(helper)
+        Def.ctor('parent').asLookup('brand').labelBy('name').$$(helper),
+        Def.ctor('hashTags').list('hashTag').$(helper)
     ];
 }
 

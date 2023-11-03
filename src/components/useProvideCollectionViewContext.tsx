@@ -3,13 +3,16 @@ import { BSON } from 'realm';
 import { useGetRowId } from '../schema/useGetRowId';
 import { Row } from '@tanstack/react-table';
 import { ICollectionViewContext } from './Contexts/CollectionViewContext';
-import { useUpdateRecord } from './useUpdateRecord';
+import { useUpdateRecord } from '../hooks/useUpdateRecord';
 import { useInsertRecord } from './useInsertRecord';
 import { useCollectionViewContext } from '../hooks/useCollectionViewContext';
 import { useLog } from './Contexts/useLogger';
 import { fromOID } from '../dal/fromOID';
+import { useOptionalCollectionRoute } from '../hooks/useOptionalCollectionRoute';
+import { useToggler } from '../hooks/useToggler';
 
 export function useProvideCollectionViewContext<T extends EntityBase>(param: any): ICollectionViewContext<T> {
+    const collectionName = useOptionalCollectionRoute();
     const log = useLog('view');
     log('NEW PARAM', `\t[${param}]`)
     const context = useCollectionViewContext();
@@ -37,9 +40,11 @@ export function useProvideCollectionViewContext<T extends EntityBase>(param: any
         },
         [edittingRow, getRowId]
     );
-    const updateRecord = useUpdateRecord<T>();
-    const insertRecord = useInsertRecord<T>();
-
+    const updateRecord = useUpdateRecord<T>(collectionName);
+    const [isFilteringEnabled, toggleFiltering] = useToggler(false);
+    const filteringEnabled = useCallback(() => {
+        return isFilteringEnabled
+    }, [isFilteringEnabled])
     // const { mutate: updateOne } = useMutation({
     //     mutationFn: ({ id, propertyName, value }: { id: OID; propertyName: string; value?: any }) => {
     //         const func = () => {
@@ -57,6 +62,8 @@ export function useProvideCollectionViewContext<T extends EntityBase>(param: any
         params,
         isRowEdittable,
         setRowEdittable,
-        updateRecord
+        updateRecord,
+        filteringEnabled,
+        toggleFiltering
     };
 }

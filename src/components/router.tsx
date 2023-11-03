@@ -5,7 +5,7 @@ import { AppRoot } from './AppRoot';
 import { collectionLoader } from '../routes/loaders/collectionLoader';
 import { Index } from './Index';
 import { BoundingClientElement } from './BoundingClientElement';
-import { RealmObjectView } from './CollectionView';
+import { RealmObjectView } from './Views/RealmObjectView';
 
 export const router = createHashRouter(
     createRoutesFromElements(

@@ -103,7 +103,7 @@ export function useProvideFormContext<T, TResultant = void>(resultant?: (x: TRes
                     const current = Object.getOwnPropertyNames(prev).includes(name) ? prev[name] : undefined;
                     if (current === value) return prev;
                     appendDirty(name);
-                    return { ...prev, [name]: transform(value) };
+                    return { ...prev, [name]: is.string(value) ? value.length > 1 ? transform(value) : null : transform(value) };
                 });
             },
         [appendDirty, setError]

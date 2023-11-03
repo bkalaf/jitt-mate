@@ -33,9 +33,10 @@ export class HashTag extends Realm.Object<IHashTag> implements IHashTag {
     get $mostRecentDate(): Optional<Date> {
         return this.$mostRecentUsage?.from;
     }
-    update(this: IHashTag, realm: Realm): IHashTag {
-        if (this.usage.length <= 2) return this;
-        const arr = Array.from(this.usage).map((x, ix) => [ix, x] as [number, IHashTagUsage]);
+    update<T>(this: T, realm: Realm): T {
+        const $this = this as IHashTag;
+        if ($this.usage.length <= 2) return this;
+        const arr = Array.from($this.usage).map((x, ix) => [ix, x] as [number, IHashTagUsage]);
         const mostRecentIndex = arr.sort((x, y) => $$.date.sort(y[1].from, x[1].from))[0][0];
         const maxCountIndex = arr.sort((x, y) => $$.number.sort(y[1].count, x[1].count))[0][0];
         const func = () =>
@@ -43,7 +44,7 @@ export class HashTag extends Realm.Object<IHashTag> implements IHashTag {
                 .map((x) => x[0])
                 .filter((x) => x !== mostRecentIndex && x !== maxCountIndex)
                 .reverse()
-                .forEach((x) => this.usage.remove(x));
+                .forEach((x) => $this.usage.remove(x));
         checkTransaction(realm)(func);
         return this;
     }

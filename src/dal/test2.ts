@@ -1,6 +1,7 @@
 import * as fs from 'graceful-fs';
 import * as path from 'path';
 import { capitalize } from '../common/text/capitalize';
+import * as SizingMap from './../enums/sizing-map.json';
 
 const toRun = [
     'auctionSite',
@@ -58,3 +59,11 @@ console.log(JSON.stringify(mercariColor, null, '\t'));
 // };
 
 // fs.writeFileSync('/home/bobby/Desktop/jitt/jitt/src/jsonOut.ts', toRun.map(run).join('\n'));
+
+const sizingMap: typeof SizingMap = JSON.parse(fs.readFileSync('/home/bobby/Desktop/jitt/jitt/src/enums/Sizes.json').toString());
+const sizes = Object.entries(sizingMap).map(([sizingType, v1]) => {
+    return Object.entries(v1).map(([size, { key, name, selector }])=> {
+        return { sizingType, size, key, name, selector, index: parseInt(selector.replaceAll('itemSizeId-', ''), 10) };
+    })
+}).reduce((pv, cv) => [...pv, ...cv], []);
+console.log(Object.getOwnPropertyNames(Object.fromEntries(sizes.map((x) => [x.index, x] as [number, any]))).length);

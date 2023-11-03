@@ -31,7 +31,7 @@ export function fromString(datatype: RealmTypes) {
             case 'set':
             case 'object':
                 console.error('datatype', datatype, value);
-                throw new Error(`cannot handle: ${value} from string.`);
+                return value
         }
     };
 }

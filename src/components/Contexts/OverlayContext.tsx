@@ -40,7 +40,7 @@ export function useProvideOverlayContext(): IOverlayContext {
     }, []);
     const pushFrame = useCallback(function <TProps>(El: React.FunctionComponent<TProps>, props: TProps) {
         setChildren((prev) => [
-            <div key={randomString(24)} className='hidden first:flex'>
+            <div key={randomString(24)} className='hidden overflow-auto first:flex'>
                 <El {...props as any} />
             </div>,
             ...prev

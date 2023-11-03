@@ -4,6 +4,7 @@ import { useColumnMeta } from '../../../hooks/useColumnMeta';
 import { BSON } from 'realm';
 import { StringTableCell } from './StringTableCell';
 import { EnumTableCell } from './EnumTableCell';
+import { CheckboxTableCell } from './CheckboxTableCell';
 import { LookupTableCell } from './LookupTableCell';
 
 export function DefaultTableBodyCell<T>(props: CellContext<T, any>) {
@@ -17,6 +18,12 @@ export function DefaultTableBodyCell<T>(props: CellContext<T, any>) {
             return <LookupTableCell<T, EntityBase> {...props} />;
         case 'enum':
             return <EnumTableCell<T> {...props} />;
+        case 'bool':
+            return <CheckboxTableCell {...props} />
+        case 'list':
+        case 'dictionary':
+        case 'set':
+            return <StringTableCell<T> {...props} />
         default:
             break;
     }

@@ -1,5 +1,5 @@
 import { Table } from '@tanstack/react-table';
-import { useTableMeta } from './Table/Cells/useTableMeta';
+import { useTableMeta } from '../hooks/useTableMeta';
 import { getRowIdFromIndex, getRowIdFromOID } from '../schema/getRowId';
 
 
