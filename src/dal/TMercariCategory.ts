@@ -55,14 +55,17 @@ export class MercariCategory extends Realm.Object<IMercariCategory> implements I
             gender: $db.string.opt,
             itemGroup: $db.string.opt,
             hashTags: $db.hashTag.set,
-            shipWeightPercent: { type: $db.float() as any, default: 0.3 }
+            shipWeightPercent: { type: $db.float() as any, optional: true },
+            family: $db.string.opt,
+            order: $db.string.opt,
+            genus: $db.string.opt
         }
     };
     static columns: DefinedColumns = [
         Def.OID(helper),
         Def.ctor('name').required().max(50).$$(helper),
         Def.ctor('id').required().max(30).$$(helper),
-        Def.ctor('gender').asEnum(Genders).$$(helper),
+        Def.ctor('gender').asEnum(Genders, 'description').$$(helper),
         Def.ctor('itemGroup').asEnum(ItemGroups).$$(helper),
         Def.ctor('shipWeightPercent').percentage(0, 1).defaultValue(0.3).$$(helper)
     ];

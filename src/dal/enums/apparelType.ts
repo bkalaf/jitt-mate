@@ -1,7 +1,7 @@
 export type ApparelTypes = {
-    active: string;
+    // active: string;
     athletic: string;
-    'b/d': string;
+    ['button-down']: string;
     bath: string;
     blazer: string;
     blouse: string;
@@ -57,7 +57,7 @@ export type ApparelTypes = {
     'u/w': string;
     'w/c': string;
     wind: string;
-    'button-down': string;
+    // 'button-down': string;
     'wash-cloth': string;
     underwear: string;
     'tank-top': string;
@@ -67,12 +67,12 @@ export type ApparelTypes = {
     'high-heel': string;
     'flip-flop': string;
     lingerie: string;
-}
+};
 export type ApparelTypesKey = keyof ApparelTypes;
 export const ApparelTypes: EnumMap<ApparelTypesKey> = {
-    active: 'activewear',
+    // active: 'activewear',
     athletic: 'athletic shoes',
-    'b/d': 'button-down',
+    'button-down': 'button-down',
     bath: 'bath towel',
     blazer: 'blazer',
     blouse: 'blouse',
@@ -129,7 +129,6 @@ export const ApparelTypes: EnumMap<ApparelTypesKey> = {
     'u/w': 'underwear',
     'w/c': 'wash cloth',
     wind: 'windbreaker',
-    'button-down': 'button-down',
     'wash-cloth': 'wash-cloth',
     underwear: 'underwear',
     'tank-top': 'tank-top',

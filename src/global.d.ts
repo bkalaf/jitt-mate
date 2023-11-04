@@ -35,6 +35,7 @@ declare global {
     export type EntityConstructor<T extends EntityBase> = {
         schema: ObjectSchema;
         columns?: ColumnDef<T, any>[];
+        embeddedColumns?: (x?: string) => DefinedColumns[];
         defaultSort?: SortDescriptor[];
         defaultFilters?: RealmFilter[];
         labelProperty?: keyof T;
@@ -63,7 +64,8 @@ declare global {
         | 'hashTagUsage'
         | 'rn'
         | 'customItemField'
-        | 'barcode';
+        | 'barcode'
+        | 'address';
     export type ContentsTypes = 'icon' | 'label';
     export type ProductAttribute<T = string> = [isSkipped: boolean, text: string | undefined, kvp: string | undefined, selector: string | undefined, value?: T];
     export type TableInfo = { defaultSort?: SortDescriptor[]; defaultFilter?: [string, any[]]; columns?: ColumnDef<any, any>[] };

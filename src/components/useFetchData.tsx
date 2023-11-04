@@ -5,12 +5,20 @@ import { useLocalRealm } from '../routes/loaders/useLocalRealm';
 import { useLog } from './Contexts/useLogger';
 import { useMemo } from 'react';
 import { identity } from '../common/functions/identity';
+import { catchError } from './catchError';
+import { process } from '@electron/remote';
 
 export function useFetchAll<T extends EntityBase>(collectionName: string) {
     const db = useLocalRealm();
     const log = useLog('db');
     const handleResults = identity;
-    const { data } = useQuery({ queryKey: [collectionName], queryFn: () => Promise.resolve(handleResults(db.objects<T>(collectionName))) });
+    const { data } = useQuery({ throwOnError: (error, query) => {
+        catchError(error);
+        console.error(query.queryKey)
+        process.stdout.write(query.queryKey.join('\n').concat('\n'))
+        log('QUERY ERROR');
+        return false;
+    }, queryKey: [collectionName], queryFn: () => Promise.resolve(handleResults(db.objects<T>(collectionName))) });
     return useMemo(() => Array.from(data ?? []) as T[], [data  ]);
 }
 // export function useFetchData<T extends EntityBase>($collectionName: string, row?: Row<T>, propertyName?: string) {

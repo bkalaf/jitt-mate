@@ -2,24 +2,24 @@ import { useCallback, useMemo, useState } from 'react';
 import { BSON } from 'realm';
 import { useGetRowId } from '../schema/useGetRowId';
 import { Row } from '@tanstack/react-table';
-import { ICollectionViewContext } from './Contexts/CollectionViewContext';
-import { useUpdateRecord } from '../hooks/useUpdateRecord';
-import { useInsertRecord } from './useInsertRecord';
-import { useCollectionViewContext } from '../hooks/useCollectionViewContext';
-import { useLog } from './Contexts/useLogger';
+import { ICollectionViewContext } from '../components/Contexts/CollectionViewContext';
+import { useUpdateRecord } from './useUpdateRecord';
+import { useInsertRecord } from '../components/useInsertRecord';
+import { useCollectionViewContext } from './useCollectionViewContext';
+import { useLog } from '../components/Contexts/useLogger';
 import { fromOID } from '../dal/fromOID';
-import { useOptionalCollectionRoute } from '../hooks/useOptionalCollectionRoute';
-import { useToggler } from '../hooks/useToggler';
+import { useOptionalCollectionRoute } from './useOptionalCollectionRoute';
+import { useToggler } from './useToggler';
 
 export function useProvideCollectionViewContext<T extends EntityBase>(param: any): ICollectionViewContext<T> {
     const collectionName = useOptionalCollectionRoute();
     const log = useLog('view');
-    log('NEW PARAM', `\t[${param}]`)
+    log('NEW PARAM', `\t[${param}]`);
     const context = useCollectionViewContext();
     const depth = (context?.depth ?? -1) + 1;
     const params = useMemo(() => [...(context?.params ?? []), param], [context?.params, param]);
     log('DEPTH', '\t'.concat(depth.toFixed(0)));
-    log('PARAMS', '\t'.concat(JSON.stringify(params, null, '\t')))
+    log('PARAMS', '\t'.concat(JSON.stringify(params, null, '\t')));
     const getRowId = useGetRowId<T>();
     const [edittingRow, _setEdittingRow] = useState<OID | undefined>();
     const setRowEdittable = useCallback(
@@ -43,8 +43,8 @@ export function useProvideCollectionViewContext<T extends EntityBase>(param: any
     const updateRecord = useUpdateRecord<T>(collectionName);
     const [isFilteringEnabled, toggleFiltering] = useToggler(false);
     const filteringEnabled = useCallback(() => {
-        return isFilteringEnabled
-    }, [isFilteringEnabled])
+        return isFilteringEnabled;
+    }, [isFilteringEnabled]);
     // const { mutate: updateOne } = useMutation({
     //     mutationFn: ({ id, propertyName, value }: { id: OID; propertyName: string; value?: any }) => {
     //         const func = () => {

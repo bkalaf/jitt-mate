@@ -3,42 +3,42 @@ export type GenderInfo = {
     description: string;
 };
 export interface Genders {
-    M: GenderInfo;
-    F: GenderInfo;
-    B: GenderInfo;
-    G: GenderInfo;
-    I: GenderInfo;
-    T: GenderInfo;
-    U: GenderInfo;
+    mens: GenderInfo;
+    womens: GenderInfo;
+    boys: GenderInfo;
+    girls: GenderInfo;
+    baby: GenderInfo;
+    toddler: GenderInfo;
+    unisex: GenderInfo;
 }
 export type GendersKey = keyof Genders;
 
 export const Genders: Record<GendersKey, GenderInfo> = {
-    M: {
-        description: "Men's",
+    mens: {
+        description: "Mens",
         name: 'mens'
     },
-    F: {
-        description: "Women's",
+    womens: {
+        description: "Womens",
         name: 'womens'
     },
-    B: {
+    boys: {
         description: 'Boys',
         name: 'boys'
     },
-    G: {
+    girls: {
         description: 'Girls',
         name: 'girls'
     },
-    I: {
+    baby: {
         description: 'Baby',
         name: 'baby'
     },
-    T: {
+    toddler: {
         description: 'Toddler',
         name: 'toddler'
     },
-    U: {
+    unisex: {
         description: 'Unisex',
         name: 'unisex'
     }

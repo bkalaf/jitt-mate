@@ -1,21 +1,19 @@
 export interface ApparelGroups {
-    top: string;
-    bottom: string;
-    active: string;
-    sleep: string;
+    tops: string;
+    bottoms: string;
+    sleepwear: string;
     shoes: string;
     fullbody: string;
-    undergarment: string;
+    undergarments: string;
 }
 export type ApparelGroupsKey = keyof ApparelGroups;
 export const ApparelGroups: EnumMap<ApparelGroupsKey> = {
-	"top": "Top",
-	"bottom": "Bottom",
-	"active": "Activewear",
-	"sleep": "Sleepwear",
+	"tops": "Top",
+	"bottoms": "Bottom",
+	"sleepwear": "Sleepwear",
 	"shoes": "Shoes",
 	"fullbody": "Full-body",
-	"undergarment": "Undergarment"
+	"undergarments": "Undergarment"
 }
 
 

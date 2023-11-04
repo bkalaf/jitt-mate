@@ -103,7 +103,7 @@ export class MercariSubSubCategory extends Realm.Object<IMercariSubSubCategory> 
             sleeveType: $db.string.opt,
             sizingType: $db.string.opt,
             customItemFields: $db.customItemField.list,
-            shipWeightPercent: { type: $db.float() as any, default: 0.3 }
+            shipWeightPercent: { type: $db.float() as any, optional: true }
         }
     };
     static labelProperty: keyof IMercariSubSubCategory = 'fullname';

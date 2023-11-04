@@ -15,19 +15,19 @@ export class Sku extends Realm.Object<ISku> implements ISku {
     _barcode: Optional<string>;
     update<T>(this: T, realm: Realm): T {
         return runInTransaction<ISku>(this as ISku, realm, (o: ISku) => {
-            o.sku = o.sku.padStart(12, '0')
+            o.sku = o.sku.padStart(12, '0');
         }) as T;
     }
     productImages: DBBacklink<IProductImage> = [] as any;
     markForPrinting(realm: Realm): ISku {
-        return runInTransaction(this, realm, (o) => o.skuPrinted = false)
+        return runInTransaction(this, realm, (o) => (o.skuPrinted = false));
     }
     unmarkForPrinting(realm: Realm): ISku {
         return runInTransaction(this, realm, (o) => (o.skuPrinted = true));
     }
     appendScan(realm: Realm, fixture?: ILocationSegment | undefined, shelf?: ILocationSegment | undefined, bin?: ILocationSegment | undefined): ISku {
         const scan: IScan = Scan.ctor(fixture, shelf, bin);
-        return runInTransaction(this, realm, o => o.scans.push(scan))
+        return runInTransaction(this, realm, (o) => o.scans.push(scan));
     }
 
     _id: BSON.ObjectId = new BSON.ObjectId();
@@ -59,13 +59,12 @@ export class Sku extends Realm.Object<ISku> implements ISku {
             skuPrinted: $db.bool.false,
             scans: $db.scan.list,
             productImages: $db.backlink($db.productImage(), 'sku'),
-            _barcode: $db.string.opt
+            _barcode: $db.string.opt,
+            shipWeightPercent: { type: $db.float() as any, optional: true }
         }
     };
     static labelProperty: keyof ISku = 'sku';
-    static defaultSort: Realm.SortDescriptor[] = [
-        'sku'
-    ];
+    static defaultSort: Realm.SortDescriptor[] = ['sku'];
     static columns: DefinedColumns = [
         Def.OID(helper),
         Def.ctor('sku').barcode().$$(helper),
@@ -75,7 +74,7 @@ export class Sku extends Realm.Object<ISku> implements ISku {
         Def.ctor('defects').list('string').$$(helper),
         Def.ctor('scans').list('scan').$$(helper),
         Def.ctor('productImages').backlink('productImage').$$(helper)
-    ]
+    ];
 }
 
 export const sizeName = (sizeMap: (value?: SizeKeys) => ISizeEntry) => (value?: SizeKeys) => value != null ? sizeMap(value).name : undefined;

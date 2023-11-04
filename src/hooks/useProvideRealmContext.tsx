@@ -1,10 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
-import Realm from 'realm';
+import Realm, { OpenRealmBehaviorType,  OpenRealmTimeOutBehavior } from 'realm';
 import Config from '../config.json';
 import { IRealmContext } from '../components/Contexts/RealmContext';
 import { useToasterContext } from './useToasterContext';
 import { toastCatchBlock } from '../util/toastCatchBlock';
 import $$schema from '../dal';
+import { catchError } from '../components/catchError';
 
 export function useProvideRealmContext(): IRealmContext {
     const app = useMemo(() => new Realm.App(Config.realm.appID), []);
@@ -31,6 +32,16 @@ export function useProvideRealmContext(): IRealmContext {
                 sync: {
                     partitionValue: nextUser.profile?.email ?? 'n/a',
                     user: nextUser,
+                    newRealmFileBehavior: {
+                        type: 'downloadBeforeOpen' as OpenRealmBehaviorType,
+                        timeOut: 5 * 60 * 1000,
+                        timeOutBehavior: 'throwException' as OpenRealmTimeOutBehavior
+                    },
+                    existingRealmFileBehavior: {
+                        type: 'downloadBeforeOpen' as OpenRealmBehaviorType,
+                        timeOut: 5 * 60 * 1000,
+                        timeOutBehavior: 'throwException' as OpenRealmTimeOutBehavior
+                    },
                     clientReset: {
                         mode: Realm.ClientResetMode.RecoverOrDiscardUnsyncedChanges
                     }
@@ -38,7 +49,7 @@ export function useProvideRealmContext(): IRealmContext {
             }).then((localRealm) => {
                 setGlobal(localRealm);
                 setDB(localRealm);
-            });
+            }).catch(catchError);
         }
     }, [setGlobal]);
     const logOut = useCallback(async () => {

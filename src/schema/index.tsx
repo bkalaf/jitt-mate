@@ -19,57 +19,57 @@ const $_id = function <T extends EntityBase>(key: keyof typeof $helpers) {
         footer: (props: CellContext<T, any>) => props.column.id
     });
 };
-const $defs: Record<string, TableInfo> = {
-    mercariBrand: {
-        defaultSort: ['name'],
-        columns: [
-            $_id('mercariBrand'),
-            // $helpers.mercariBrand.accessor((row) => ofOID(row._id), {
-            //     header: 'ID',
-            //     id: '_id',
-            //     cell: OIDTableCell,
-            //     footer: props => props.column.id
-            // }),
-            $helpers.mercariBrand.accessor('name', { header: 'Name', cell: StringTableCell })
-        ]
-    },
-    brand: {
-        defaultSort: ['name']
-    },
-    mercariCategory: {
-        defaultSort: ['name']
-    },
-    classifier: {
-        defaultSort: ['name']
-    },
-    mercariSubCategory: {
-        defaultSort: ['name']
-    },
-    mercariSubSubCategory: {
-        defaultSort: ['fullname']
-    },
-    product: {
-        defaultSort: ['notes']
-    },
-    sku: {
-        defaultSort: ['sku'],
-        defaultFilter: ['product != $0', [null]]
-    },
-    locationSegment: {
-        defaultSort: [
-            ['type', false],
-            ['barcode', false]
-        ]
-    },
-    productImage: {
-        defaultSort: [
-            ['sku.sku', false],
-            ['filename', false]
-        ]
-    },
-    draft: {
-        defaultSort: [['_id', false]]
-    }
-};
+// const $defs: Record<string, TableInfo> = {
+//     mercariBrand: {
+//         defaultSort: ['name'],
+//         columns: [
+//             $_id('mercariBrand'),
+//             // $helpers.mercariBrand.accessor((row) => ofOID(row._id), {
+//             //     header: 'ID',
+//             //     id: '_id',
+//             //     cell: OIDTableCell,
+//             //     footer: props => props.column.id
+//             // }),
+//             $helpers.mercariBrand.accessor('name', { header: 'Name', cell: StringTableCell })
+//         ]
+//     },
+//     brand: {
+//         defaultSort: ['name']
+//     },
+//     mercariCategory: {
+//         defaultSort: ['name']
+//     },
+//     classifier: {
+//         defaultSort: ['name']
+//     },
+//     mercariSubCategory: {
+//         defaultSort: ['name']
+//     },
+//     mercariSubSubCategory: {
+//         defaultSort: ['fullname']
+//     },
+//     product: {
+//         defaultSort: ['notes']
+//     },
+//     sku: {
+//         defaultSort: ['sku'],
+//         defaultFilter: ['product != $0', [null]]
+//     },
+//     locationSegment: {
+//         defaultSort: [
+//             ['type', false],
+//             ['barcode', false]
+//         ]
+//     },
+//     productImage: {
+//         defaultSort: [
+//             ['sku.sku', false],
+//             ['filename', false]
+//         ]
+//     },
+//     draft: {
+//         defaultSort: [['_id', false]]
+//     }
+// };
 
-export default $defs;
+// export default $defs;

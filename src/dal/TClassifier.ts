@@ -103,7 +103,7 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
             isAthletic: $db.bool.false,
             sleeveType: $db.string.opt,
             sizingType: $db.string.opt,
-            shipWeightPercent: { type: $db.float() as any, default: 0.3, optional: true }
+            shipWeightPercent: { type: $db.float() as any, optional: true }
         }
     };
     static labelProperty: keyof IClassifier = 'name';
@@ -120,7 +120,9 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
         Def.ctor<IClassifier>('itemGroup').asEnum(ItemGroups).$$(helper),
         Def.ctor<IClassifier>('topAdornment').asEnum(TopAdornments).$$(helper),
         Def.ctor<IClassifier>('sleeveType').asEnum(SleeveTypes).$$(helper),
-        Def.ctor<IClassifier>('sizingType').asEnum(SizingTypes).$$(helper)
+        Def.ctor<IClassifier>('sizingType').asEnum(SizingTypes).$$(helper),
+        Def.ctor('shipWeightPercent').percentage(0.1).$$(helper),
+        Def.ctor('gender').asEnum(Genders, 'description').readonly().$$(helper)
     ];
 
     // get $sizeMap(): (value?: SizeKeys) => ISizeEntry | undefined {

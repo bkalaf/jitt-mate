@@ -8,22 +8,44 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
     brand: OptObj<IBrand>;
     circa: Optional<string>;
     classifier: OptObj<IClassifier>;
-    color: Optional<'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'pink' | 'brown' | 'gold' | 'silver' | 'white' | 'black' | 'grey' | 'beige' | 'burgundy' | 'aqua' | 'cyan' | 'teal' | 'cream' | 'tan' | 'navy'>;
+    color: Optional<
+        | 'red'
+        | 'orange'
+        | 'yellow'
+        | 'green'
+        | 'blue'
+        | 'purple'
+        | 'pink'
+        | 'brown'
+        | 'gold'
+        | 'silver'
+        | 'white'
+        | 'black'
+        | 'grey'
+        | 'beige'
+        | 'burgundy'
+        | 'aqua'
+        | 'cyan'
+        | 'teal'
+        | 'cream'
+        | 'tan'
+        | 'navy'
+    >;
     cutNo: Optional<string>;
     descriptiveText: Optional<string>;
     features: string[] = [];
     hashTags: DBSet<IHashTag> = [] as any;
     heightIn: Optional<number>;
-    isRare =  false;
+    isRare = false;
     isVintage = false;
     madeOf: Partial<Record<'A' | 'C' | 'CS' | 'D' | 'E' | 'H' | 'K' | 'L' | 'M' | 'N' | 'OC' | 'P' | 'R' | 'U' | 'W' | 'X', number>> = {};
     modelNo: Optional<string>;
     notes: Optional<string>;
     styleNo: Optional<string>;
-    upcs: string[] = []
+    upcs: string[] = [];
     weightG: Optional<number>;
     widthIn: Optional<number>;
-    _id: BSON.ObjectId = new BSON.ObjectId()
+    _id: BSON.ObjectId = new BSON.ObjectId();
     update<T>(this: T, realm: Realm): T {
         return this;
     }
@@ -115,8 +137,9 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
             inseamIn: $db.float.opt,
 
             descriptiveText: $db.string.opt,
-            rn: $db.int.opt,
-            pocketCount: $db.int.opt,            
+            _rn: $db.int.opt,
+            rn: $db.rn.opt,
+            pocketCount: $db.int.opt,
             sleeveType: $db.string.opt,
             necklineType: $db.string.opt,
             backlineType: $db.string.opt,
@@ -150,6 +173,7 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
             isVintage: { type: 'bool', optional: true, default: false },
             isRare: { type: 'bool', optional: true, default: false },
             notes: { type: 'string', optional: true, default: '' },
+            shipWeightPercent: { type: $db.float() as any, optional: true }
         }
     };
 

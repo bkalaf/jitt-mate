@@ -8,7 +8,7 @@ import { sum } from '../common/math/sum';
 import { konst } from '../common/functions/konst';
 import { Def } from './Def';
 import { unpad } from './unpad';
-import { createColumnHelper } from '@tanstack/react-table';
+import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
 
 type BC = WithoutAccessors<IBarcode>;
 type F = FunctionProperties<IBarcode>;
@@ -72,7 +72,9 @@ export class Barcode extends Realm.Object<IBarcode> implements IBarcode {
             }
         }
         const digit = parseInt(barcode.split('').reverse().slice(1, 2).join(''), 10);
-        return getExpander(digit).map(f => f(barcode)).join('');
+        return getExpander(digit)
+            .map((f) => f(barcode))
+            .join('');
     }
     static calculateCheckDigit(barcode: string): [BarcodeTypesKey, string] {
         const cd = barcode[barcode.length - 1];
@@ -87,7 +89,7 @@ export class Barcode extends Realm.Object<IBarcode> implements IBarcode {
             if (bc.length === 12 && barcode.startsWith('4')) {
                 if (bc.startsWith('49')) return ['locator', barcode];
                 return ['sku', barcode];
-            } 
+            }
             if (bc.length <= 12) return ['upcA', barcode];
             if (bc.length === 13) return ['ean13', barcode];
             throw new Error(`could not classify: ${barcode}`);
@@ -95,7 +97,7 @@ export class Barcode extends Realm.Object<IBarcode> implements IBarcode {
         if (barcode.length === 8) {
             const expanded = Barcode.expandTruncated(barcode);
             const [type, result] = Barcode.calculateCheckDigit(expanded);
-            if (type === 'upcA') return ['upcE', barcode]
+            if (type === 'upcA') return ['upcE', barcode];
         }
         throw new Error(`could not classify: ${barcode}`);
     }
@@ -105,7 +107,7 @@ export class Barcode extends Realm.Object<IBarcode> implements IBarcode {
             return [true, type];
         } catch (error) {
             console.error(`BARCODE CLASSIFY ERROR: ${barcode}`);
-            return [false]
+            return [false];
         }
     }
     update(realm: Realm): IBarcode {
@@ -175,14 +177,25 @@ export class Barcode extends Realm.Object<IBarcode> implements IBarcode {
             type: { type: 'string', default: 'ean13' }
         }
     };
-    static defaultSort: Realm.SortDescriptor[] = [
-        'rawValue'
-    ];
+    static defaultSort: Realm.SortDescriptor[] = ['rawValue'];
     static columns: DefinedColumns = [
-        Def.ctor('rawValue').barcode().$$(helper),
-        Def.ctor('type').asEnum(BarcodeTypes).$$(helper),
-        Def.ctor('valid').checkbox(false).$$(helper)
-    ]
+        helper.group({
+            header: 'Barcode',
+            footer: 'barcode',
+            columns: [Def.ctor('rawValue').barcode().$$(helper), Def.ctor('type').asEnum(BarcodeTypes).$$(helper), Def.ctor('valid').checkbox(false).$$(helper)] as ColumnDef<IBarcode, any>[]
+        })
+    ];
+    static embeddeColumns: (x?: string) => DefinedColumns = (x?: string) => [
+        helper.group({
+            header: 'Barcode',
+            footer: 'barcode',
+            columns: [
+                Def.ctor([x, 'rawValue'].filter(x => x != null).join('.')).displayName('Value').barcode().$$(helper),
+                Def.ctor([x, 'type'].filter(x => x != null).join('.')).displayName('Barcode Type').asEnum(BarcodeTypes).$$(helper),
+                Def.ctor([x, 'valid'].filter(x => x != null).join('.')).displayName('Valid').checkbox(false).$$(helper)
+            ] as ColumnDef<IBarcode, any>[]
+        })
+    ];
 }
 
 console.log(Barcode.ctorWithoutCheckdigit('49500000062'))

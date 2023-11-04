@@ -16,8 +16,12 @@ import { Scan } from './TScan';
 import { Sku } from './Sku';
 import * as Realm from 'realm';
 import { Barcode } from './TBarcode';
+import { Address } from './TAddress';
+import { Rn } from './TRn';
 
 const $$schema: Realm.ObjectClass<any>[] = [
+    Address,
+    Rn,
     MercariBrand,
     Brand,
     MercariCategory,

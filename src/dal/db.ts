@@ -2,7 +2,6 @@ import Realm, { PropertySchema, PropertyTypeName, Types, BSON } from 'realm';
 
 import {
     MaterialKeys,
-    ColorKeys,
     AuctionSiteKeys} from '../enums/importNecklineType';
 import { toType } from '../common/toType';
 import { ISku } from './types';
@@ -86,7 +85,8 @@ export const $db: DB = {
     hashTagUsage: toType('hashTagUsage'),
     hashTag: toType('hashTag'),
     rn: toType('rn'),
-    barcode: toType('barcode')
+    barcode: toType('barcode'),
+    address: toType('address')
 } as any;
 
 $db.backlink = (name: keyof typeof $db, property: string) =>

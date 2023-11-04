@@ -1,23 +1,11 @@
 import { Table, flexRender } from '@tanstack/react-table';
 import { TableHeaderCell } from './TableHeaderCell';
 import { TableRow } from './TableRow';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect } from 'react';
+import { DebouncedInput } from './DebouncedInput';
 
 
 export function ReactTable<T>({ getId, table, SubComponent, setChildren }: { table: Table<T>; SubComponent: SubComponentFunction<T>; getId: (x: T) => string, setChildren: StateSetter<JSX.Element | null> }) {
-    const [localGlobalValue, setLocalGlobalValue] = useState<null | string>(null);
-    const token = useRef<NodeJS.Timeout | undefined>();
-    const setGlobalValue = useCallback((v?: string) => {
-        table.setGlobalFilter(v);
-        token.current = undefined;
-    }, [table])
-    const setValue = useCallback((ev: React.ChangeEvent<HTMLInputElement>) => {
-        setLocalGlobalValue(ev.target.value.length === 0 ? null : ev.target.value)
-        if (token.current) {
-            clearTimeout(token.current);
-        }
-        token.current = setTimeout(() => setGlobalValue(ev.target.value.length === 0 ? undefined : ev.target.value), 250);
-    }, [setGlobalValue])
     const inputID = `global-filter-input`;
     const labelID = `${inputID}-label`;
     useEffect(() => {
@@ -26,18 +14,18 @@ export function ReactTable<T>({ getId, table, SubComponent, setChildren }: { tab
                 <label id={labelID} htmlFor={inputID} className='flex items-center justify-start w-full text-lg font-bold indent-2 font-fira-sans'>
                     Filter:{' '}
                 </label>
-                <input
+                <DebouncedInput
                     id={inputID}
                     aria-labelledby={labelID}
                     type='text'
                     name='global-filter'
                     className='flex w-full h-full p-1 text-base font-normal font-raleway'
-                    value={localGlobalValue ?? ''}
-                    onChange={setValue}
+                    value={table.getState().globalFilter}
+                    onChange={table.setGlobalFilter}
                 />
             </div>
         );
-    }, [inputID, labelID, localGlobalValue, setChildren, setValue])
+    }, [inputID, labelID, setChildren, table])
     return table && <>
                 <table className='relative w-full h-full p-0 overflow-auto table-auto border-seperate'>
                     <thead className='sticky top-0 m-0'>

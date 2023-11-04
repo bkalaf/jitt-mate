@@ -1,4 +1,4 @@
-import { useProvideCollectionViewContext } from '../useProvideCollectionViewContext';
+import { useProvideCollectionViewContext } from '../../hooks/useProvideCollectionViewContext';
 import { useCollectionRoute } from '../../hooks/useCollectionRoute';
 import { CollectionViewContext } from '../Contexts/CollectionViewContext';
 import { useOptionalCollectionRoute } from '../../hooks/useOptionalCollectionRoute';

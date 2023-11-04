@@ -9,9 +9,14 @@ import { toDateString } from './toDateString';
 import { ofNumber } from './ofNumber';
 import { toPercentageString } from './toPercentageString';
 import { ofDate } from './ofDate';
-import { is } from './is';
-import { identity } from '../common/functions/identity';
 import { toProperFromCamel } from '../common/text/toProperCase';
+
+export const cleanup = (input: string) => ['?', '[', ']', '{', '}', '<', '>'].map((toReplace) => (s: string) => s.replaceAll(toReplace, '')).reduce((pv, cv) => cv(pv), input);
+
+const isOneOf =
+    (...listOfTypes: string[]) =>
+    (str: string) =>
+        listOfTypes.includes(cleanup(str));
 
 export class Def<T, TValue = any> {
     backing: [DeepKeys<T>, JITTColumnDef<T, TValue>];
@@ -69,7 +74,10 @@ export class Def<T, TValue = any> {
     }
     objectType(ot: RealmTypes | RealmObjects): Def<any, any> {
         console.log(`objectType`, ot);
-        return this.addToMeta('objectType', is.realmType.primitive(ot) ? ot : ($db[ot as RealmObjects]() as RealmObjects));
+        return this.addToMeta(
+            'objectType',
+            isOneOf('int', 'double', 'decimal128', 'float', 'bool', 'string', 'date', 'data', 'objectId', 'uuid', 'enum', 'linkingObjects')(ot) ? ot : ($db[ot as RealmObjects]() as RealmObjects)
+        );
     }
     asLookup(objectType?: RealmObjects): Def<any, any> {
         const result = this.setDataType('object');
@@ -222,3 +230,4 @@ export class Def<T, TValue = any> {
         }) as ColumnDef<T, BSON.ObjectId>;
     }
 }
+

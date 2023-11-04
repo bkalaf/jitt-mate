@@ -1,4 +1,15 @@
-import { getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
+import {
+    getCoreRowModel,
+    getExpandedRowModel,
+    getFacetedMinMaxValues,
+    getFacetedRowModel,
+    getFacetedUniqueValues,
+    getFilteredRowModel,
+    getGroupedRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    useReactTable
+} from '@tanstack/react-table';
 import { useCollectionRoute } from '../../hooks/useCollectionRoute';
 import { useCallback, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useColumnDefs } from '../../hooks/useColumnDefs';
@@ -19,6 +30,7 @@ import { createSubComponent } from '../../dal/createSubComponent';
 import { fuzzyFilter } from '../Table/fuzzy';
 import { ClearSelectionButton } from './commands/ClearSelectionButton';
 import { RunUpdateButton } from './commands/RunUpdateButton';
+import { ToggleFilteringButton } from './commands/ToggleFilteringButton';
 
 export function RealmObjectView<T extends EntityBase>() {
     const collectionName = useCollectionRoute();
@@ -37,6 +49,11 @@ export function RealmObjectView<T extends EntityBase>() {
         getPaginationRowModel: getPaginationRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
+        getExpandedRowModel: getExpandedRowModel(),
+        getFacetedMinMaxValues: getFacetedMinMaxValues(),
+        getFacetedRowModel: getFacetedRowModel(),
+        getFacetedUniqueValues: getFacetedUniqueValues(),
+        getGroupedRowModel: getGroupedRowModel(),
         enableMultiSort: true,
         enableColumnFilters: true,
         debugAll: true,
@@ -45,7 +62,7 @@ export function RealmObjectView<T extends EntityBase>() {
         },
         globalFilterFn: fuzzyFilter,
         getRowId,
-        getRowCanExpand,
+        getRowCanExpand,        
         meta: {
             collectionName: collectionName,
             scope: 'top-level',
@@ -107,7 +124,8 @@ export function RealmObjectView<T extends EntityBase>() {
                     canNotGoForward={canNotGoForward}
                     previousPage={previousPage}
                     nextPage={nextPage}
-                    page={page} />,
+                    page={page}
+                />,
                 el
             );
         }
@@ -123,9 +141,10 @@ export function RealmObjectView<T extends EntityBase>() {
                     <DeleteSelectionButton table={table} />
                     <ClearSelectionButton table={table} />
                     <RunUpdateButton table={table} />
+                    <ToggleFilteringButton table={table} />
                     {children}
                 </div>
-                <ReactTable getId={getRowId} table={table} SubComponent={SubComponent} setChildren={setChildren }/>
+                <ReactTable getId={getRowId} table={table} SubComponent={SubComponent} setChildren={setChildren} />
                 {portal.current}
             </div>
         </CollectionViewProvider>

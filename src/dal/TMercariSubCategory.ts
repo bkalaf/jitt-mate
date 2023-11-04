@@ -15,7 +15,7 @@ export const helper = createColumnHelper<IMercariSubCategory>();
 export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implements IMercariSubCategory {
     shipWeightPercent: Optional<number>;
     gather(this: IMercariSubCategory) {
-        const { hashTags: parentHashTags, gender, shipWeightPercent, categoryId, itemGroup, categoryName,} = { ...this.parent?.gather() };
+        const { hashTags: parentHashTags, gender, shipWeightPercent, categoryId, itemGroup, categoryName } = { ...this.parent?.gather() };
         const gathered = {
             itemGroup: this.itemGroup ?? itemGroup,
             hashTags: Array.from([...(parentHashTags ?? []), ...this.hashTags.values()]),
@@ -72,7 +72,7 @@ export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implem
             apparelGroup: $db.string.opt,
             itemGroup: $db.string.opt,
             hashTags: $db.hashTag.set,
-            shipWeightPercent: { type: $db.float() as any, default: 0.3, optional: true }
+            shipWeightPercent: { type: $db.float() as any, optional: true }
         }
     };
     static labelProperty: keyof IMercariSubCategory = 'name';

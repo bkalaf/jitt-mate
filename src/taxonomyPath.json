@@ -1,0 +1,261 @@
+[
+	[
+		"accessories",
+		"shoes",
+		"tops",
+		"bottoms",
+		"undergarments",
+		"sleepwear",
+		"fullbody"
+	],
+	{
+		"accessories": [
+			[
+				"mid",
+				"head",
+				"hands"
+			],
+			{
+				"mid": [
+					"tie",
+					"belt",
+					"cumberbund",
+					"suspenders",
+					"wallet"
+				],
+				"head": [
+					"baseball",
+					"cowboy",
+					"fedora",
+					"skull",
+					"sunglasses",
+					"visor"
+				],
+				"hands": [
+					"gloves",
+					"mittens",
+					"work",
+					"watch"
+				]
+			}
+		],
+		"shoes": [
+			[
+				"heeled",
+				"flats",
+				"sneakers",
+				"boots"
+			],
+			{
+				"heeled": [
+					"high-heel",
+					"stiletto",
+					"wedge",
+					"sandal"
+				],
+				"flats": [
+					"loafer",
+					"sandal",
+					"flip-flop"
+				],
+				"sneakers": [
+					"athletic",
+					"skate",
+					"high-top",
+					"runners",
+					"basketball"
+				],
+				"boots": [
+					"cowboy",
+					"hiking",
+					"work"
+				]
+			}
+		],
+		"tops": [
+			[
+				"shirts",
+				"jackets",
+				"button-front",
+				"sweaters",
+				"other"
+			],
+			{
+				"shirts": [
+					"t-shirt",
+					"camisole",
+					"tank-top",
+					"tube-top",
+					"halter",
+					"sleeveless",
+					"wrap",
+					"tunic"
+				],
+				"jackets": [
+					"fleece",
+					"bomber",
+					"leather",
+					"windbreaker",
+					"trenchcoat",
+					"raincoat",
+					"denim",
+					"hoodie",
+					"overcoat",
+					"poncho"
+				],
+				"button-front": [
+					"polo",
+					"rugby",
+					"oxford",
+					"button-down",
+					"fitted",
+					"flannel",
+					"henley",
+					"hawaiian",
+					"blouse",
+					"dress-shirt"
+				],
+				"sweaters": [
+					"sweater",
+					"sweatshirt",
+					"pull-over",
+					"tutleneck",
+					"cardigan"
+				],
+				"other": []
+			}
+		],
+		"bottoms": [
+			[
+				"full-length",
+				"shorts",
+				"jeans",
+				"other"
+			],
+			{
+				"full-length": [
+					"carpenter",
+					"cargo",
+					"leather",
+					"chinos",
+					"khakis",
+					"pleated",
+					"fitted",
+					"casual",
+					"corduroys",
+					"trousers"
+				],
+				"shorts": [
+					"DEFAULT",
+					"short",
+					"denim",
+					"board",
+					"bermuda",
+					"khaki",
+					"casual",
+					"bike",
+					"surf",
+					"cargo",
+					"gym"
+				],
+				"jeans": [
+					"relaxed",
+					"boot",
+					"slim",
+					"skinny",
+					"baggy",
+					"flare",
+					"slim-boot",
+					"bell-bottom",
+					"straight",
+					"casual"
+				],
+				"other": [
+					"cropped-pants",
+					"skort",
+					"capris",
+					"track-pants",
+					"leggings",
+					"tights",
+					"sweatpants",
+					"skirt"
+				]
+			}
+		],
+		"undergarments": [
+			[
+				"socks",
+				"mens",
+				"womens",
+				"lingerie"
+			],
+			{
+				"socks": [
+					"athletic",
+					"mid",
+					"crew",
+					"ankle",
+					"knee-high"
+				],
+				"mens": [
+					"briefs",
+					"boxers",
+					"jock"
+				],
+				"womens": [
+					"bra",
+					"panties",
+					"stockings",
+					"panty-hose"
+				],
+				"lingerie": [
+					"negligee"
+				]
+			}
+		],
+		"sleepwear": [
+			[
+				"pajamas",
+				"robes"
+			],
+			{
+				"pajamas": [
+					"top",
+					"bottom",
+					"set"
+				],
+				"robes": [
+					"robe",
+					"nightgown",
+					"wrap"
+				]
+			}
+		],
+		"fullbody": [
+			[
+				"dresses",
+				"suits",
+				"overalls"
+			],
+			{
+				"dresses": [],
+				"suits": [
+					"tuxedo",
+					"double-breasted",
+					"1-button",
+					"2-button",
+					"3-button",
+					"4-button",
+					"bodysuit",
+					"pant-suit"
+				],
+				"overalls": [
+					"jumpsuit",
+					"romper",
+					"denim",
+					"bodysuit"
+				]
+			}
+		]
+	}
+]

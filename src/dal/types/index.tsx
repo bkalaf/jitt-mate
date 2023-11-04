@@ -9,6 +9,7 @@ import {
     MaterialKeys,
     MovieRatingKeys,
     NecklineTypeKeys,
+    OriginKeys,
     SizeKeys,
     WaistTypeKeys
 } from '../../enums/importNecklineType';
@@ -24,6 +25,9 @@ import { LocationTypesKey } from '../enums/locationTypes';
 import { LocationLabelColorsKey } from '../enums/locationLabelColors';
 import { LocationKindsKey } from '../enums/locationKinds';
 import { BarcodeTypesKey } from '../enums/barcodeTypes';
+import { RnNumberTypesKey } from '../enums/rnNumberType';
+import { ProvincesKey } from '../enums/provinces';
+import { Countries } from '../enums/countries';
 
 export type AttributeObject = Record<string, any>;
 
@@ -63,6 +67,39 @@ export interface IBrand extends IRealmEntity, IGather<IBrand, 'brandName' | 'bra
     folder: string;
     parent: OptObj<IBrand>;
     hashTags: DBSet<IHashTag>;
+}
+
+export interface IAddress {
+    line1: Optional<string>;
+    line2: Optional<string>;
+    city: Optional<string>;
+    province: Optional<ProvincesKey>;
+    postalCode: Optional<string>;
+    country?: Optional<keyof Countries>;
+    readonly streetOnly: Optional<string>;
+    readonly cityState: Optional<string>;
+}
+
+export interface IRn extends IRealmEntity {
+    companyName: string;
+    no: number;
+    legalBusinessName: Optional<string>;
+    companyType: Optional<string>;
+    isImporter: boolean;
+    isRetailer: boolean;
+    isMailOrder: boolean;
+    isInternet: boolean;
+    isOther: boolean;
+    noType: Optional<RnNumberTypesKey>;
+    isManufacturer: boolean;
+    isWholesaler: boolean;
+    productLine: Optional<string>;
+    material: Optional<string>;
+    url: Optional<string>;
+    brand: OptObj<IBrand>;
+    products: DBBacklink<IProduct>;
+    readonly scrapedOn: Date;
+    addresses: DBList<IAddress>
 }
 export interface IMercariCategory extends IRealmEntity, IGather<IMercariCategory, 'categoryId' | 'gender' | 'itemGroup' | 'categoryName' | 'shipWeightPercent'> {
     name: string;
