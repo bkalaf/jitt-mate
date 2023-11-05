@@ -15,7 +15,7 @@ import { createSubComponent } from '../../dal/createSubComponent';
 import { is } from '../../dal/is';
 import { useNestedColumnDefs } from '../../hooks/useNestedColumnDefs';
 import { useOverlayContext } from '../Contexts/useOverlayContext';
-import { useFetchAll } from '../useFetchData';
+import { useFetchAll } from '../../hooks/useFetchData';
 import { faBoltLightning } from '@fortawesome/pro-solid-svg-icons';
 import { Button } from '../Buttons/Button';
 import { useLocalRealm } from '../../routes/loaders/useLocalRealm';

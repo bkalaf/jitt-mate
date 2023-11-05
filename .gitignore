@@ -96,3 +96,7 @@ src/config.json
 .gitignore
 src/fsinfo.json
 .vscode
+dist/
+Shutterstock*.*
+src/assets/laundry-symbols
+src/assets/clothing-care-icons/*.d.svg.ts

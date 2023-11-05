@@ -1,4 +1,4 @@
-import { process } from '@electron/remote';
+// import { process } from '@electron/remote';
 
 export function catchError(err: unknown) {
     console.error((err as Error).message);

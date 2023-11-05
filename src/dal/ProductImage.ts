@@ -36,7 +36,7 @@ export class ProductImage extends Realm.Object<IProductImage> implements IProduc
         return this.sku;
     }
     get $barcode(): string {
-        return this.$sku.sku;
+        return this.$sku.sku?.rawValue ?? ''
     }
     get $removeBgFilename(): string {
         return path.basename(this.filename, path.extname(this.filename)).concat(Config.removeBgSuffix);
@@ -62,7 +62,7 @@ export class ProductImage extends Realm.Object<IProductImage> implements IProduc
         }
     };
     get skuBarcode(): Optional<string> {
-        return this.sku?.sku;
+        return this.sku?.sku?.rawValue;
     }
     get brandFolder(): string {
         return this.sku?.product?.brand?.folder ?? 'no-brand';

@@ -111,8 +111,8 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
     static columns: DefinedColumns = [
         Def.OID(helper),
         Def.ctor<IClassifier>('name').$$(helper),
-        Def.ctor<IClassifier>('mercariSubSubCategory').asLookup().$$(helper),
-        Def.ctor('isAtheltic').checkbox().$$(helper),
+        Def.ctor<IClassifier>('mercariSubSubCategory').asLookup().labelBy('fullname').$$(helper),
+        Def.ctor('isAthletic').checkbox().$$(helper),
         Def.ctor<IClassifier>('apparelType').asEnum(ApparelTypes).$$(helper),
         Def.ctor<IClassifier>('legType').asEnum(LegTypes).$$(helper),
         Def.ctor<IClassifier>('itemGroup').asEnum(ItemGroups).$$(helper),

@@ -24,7 +24,7 @@ import { compR } from '../../common/functions/composeR';
 import { useLoadInsertForm } from '../../hooks/useLoadInsertForm';
 import { DeleteSelectionButton } from './commands/DeleteSelectionButton';
 import { InsertRecordButton } from './commands/InsertRecordButton';
-import { useFetchAll } from '../useFetchData';
+import { useFetchAll } from '../../hooks/useFetchData';
 import { getRowIdFromOID } from '../../schema/getRowId';
 import { createSubComponent } from '../../dal/createSubComponent';
 import { fuzzyFilter } from '../Table/fuzzy';
@@ -34,6 +34,7 @@ import { ToggleFilteringButton } from './commands/ToggleFilteringButton';
 
 export function RealmObjectView<T extends EntityBase>() {
     const collectionName = useCollectionRoute();
+    console.log(`collectionName`, collectionName);
     const { columns, getRowCanExpand, schema, subComponentTabPanels, visibility: columnVisibility, sorting } = useColumnDefs<T>(collectionName);
     const data = useFetchAll<T>(collectionName);
     const getRowId = getRowIdFromOID;

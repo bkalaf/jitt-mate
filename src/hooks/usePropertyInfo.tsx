@@ -30,7 +30,7 @@ export function usePropertyInfo<T>(table: Table<T>, column: Column<T, any> | Col
             : {})
     };
 
-    const { datatype, defaultValue: defaultValue2, enumMap, lookupProperty, labelProperty, readonly, required: req2, validators, objectType: ot, inputType } = useColumnMeta(column);
+    const { datatype, defaultValue: defaultValue2, enumMap, lookupProperty, labelProperty, readonly, required: req2, validators, objectType: ot, inputType, colorMap } = useColumnMeta(column);
 
     const required = !(optional ?? false);
     const required2 = req2 ?? false;
@@ -55,6 +55,7 @@ export function usePropertyInfo<T>(table: Table<T>, column: Column<T, any> | Col
         property,
         enumMap,
         labelProperty,
+        colorMap,
         readonly,
         ot,
         validators

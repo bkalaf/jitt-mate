@@ -1,6 +1,6 @@
 import { capitalize } from './capitalize';
 
-export function splitAt(predicate: (x: string) => boolean) {
+export function splitAt(predicate: (x: string) => boolean, postFunc = capitalize, joiner = '') {
     return function (str: string) {
         function inner(todo: string[], current: string[] = [], accum: string[][] = []) {
             if (todo.length === 0) return [...accum, current];
@@ -12,6 +12,6 @@ export function splitAt(predicate: (x: string) => boolean) {
         }
         const chars = str.split('');
         const result = inner(chars);
-        return result.map((x) => capitalize(x.join(''))).join('');
+        return result.map((x) => postFunc(x.join(''))).join(joiner);
     };
 }

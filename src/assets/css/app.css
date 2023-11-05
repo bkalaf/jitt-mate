@@ -3,11 +3,11 @@
 @import './base.css';
 @import './components.css';
 @import './utilities.css';
-@import '../../../node_modules/@fortawesome/fontawesome-svg-core/styles.css';
+/* @import '../../../node_modules/@fortawesome/fontawesome-svg-core/styles.css'; */
 
-body {
+/* body {
     font-family: 'Open Sans';
-}
+} */
 
 /* .active {
     @apply text-white border border-white bg-magenta;

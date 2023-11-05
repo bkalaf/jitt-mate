@@ -7,7 +7,7 @@ import { lookupByLongName } from './enums/provinces';
 import { $db } from './db';
 import { checkTransaction } from '../util/checkTransaction';
 import { toOID } from './toOID';
-import { checkWS } from './checkWS';
+import { checkWS } from '../common/text/checkWS';
 
 export const FTC_RN_LOOKUP = 'https://rn.ftc.gov/Account/BasicSearch';
 export const RN_INPUT = Selector({ tagName: 'input', id: 'SearchText' });

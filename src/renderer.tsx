@@ -26,7 +26,7 @@
  * ```
  */
 import { createRoot } from 'react-dom/client';
-
+import './components/test';
 import './assets/css/app.css';
 import { App } from './components/App';
 

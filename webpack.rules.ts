@@ -18,8 +18,9 @@ export const rules: Required<ModuleOptions>['rules'] = [
       },
     },
   },
+  { test: /\.svg$/, use: ['@svgr/webpack'] },
   {
-    test: /\.(png|jpe?g|gif|webp|svg)$/,
+    test: /\.(png|jpe?g|gif|webp)$/,
     type: 'asset/resource',
     generator: {
       filename: 'images/[hash][ext][query]'

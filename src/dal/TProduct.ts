@@ -1,6 +1,6 @@
 import { $db } from './db';
 import Realm, { BSON } from 'realm';
-import { IBrand, IClassifier, IHashTag, IProduct } from './types';
+import { IBarcode, IBrand, IClassifier, IHashTag, IProduct } from './types';
 import { ObjectId } from 'mongodb';
 
 export class Product extends Realm.Object<IProduct> implements IProduct {
@@ -42,7 +42,7 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
     modelNo: Optional<string>;
     notes: Optional<string>;
     styleNo: Optional<string>;
-    upcs: string[] = [];
+    upcs: DBList<IBarcode> = [] as any;
     weightG: Optional<number>;
     widthIn: Optional<number>;
     _id: BSON.ObjectId = new BSON.ObjectId();
@@ -118,7 +118,7 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
             brand: $db.brand.opt,
             classifier: $db.classifier.opt,
             _barcodes: $db.string.list,
-            upcs: $db.string.list,
+            upcs: $db.barcode.list,
             modelNo: $db.string.opt,
             styleNo: $db.string.opt,
             cutNo: $db.string.opt,

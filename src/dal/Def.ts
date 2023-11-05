@@ -98,7 +98,7 @@ export class Def<T, TValue = any> {
         return this.addToMeta('inputType', inputType);
     }
     checkbox(defaultValue = false) {
-        return this.addToMeta('defaultValue', defaultValue).inputType('checkbox').setDataType('bool');
+        return this.addToMeta('defaultValue', defaultValue).inputType('checkbox').setDataType('bool').justify('center');
     }
     validator(...validators: Validator<TValue | undefined>[]): Def<any, any> {
         return this.addToArray('validators', ...validators);
@@ -205,6 +205,12 @@ export class Def<T, TValue = any> {
             })
             .inputType('text');
     }
+    justify(s: string) {
+        return this.addToMeta('justify', ['justify', s].join('-') as any)
+    }
+    chip(colorMap: Record<string, string>) {
+        return this.addToMeta('colorMap', colorMap).justify('center');
+    }
     asDate(dateOnly = false, initialNow = false) {
         const result = this.setDataType('date')
             .inputType(dateOnly ? 'date' : 'datetime-local')
@@ -225,8 +231,9 @@ export class Def<T, TValue = any> {
     static OID<T>(helper: ColumnHelper<any>): DefinedColumn {
         return helper.accessor((x) => fromOID(x._id), {
             id: '_id',
-            header: 'OID',
-            meta: { datatype: 'objectId', required: true, readonly: true, defaultValue: () => new BSON.ObjectId() }
+            header: 'ID',
+            maxSize: 15,
+            meta: { justify: 'justify-center', datatype: 'objectId', required: true, readonly: true, defaultValue: () => new BSON.ObjectId() }
         }) as ColumnDef<T, BSON.ObjectId>;
     }
 }

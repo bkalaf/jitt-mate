@@ -231,6 +231,18 @@ declare global {
     export type PreProcessFunction<TInput, TOutput> = (x?: TInput) => TOutput;
     export type RealmCollectionTypes = 'list' | 'dictionary' | 'set' | 'linkingObjects';
     export type RealmCollections<T> = DBSet<T> | DBDictionary<T> | DBList<T>;
+
+    export type LaundryCareItemInfo = {
+        SvgElement: React.FunctionComponent<{ className?: string }>;
+        name: string;
+    };
+    export type IClothingCareClusterProps = {
+        elements: LaundryCareItemInfo[];
+        isSelected: (n: string) => boolean;
+        getToggler: (n: string) => () => void;
+        title: string;
+        register: (n: string) => void;
+    };
 }
 
 declare module '@tanstack/table-core' {
@@ -256,6 +268,8 @@ declare module '@tanstack/table-core' {
         multiple?: boolean;
         multiplier?: number;
         precision?: number;
+        colorMap?: Record<string, string>;
+        justify?: 'justify-center' | 'justify-start' | 'justify-end' | 'justify-between' | 'justify-evenly' | 'justify-around';
         preprocess?: PreProcessFunction<any, any>[];
         formatString?: (x?: StringOr<TValue>) => StringOr;
     }

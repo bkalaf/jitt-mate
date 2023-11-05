@@ -86,7 +86,7 @@ export class Barcode extends Realm.Object<IBarcode> implements IBarcode {
         const calc = Barcode.getEANCheckDigit(bc);
         if (calc === cd) {
             if (bc.length === 13 && (bc.startsWith('978') || bc.startsWith('979'))) return ['isbn13', barcode];
-            if (bc.length === 12 && barcode.startsWith('4')) {
+            if (bc.length === 12 && unpad(barcode).startsWith('4')) {
                 if (bc.startsWith('49')) return ['locator', barcode];
                 return ['sku', barcode];
             }
@@ -106,6 +106,9 @@ export class Barcode extends Realm.Object<IBarcode> implements IBarcode {
             const [type, bc] = Barcode.calculateCheckDigit(barcode);
             return [true, type];
         } catch (error) {
+            console.log(JSON.stringify(error, null, '\t'))
+            console.log((error as Error).message);
+            console.log((error as Error).name)
             console.error(`BARCODE CLASSIFY ERROR: ${barcode}`);
             return [false];
         }
@@ -114,11 +117,11 @@ export class Barcode extends Realm.Object<IBarcode> implements IBarcode {
         return runInTransaction(this, realm, () => {
             const bc = this.rawValue.padStart(13, '0');
             if (this.rawValue !== bc) {
-                this.rawValue = bc;
-                const [valid, type] = Barcode.classify(bc);
-                this.valid = valid;
-                this.type = type;
+                this.rawValue = bc;                
             }
+            const [valid, type] = Barcode.classify(bc);
+            this.valid = valid;
+            this.type = type;
         });
     }
     equalTo(value: string): boolean {

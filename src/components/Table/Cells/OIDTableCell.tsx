@@ -5,8 +5,8 @@ import { faKey } from '@fortawesome/pro-solid-svg-icons';
 export function OIDTableCell<T>(props: CellContext<T, any>) {
     const value = props.getValue<string>();
     return (
-        <span className='flex w-full h-full p-1 rounded-md bg-slate-700' title={['ID: ', value].join('')}>
-            <FontAwesomeIcon icon={faKey} className='inline-block text-yellow-400' size='lg' />
+        <span className='w-4 h-4 bg-transparent border border-sky-500 text-slate-700' title={['ID: ', value].join('')}>
+            <FontAwesomeIcon icon={faKey} className='block object-fill' />
         </span>
     );
 }

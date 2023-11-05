@@ -3,12 +3,12 @@ import { OIDTableCell } from './OIDTableCell';
 import { useColumnMeta } from '../../../hooks/useColumnMeta';
 import { BSON } from 'realm';
 import { StringTableCell } from './StringTableCell';
-import { EnumTableCell } from './EnumTableCell';
+import { EnumChipTableCell, EnumTableCell } from './EnumTableCell';
 import { CheckboxTableCell } from './CheckboxTableCell';
 import { LookupTableCell } from './LookupTableCell';
 
 export function DefaultTableBodyCell<T>(props: CellContext<T, any>) {
-    const { datatype, defaultValue, enumMap, objectType, labelProperty } = useColumnMeta<T>(props.column);
+    const { datatype, colorMap, defaultValue, enumMap, objectType, labelProperty } = useColumnMeta<T>(props.column);
     switch (datatype) {
         case 'string':
             return <StringTableCell<T> {...props} />;
@@ -17,16 +17,14 @@ export function DefaultTableBodyCell<T>(props: CellContext<T, any>) {
         case 'object':
             return <LookupTableCell<T, EntityBase> {...props} />;
         case 'enum':
-            return <EnumTableCell<T> {...props} />;
+            return colorMap != null ? <EnumChipTableCell<T> {...props} /> : <EnumTableCell<T> {...props} />;
         case 'bool':
-            return <CheckboxTableCell {...props} />
+            return <CheckboxTableCell {...props} />;
         case 'list':
         case 'dictionary':
         case 'set':
-            return <StringTableCell<T> {...props} />
+            return <StringTableCell<T> {...props} />;
         default:
             break;
     }
 }
-
-

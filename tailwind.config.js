@@ -156,6 +156,7 @@ module.exports = {
             readonly: 'readonly="true"',
             required: 'required="true"',
             selected: 'selected="true"',
+            unselected: 'selected="false"',
             current: 'current="true"',
             'not-current': 'current="false"',
 

@@ -3,7 +3,7 @@ import Realm, { BSON } from 'realm';
 import { $db } from './db';
 import {
     SizeKeys} from '../enums/importNecklineType';
-import { ILocationSegment, IProduct, IProductImage, IScan, ISku } from './types';
+import { IBarcode, ILocationSegment, IProduct, IProductImage, IScan, ISku } from './types';
 import { ISizeEntry } from '../enums/sizes';
 import { Scan } from './TScan';
 import { Def } from './Def';
@@ -15,7 +15,7 @@ export class Sku extends Realm.Object<ISku> implements ISku {
     _barcode: Optional<string>;
     update<T>(this: T, realm: Realm): T {
         return runInTransaction<ISku>(this as ISku, realm, (o: ISku) => {
-            o.sku = o.sku.padStart(12, '0');
+            // o.sku = o.sku.padStart(12, '0');
         }) as T;
     }
     productImages: DBBacklink<IProductImage> = [] as any;
@@ -31,7 +31,7 @@ export class Sku extends Realm.Object<ISku> implements ISku {
     }
 
     _id: BSON.ObjectId = new BSON.ObjectId();
-    sku = '';
+    sku: Optional<IBarcode>
     product: OptObj<IProduct>;
     price = 0;
     condition: ConditionKeys = 3;
@@ -51,7 +51,7 @@ export class Sku extends Realm.Object<ISku> implements ISku {
         primaryKey: '_id',
         properties: {
             _id: $db.objectId,
-            sku: $db.string.req,
+            sku: $db.barcode.opt,
             product: $db.product.opt,
             price: $db.float.zero,
             condition: $db.int.two,

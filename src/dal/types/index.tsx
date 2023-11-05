@@ -1,25 +1,11 @@
 import Realm, { BSON } from 'realm';
-import {
-    BacklineTypeKeys,
-    BookTypeKeys,
-    CollarTypeKeys,
-    ColorKeys,
-    CuffTypeKeys,
-    GameRatingKeys,
-    MaterialKeys,
-    MovieRatingKeys,
-    NecklineTypeKeys,
-    OriginKeys,
-    SizeKeys,
-    WaistTypeKeys
-} from '../../enums/importNecklineType';
 import { ApparelGroupsKey } from '../enums/apparelGroups';
 import { ApparelTypesKey } from '../enums/apparelType';
 import { ItemGroupsKey } from '../enums/itemGroups';
 import { GendersKey } from '../enums/genders';
-import { LegTypesKey } from '../enums/legTypes';
-import { TopAdornmentsKey } from '../enums/topAdornments';
-import { SleeveTypesKey } from '../enums/sleeveTypes';
+import { LegTypes, LegTypesKey } from '../enums/legTypes';
+import { TopAdornments, TopAdornmentsKey } from '../enums/topAdornments';
+import { SleeveTypes, SleeveTypesKey } from '../enums/sleeveTypes';
 import { SizingTypesKey } from '../enums/sizingTypes';
 import { LocationTypesKey } from '../enums/locationTypes';
 import { LocationLabelColorsKey } from '../enums/locationLabelColors';
@@ -28,6 +14,16 @@ import { BarcodeTypesKey } from '../enums/barcodeTypes';
 import { RnNumberTypesKey } from '../enums/rnNumberType';
 import { ProvincesKey } from '../enums/provinces';
 import { Countries } from '../enums/countries';
+import { MaterialTypes } from '../enums/materialTypes';
+import { WaistTypes } from '../enums/waistTypes';
+import { NecklineTypes } from '../enums/necklineTypes';
+import { SizeKeys } from '../../enums/importNecklineType';
+import { CuffTypes } from '../enums/cuffTypes';
+import { CollarTypes } from '../enums/collarTypes';
+import { BacklineTypes } from '../enums/backlineTypes';
+import { Sizes } from '../enums/sizes';
+import { Colors } from '../enums/colors';
+import { FrontTypes } from '../enums/frontTypes';
 
 export type AttributeObject = Record<string, any>;
 
@@ -38,6 +34,10 @@ export interface IRealmEntity {
 export interface IGather<T extends { hashTags: DBSet<IHashTag> }, TKeys extends string = 'hashTags'> {
     gather(this: T): { [P in TKeys | 'hashTags']?: T[P & keyof T] extends never ? any : P extends 'hashTags' ? IHashTag[] : T[P & keyof T] extends DBList<infer R> ? R[] : T[P & keyof T] };
 }
+export type Measurements = 'chest' | 'neck' | 'inseam' | 'length' | 'sleeve' | 'torso' | 'waist' | 'hip' | 'foot' | 'bust' | 'head' | 'heel';
+export type Flags = 'athletic' | 'decorative' | 'graphic' | 'rare' | 'vintage' | 'collectible' | 'discontinued' | 'mediaMail';
+export type MeasurementKeys = `${Measurements}Inches`;
+
 export interface IHashTagUsage {
     from: Date;
     count: number;
@@ -99,7 +99,33 @@ export interface IRn extends IRealmEntity {
     brand: OptObj<IBrand>;
     products: DBBacklink<IProduct>;
     readonly scrapedOn: Date;
-    addresses: DBList<IAddress>
+    addresses: DBList<IAddress>;
+}
+
+export type FlagsKeys = `is${Capitalize<Flags>}`;
+export type IFlagDictionary = Partial<Record<FlagsKeys, boolean>>;
+export type IMeasurementDictionary = Partial<Record<MeasurementKeys, number>>;
+export interface IProductTaxonomy {
+    kingdom: Optional<string>;
+    phylum: Optional<string>;
+    klass: Optional<string>;
+    order: Optional<string>;
+    family: Optional<string>;
+    genus: Optional<string>;
+    species: Optional<string>;
+    //apparel
+    backlineType: Optional<keyof BacklineTypes>;
+    collarType: Optional<keyof CollarTypes>;
+    cuffType: Optional<keyof CuffTypes>;
+    necklineType: Optional<keyof NecklineTypes>;
+    topAdornment: Optional<keyof TopAdornments>;
+    frontType: Optional<keyof FrontTypes>;
+    waistType: Optional<keyof WaistTypes>;
+    sleeveType: Optional<keyof SleeveTypes>;
+    pocketCount: Optional<number>;
+    size: Optional<keyof typeof Sizes>;
+    legType: Optional<keyof LegTypes>;
+    flags: IFlagDictionary;
 }
 export interface IMercariCategory extends IRealmEntity, IGather<IMercariCategory, 'categoryId' | 'gender' | 'itemGroup' | 'categoryName' | 'shipWeightPercent'> {
     name: string;
@@ -109,6 +135,7 @@ export interface IMercariCategory extends IRealmEntity, IGather<IMercariCategory
     hashTags: DBSet<IHashTag>;
     shipWeightPercent: Optional<number>;
     readonly $selector: string;
+    taxa: IProductTaxonomy;
 }
 export interface IMercariSubCategory
     extends IRealmEntity,
@@ -122,6 +149,7 @@ export interface IMercariSubCategory
     hashTags: DBSet<IHashTag>;
     shipWeightPercent: Optional<number>;
     readonly $selector: string;
+    taxa: IProductTaxonomy;
 }
 
 export interface ICustomItemField {
@@ -170,6 +198,7 @@ export interface IMercariSubSubCategory
     sizingType: Optional<SizingTypesKey>;
     customItemFields: DBList<ICustomItemField>;
     readonly $selector: string;
+    taxa: IProductTaxonomy;
 }
 
 export interface IClassifier
@@ -213,6 +242,7 @@ export interface IClassifier
     sizingType: Optional<SizingTypesKey>;
     readonly isMediaMail: boolean;
     readonly athletic: Optional<string>;
+    taxa: IProductTaxonomy;
 }
 
 export interface ILocationSegment extends IRealmEntity {
@@ -250,30 +280,22 @@ export interface IVideoDetails extends IMediaDetails {
     runtimeMin: Optional<number>;
     studio: Optional<string>;
 }
-export interface IApparelDetails {
-    apparelType: Optional<ApparelTypesKey>;
-    backlineType: Optional<BacklineTypeKeys>;
-    collarType: Optional<CollarTypeKeys>;
-    cuffType: Optional<CuffTypeKeys>;
-    rn: number;
-    necklineType: Optional<NecklineTypeKeys>;
-    topAdornment: Optional<TopAdornmentsKey>;
-    waistType: Optional<WaistTypeKeys>;
-    sleeveType: Optional<SleeveTypesKey>;
-    pocketCount: Optional<number>;
-    size: Optional<SizeKeys>;
-    legType: Optional<LegTypesKey>;
-}
-export interface IMeasurements {
-    chestIn: Optional<number>;
-    neckIn: Optional<number>;
-    inseamIn: Optional<number>;
-    lengthIn: Optional<number>;
-    sleeveIn: Optional<number>;
-    torsoIn: Optional<number>;
-    waistIn: Optional<number>;
-}
-export interface IProduct extends IRealmEntity, IMeasurements {
+
+export type Distances = 'length' | 'width' | 'height' | 'diameter';
+export type Volumes = 'volume';
+export type Capacity = 'capacity';
+export type Timespans = 'runtime';
+export type CurrentDirection = 'input' | 'output';
+export type Voltages = 'Voltage';
+export type Wattages = 'Wattage';
+export type Amperages = 'Amperage';
+export type ChargeWithUnits = `${Voltages}Volts` | `${Amperages}Amps` | `${Wattages}Watts`;
+export type Electrical = `${CurrentDirection}${ChargeWithUnits}`;
+export type DimensionKeys = `${Distances}Inches` | `${Volumes}FlOz` | `${Capacity}GB` | `${Timespans}Min` | Electrical;
+export type IDimensions = Partial<Record<DimensionKeys, number>>;
+export type IMadeOfDictionary = Partial<Record<string, Record<keyof MaterialTypes, number>>>;
+
+export interface IProduct extends IRealmEntity {
     // IApparelDetails,
     // IMediaDetails,
     // IVideoDetails,
@@ -322,7 +344,7 @@ export interface IProduct extends IRealmEntity, IMeasurements {
     brand: OptObj<IBrand>;
     circa: Optional<string>;
     classifier: OptObj<IClassifier>;
-    color: Optional<ColorKeys>;
+    color: Optional<keyof typeof Colors>;
     cutNo: Optional<string>;
     descriptiveText: Optional<string>;
     features: string[];
@@ -330,15 +352,21 @@ export interface IProduct extends IRealmEntity, IMeasurements {
     heightIn: Optional<number>;
     isRare: boolean;
     isVintage: boolean;
-    madeOf: Partial<Record<MaterialKeys, number>>;
+    madeOf: Partial<Record<keyof MaterialTypes, number>>;
+    materials: IMadeOfDictionary;
     modelNo: Optional<string>;
     notes: Optional<string>;
     // origin: Optional<OriginKeys>;
     styleNo: Optional<string>;
-    upcs: string[];
-    _barcodes: string[];        
+    upcs: DBList<IBarcode>;
+    _barcodes: string[];
     weightG: Optional<number>;
     widthIn: Optional<number>;
+    taxa: IProductTaxonomy;
+    measurements: IMeasurementDictionary;
+    rn: Optional<IRn>;
+    dimensions: IDimensions;
+    clothingCare: DBList<string>;
 }
 
 export interface IBarcode {
@@ -358,9 +386,9 @@ export interface IBarcode {
     readonly isLocator: boolean;
     readonly isSKU: boolean;
     readonly isTruncated: boolean;
-};
+}
 export interface ISku extends IRealmEntity {
-    sku: string;
+    sku: Optional<IBarcode>;
     _barcode: Optional<string>;
     product: OptObj<IProduct>;
     price: number;

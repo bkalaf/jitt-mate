@@ -8,6 +8,7 @@ import { LocationKinds } from './enums/locationKinds';
 import { LocationLabelColors } from './enums/locationLabelColors';
 import { LocationTypes } from './enums/locationTypes';
 import { BarcodeTypes } from './enums/barcodeTypes';
+import { Barcode } from './TBarcode';
 
 const helper = createColumnHelper();
 export class LocationSegment extends Realm.Object<LocationSegment> implements ILocationSegment {
@@ -35,7 +36,7 @@ export class LocationSegment extends Realm.Object<LocationSegment> implements IL
         properties: {
             _id: $db.objectId,
             barcode: $db.barcode.opt,
-            _barcode: $db.string.empty,
+            _barcode: $db.string.opt,
             name: $db.string.empty,
             type: $db.string.empty,
             color: $db.string.opt,
@@ -44,14 +45,26 @@ export class LocationSegment extends Realm.Object<LocationSegment> implements IL
         }
     };
     static labelProperty: keyof ILocationSegment = 'name';
-    static defaultSort: Realm.SortDescriptor[] = ['barcode.rawValue', 'name'];
+    static defaultSort: Realm.SortDescriptor[] = ['barcode.rawValue'];
     static columns: DefinedColumns = [
         Def.OID(helper),
-        Def.ctor('barcode.type').readonly().asEnum(BarcodeTypes).displayName('Barcode Type').$$(helper),
-        Def.ctor('barcode.rawValue').barcode().displayName('UPC').$$(helper),
+        // Def.ctor('barcode.rawValue').barcode().displayName('UPC').$$(helper),
+        ...Barcode.embeddeColumns('barcode'),
         Def.ctor('name').max(50).required().$$(helper),
-        Def.ctor('type').asEnum(LocationTypes).$$(helper),
-        Def.ctor('color').asEnum(LocationLabelColors).$$(helper),
+        Def.ctor('type').asEnum(LocationTypes).chip({
+            fixture: 'bg-indigo-600 text-white',
+            shelf: 'bg-rose-600 text-white',
+            bin: 'bg-yellow-600 text-black'
+        }).$$(helper),
+        Def.ctor('color').asEnum(LocationLabelColors).chip({
+            purple: 'bg-purple-500 text-white',
+            yellow: 'bg-yellow-500 text-black',
+            green: 'bg-emerald-800 text-white',
+            orange: 'bg-orange-700 text-white',
+            pink: 'bg-rose-600 text-white',
+            white: 'bg-neutral-200 text-black',
+            blue: 'bg-sky-700 text-white'
+        }).$$(helper),
         Def.ctor('kind').asEnum(LocationKinds).$$(helper),
         Def.ctor('notes').max(150).$$(helper)
     ];

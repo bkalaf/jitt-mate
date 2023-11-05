@@ -1,6 +1,6 @@
 import { Column, Table } from '@tanstack/react-table';
 import { FormProvider } from './Contexts/FormProvider';
-import { useInsertRecord } from './useInsertRecord';
+import { useInsertRecord } from '../hooks/useInsertRecord';
 import { EditFormControl } from './Table/Cells/DefaultEditBodyCell';
 import { useLogger } from './Contexts/useLogger';
 import { FormFooter } from './FormFooter';

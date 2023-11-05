@@ -21,6 +21,12 @@ export function DefaultEditBodyCell(noLabel = false) {
         switch (props.column.columnDef?.meta?.datatype) {
             case undefined:
                 return <Wrapper>{flexRender(props.column.columnDef.cell, props.cell?.getContext() as any)}</Wrapper>;
+            case 'bool':
+                return (
+                    <Wrapper>
+                        <TextFieldInput<T> noLabel={noLabel} initialValue={initialValue()} table={props.table} column={props.column} />
+                    </Wrapper>
+                );
             case 'string':
                 return (
                     <Wrapper>

@@ -14,11 +14,13 @@
     "baseUrl": ".",
     "outDir": "dist",
     "moduleResolution": "node",
+    "allowArbitraryExtensions": true,
     "resolveJsonModule": true,
     "paths": {
       "*": ["node_modules/*"]
     },
-    "strict": true
+    "strict": true,
+    "declaration": true
   },
   "include": ["src/**/*"]
 }

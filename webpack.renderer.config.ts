@@ -23,6 +23,6 @@ export const rendererConfig: Configuration = {
     fallback: {
       path: require.resolve('path-browserify')
     },
-    extensions: ['.js', '.ts', '.jsx', '.tsx', '.css'],
+    extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.svg'],
   },
 };

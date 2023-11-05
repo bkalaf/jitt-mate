@@ -6,10 +6,11 @@ import * as fs from 'graceful-fs';
 import * as Config from '../config.json';
 import { normalizeNewLine } from './normalizeNewLine';
 import { nextScan } from './nextScan';
-import { ILocationSegment, IScan, ISku } from './types';
+import { IBarcode, ILocationSegment, IScan, ISku } from './types';
 import { dateFromNow } from './dateFromNow';
 import { Def } from './Def';
 import { createColumnHelper } from '@tanstack/react-table';
+import { Barcode } from './TBarcode';
 
 export const RESET_ALL = '029999999999';
 
@@ -21,16 +22,16 @@ export type ControlBarcodeInfo = [string, 'reset-all', undefined];
 const helper = createColumnHelper();
 export const Scanning = {
     locationSegments: (realm: Realm) => {
-        return realm.objects<ILocationSegment>($db.locationSegment()).map((x) => [x.barcode, $db.locationSegment(), x] as LocationSegmentBarcodeInfo);
+        return realm.objects<ILocationSegment>($db.locationSegment()).map((x) => [x.barcode?.scanValue, $db.locationSegment(), x] as LocationSegmentBarcodeInfo);
     },
     products: (realm: Realm) => {
         return realm
             .objects<ISku>($db.sku())
-            .map((x) => x.product?.upcs.map((upc) => [upc, $db.sku(), x] as ProductBarcodeInfo) ?? [])
+            .map((x) => x.product?.upcs.map((upc) => [upc?.scanValue, $db.sku(), x] as ProductBarcodeInfo) ?? [])
             .reduce((pv, cv) => [...pv, ...cv], []);
     },
     skus: (realm: Realm) => {
-        return realm.objects<ISku>($db.sku()).map((x) => [x.sku, $db.sku(), x] as SkuBarcodeInfo);
+        return realm.objects<ISku>($db.sku()).map((x) => [x.sku?.scanValue, $db.sku(), x] as SkuBarcodeInfo);
     },
     controls: () => {
         return [[RESET_ALL, 'reset-all', undefined]] as ControlBarcodeInfo[];
@@ -45,7 +46,7 @@ export const Scanning = {
     getItem: (realm: Realm, bc: string) => {
         const result = Scanning.barcodes(realm)[bc];
         if (result == null) {
-            return ['sku', realm.create<ISku>($db.sku(), { _id: new BSON.ObjectId(), sku: bc.padStart(12, '0') })] as ['sku', ISku];
+            return ['sku', realm.create<ISku>($db.sku(), { _id: new BSON.ObjectId(), sku: Barcode.ctor(bc.padStart(13, '0')) as unknown as IBarcode })] as ['sku', ISku];
         }
         return result;
     },
@@ -83,7 +84,7 @@ export const Scanning = {
         console.log(`scans to process: ${filteredData.length}`);
         Scanning.processScans(realm, filteredData);
     }
-}
+};
 
 export class Scan extends Realm.Object<IScan> implements IScan {
     fixture: Optional<ILocationSegment>;
