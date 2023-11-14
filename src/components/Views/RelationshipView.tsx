@@ -129,14 +129,14 @@ export function RelationshipView<T extends EntityBase, TValue>({ original, listT
             switch (listType) {
                 case 'list': {
                     const selected = Object.entries(table.getState().rowSelection).filter(x => x[1]).map(x => x[0]);
-                    const objs = selected.map(x => db.objectForPrimaryKey<EntityBase>(listOf, toOID(x)!)) as any as RealmObj<T>[];
+                    const objs = selected.map(x => db.objectForPrimaryKey<EntityBase>(listOf, toOID(x)!)) as any as Entity<T>[];
                     const list = original as DBList<T>;
                     list.push(...objs);
                     break;
                 }
                 case 'dictionary': {
                     const selected = Object.entries(table.getState().rowSelection).filter(x => x[1]).map(x => x[0]);
-                    const objs = selected.map(x => [x[0], db.objectForPrimaryKey<T>(listOf, toOID(x[1])! as T[keyof T] )] as [string, RealmObj<T & EntityBase>]);
+                    const objs = selected.map(x => [x[0], db.objectForPrimaryKey<T>(listOf, toOID(x[1])! as T[keyof T] )] as [string, Entity<T & EntityBase>]);
                     const list = original as DBDictionary<T>;
                     objs.forEach(([k, v]) => list.set({ [k]: v }));
                     break;
@@ -145,7 +145,7 @@ export function RelationshipView<T extends EntityBase, TValue>({ original, listT
                     const selected = Object.entries(table.getState().rowSelection)
                         .filter((x) => x[1])
                         .map((x) => x[0]);
-                    const objs = selected.map((x) => db.objectForPrimaryKey<EntityBase>(listOf, toOID(x)!)) as any as RealmObj<T>[];
+                    const objs = selected.map((x) => db.objectForPrimaryKey<EntityBase>(listOf, toOID(x)!)) as any as Entity<T>[];
                     const list = original as DBSet<T>;
                     objs.forEach(x => list.add(x));
                     break;

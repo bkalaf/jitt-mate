@@ -17,7 +17,7 @@ export function useFetchAll<T extends EntityBase>(collectionName: string) {
             console.error(query.queryKey);
             process.stdout.write(query.queryKey.join('\n').concat('\n'));
             log('QUERY ERROR');
-            return false;
+            throw error;
         },
         queryKey: [collectionName],
         queryFn: () => Promise.resolve(handleResults(db.objects<T>(collectionName)))

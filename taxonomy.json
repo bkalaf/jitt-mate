@@ -1,0 +1,1356 @@
+{
+	"apparel": {
+		"text": "apparel",
+		"options": {
+			"men": {
+				"text": "men",
+				"options": {
+					"tops": {
+						"text": "tops",
+						"options": {
+							"shirts": {
+								"text": "shirts",
+								"options": {
+									"t-shirts": {
+										"text": "t-shirts"
+									},
+									"camisoles": {
+										"text": "camisoles"
+									},
+									"sleeveless-shirts": {
+										"text": "sleeveless-shirts"
+									},
+									"tank-tops": {
+										"text": "tank-tops"
+									},
+									"tube-tops": {
+										"text": "tube-tops"
+									},
+									"halter-tops": {
+										"text": "halter-tops"
+									}
+								}
+							},
+							"jackets": {
+								"text": "jackets",
+								"options": {
+									"windbreakers": {
+										"text": "windbreakers"
+									},
+									"fleece": {
+										"text": "fleece-jackets"
+									},
+									"bombers": {
+										"text": "bomber-jackets"
+									},
+									"raincoats": {
+										"text": "raincoats"
+									},
+									"trenchcoats": {
+										"text": "trenchcoats"
+									},
+									"leather": {
+										"text": "leather-jackets"
+									},
+									"hoodies": {
+										"text": "hoodies"
+									},
+									"denim": {
+										"text": "denim-jackets"
+									},
+									"overcoats": {
+										"text": "overcoats"
+									},
+									"ponchos": {
+										"text": "ponchos"
+									}
+								}
+							},
+							"button-front": {
+								"text": "button-front",
+								"options": {
+									"buttonDowns": {
+										"text": "button-downs"
+									},
+									"dress": {
+										"text": "dress-shirts"
+									},
+									"fitted": {
+										"text": "fitted-shirts"
+									},
+									"flannels": {
+										"text": "flannel-shirts"
+									},
+									"blouses": {
+										"text": "blouses"
+									},
+									"henleys": {
+										"text": "henleys"
+									},
+									"hawaiians": {
+										"text": "hawaiian-shirts"
+									},
+									"oxfords": {
+										"text": "oxford-shirts"
+									},
+									"rugbys": {
+										"text": "rugby-shirts"
+									},
+									"polos": {
+										"text": "polos"
+									}
+								}
+							},
+							"sweaters": {
+								"text": "sweaters",
+								"options": {
+									"": {
+										"text": "sweaters"
+									},
+									"turtleNecks": {
+										"text": "turtle-necks"
+									},
+									"pullOvers": {
+										"text": "pull-overs"
+									},
+									"cardigans": {
+										"text": "cardigan"
+									},
+									"sweatshirts": {
+										"text": "sweatshirt"
+									}
+								}
+							},
+							"other": {
+								"text": "others",
+								"options": {
+									"tunics": {
+										"text": "tunics"
+									},
+									"wraps": {
+										"text": "wraps"
+									},
+									"jerseys": {
+										"text": "jerseys"
+									}
+								}
+							}
+						}
+					},
+					"bottoms": {
+						"text": "bottoms",
+						"options": {
+							"pants": {
+								"text": "pantses",
+								"options": {
+									"carpenter": {
+										"text": "carpenter-pants"
+									},
+									"cargo": {
+										"text": "cargo-pants"
+									},
+									"leather": {
+										"text": "leather-pants"
+									},
+									"chino": {
+										"text": "chinos"
+									},
+									"khaki": {
+										"text": "khakis"
+									},
+									"pleated": {
+										"text": "pleated-pants"
+									},
+									"fitted": {
+										"text": "fitted-pants"
+									},
+									"casual": {
+										"text": "casual-pants"
+									},
+									"corduroy": {
+										"text": "corduroys"
+									},
+									"trouser": {
+										"text": "trousers"
+									}
+								}
+							},
+							"shorts": {
+								"text": "shortses",
+								"options": {
+									"": {
+										"text": "shorts"
+									},
+									"denim": {
+										"text": "denim-shorts"
+									},
+									"board": {
+										"text": "board-shorts"
+									},
+									"surf": {
+										"text": "surf-shorts"
+									},
+									"khaki": {
+										"text": "khaki-shorts"
+									},
+									"bermuda": {
+										"text": "-bermuda-shorts"
+									},
+									"cargo": {
+										"text": "cargo-shorts"
+									},
+									"casual": {
+										"text": "casual-shorts"
+									},
+									"bike": {
+										"text": "bike-shorts"
+									},
+									"gym": {
+										"text": "gym-shorts"
+									}
+								}
+							},
+							"jeans": {
+								"text": "jeanses",
+								"options": {
+									"relaxed": {
+										"text": "relaxed-fit-jeans"
+									},
+									"bootCut": {
+										"text": "boot-cut-jeans"
+									},
+									"slimBoot": {
+										"text": "slim-boot-cut-jeans"
+									},
+									"slim": {
+										"text": "slim-fit-jeans"
+									},
+									"skinny": {
+										"text": "skinny-jeans"
+									},
+									"flare": {
+										"text": "flare-cut-jeans"
+									},
+									"bellBottom": {
+										"text": "bell-bottoms"
+									},
+									"straight": {
+										"text": "straight-fit-jeans"
+									},
+									"casual": {
+										"text": "casual-jeans"
+									},
+									"baggy": {
+										"text": "baggy-jeans"
+									}
+								}
+							},
+							"other": {
+								"text": "others",
+								"options": {
+									"croppedPant": {
+										"text": "cropped-pants"
+									},
+									"skort": {
+										"text": "skorts"
+									},
+									"capri": {
+										"text": "capris"
+									},
+									"legging": {
+										"text": "leggings"
+									},
+									"trackPant": {
+										"text": "track-pants"
+									},
+									"trackSuit": {
+										"text": "track-suits"
+									},
+									"sweatPant": {
+										"text": "sweat-pants"
+									},
+									"tight": {
+										"text": "tights"
+									},
+									"skirt": {
+										"text": "skirts"
+									}
+								}
+							}
+						}
+					},
+					"footwear": {
+						"text": "footwear",
+						"options": {
+							"other": {
+								"text": "others",
+								"options": {
+									"speciality": {
+										"text": "speciality-shoes"
+									},
+									"work": {
+										"text": "work-shoes"
+									},
+									"fashion": {
+										"text": "fashion-shoes"
+									},
+									"safety": {
+										"text": "safety-shoes"
+									}
+								}
+							},
+							"boots": {
+								"text": "boots",
+								"options": {
+									"workBoot": {
+										"text": "work-boots"
+									},
+									"cowboy": {
+										"text": "cowboy-boots"
+									},
+									"hiking": {
+										"text": "hiking-boots"
+									}
+								}
+							},
+							"sneaker": {
+								"text": "sneakers",
+								"options": {
+									"athletic": {
+										"text": "athletic-sneakers"
+									},
+									"skate": {
+										"text": "skate-sneakers"
+									},
+									"highTops": {
+										"text": "high-topses"
+									},
+									"runner": {
+										"text": "runner's-sneakers"
+									},
+									"basketball": {
+										"text": "basketball-sneakers"
+									},
+									"golf": {
+										"text": "golf-shoes"
+									},
+									"cleat": {
+										"text": "cleats"
+									}
+								}
+							},
+							"withHeel": {
+								"text": "with-heels",
+								"options": {
+									"highHeel": {
+										"text": "high-heels"
+									},
+									"wedge": {
+										"text": "wedges"
+									},
+									"sandal": {
+										"text": "heeledsandals"
+									},
+									"stiletto": {
+										"text": "stilettos"
+									}
+								}
+							},
+							"withoutHeel": {
+								"text": "without-heels",
+								"options": {
+									"loafer": {
+										"text": "loaders"
+									},
+									"derby": {
+										"text": "derbies"
+									},
+									"oxford": {
+										"text": "oxfords"
+									},
+									"sandal": {
+										"text": "sandals"
+									},
+									"flipFlop": {
+										"text": "flip-flops"
+									},
+									"mule": {
+										"text": "mules"
+									},
+									"clog": {
+										"text": "clogs"
+									},
+									"dressFlat": {
+										"text": "dress-flats"
+									}
+								}
+							}
+						}
+					},
+					"undergarmet": {
+						"text": "undergarments",
+						"options": {
+							"socks": {
+								"text": "sockses",
+								"options": {
+									"athletic": {
+										"text": "athletic-socks"
+									},
+									"crew": {
+										"text": "crew-socks"
+									},
+									"ankle": {
+										"text": "ankel-socks"
+									},
+									"kneeHigh": {
+										"text": "knee-high-socks"
+									},
+									"mid": {
+										"text": "mid-socks"
+									}
+								}
+							},
+							"men": {
+								"text": "men",
+								"options": {
+									"brief": {
+										"text": "brieves"
+									},
+									"boxer": {
+										"text": "boxers"
+									},
+									"jock": {
+										"text": "jocks"
+									}
+								}
+							},
+							"women": {
+								"text": "women",
+								"options": {
+									"bra": {
+										"text": "bras"
+									},
+									"panty": {
+										"text": "panties"
+									},
+									"stocking": {
+										"text": "stockings"
+									},
+									"pantyHose": {
+										"text": "panty-hoses"
+									}
+								}
+							},
+							"lingerie": {
+								"text": "lingeries",
+								"options": {
+									"negligee": {
+										"text": "negligees"
+									}
+								}
+							}
+						}
+					},
+					"accessory": {
+						"text": "accessories",
+						"options": {
+							"mid": {
+								"text": "mids",
+								"options": {
+									"belt": {
+										"text": "belts"
+									},
+									"suspender": {
+										"text": "suspenders"
+									},
+									"bowtie": {
+										"text": "bowties"
+									},
+									"necktie": {
+										"text": "neckties"
+									},
+									"wallet": {
+										"text": "wallets"
+									}
+								}
+							},
+							"head": {
+								"text": "heads",
+								"options": {
+									"ballCap": {
+										"text": "baseball-caps"
+									},
+									"cowboy": {
+										"text": "cowboy-hats"
+									},
+									"fedora": {
+										"text": "fedoras"
+									},
+									"skullCap": {
+										"text": "skull-caps"
+									},
+									"sunglasses": {
+										"text": "sunglasses"
+									},
+									"headband": {
+										"text": "headbands"
+									},
+									"visor": {
+										"text": "visors"
+									}
+								}
+							},
+							"hand": {
+								"text": "hands",
+								"options": {
+									"glove": {
+										"text": "gloves"
+									},
+									"mitten": {
+										"text": "mittens"
+									},
+									"utilityGlove": {
+										"text": "utility-gloves"
+									},
+									"watch": {
+										"text": "watches"
+									}
+								}
+							}
+						}
+					},
+					"outfits": {
+						"text": "outfits",
+						"options": {
+							"dresses": {
+								"text": "dresses"
+							},
+							"suits": {
+								"text": "suits",
+								"options": {
+									"tuxedo": {
+										"text": "tuxedoes"
+									},
+									"doubleBreasted": {
+										"text": "double-breasteds"
+									},
+									"oneButton": {
+										"text": "one-buttons"
+									},
+									"twoButton": {
+										"text": "two-buttons"
+									},
+									"threeButton": {
+										"text": "three-buttons"
+									},
+									"fourButton": {
+										"text": "four-buttons"
+									}
+								}
+							},
+							"overall": {
+								"text": "overallses",
+								"options": {
+									"jumpsuit": {
+										"text": "jumpsuits"
+									},
+									"rompers": {
+										"text": "rompers"
+									},
+									"denim": {
+										"text": "denim overalls"
+									},
+									"bodysuit": {
+										"text": "bodysuits"
+									}
+								}
+							},
+							"sleepwear": {
+								"text": "sleepwear",
+								"options": {
+									"pajamaBoth": {
+										"text": "pajama top & bottoms"
+									},
+									"pajamaTop": {
+										"text": "pajama tops"
+									},
+									"pajamaBottom": {
+										"text": "pajama bottoms"
+									},
+									"robe": {
+										"text": "robes"
+									},
+									"nightgown": {
+										"text": "nightgowns"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"women": {
+				"text": "women",
+				"options": {
+					"tops": {
+						"text": "tops",
+						"options": {
+							"shirts": {
+								"text": "shirts",
+								"options": {
+									"tShirts": {
+										"text": "t-shirts"
+									},
+									"camisoles": {
+										"text": "camisoles"
+									},
+									"sleeveless": {
+										"text": "sleeveless-shirts"
+									},
+									"tankTops": {
+										"text": "tank-tops"
+									},
+									"tubeTops": {
+										"text": "tube-tops"
+									},
+									"halters": {
+										"text": "halter-tops"
+									}
+								}
+							},
+							"jackets": {
+								"text": "jackets",
+								"options": {
+									"windbreakers": {
+										"text": "windbreakers"
+									},
+									"fleeces": {
+										"text": "fleece-jackets"
+									},
+									"bombers": {
+										"text": "bomber-jackets"
+									},
+									"raincoats": {
+										"text": "raincoats"
+									},
+									"trenchcoats": {
+										"text": "trenchcoats"
+									},
+									"leather": {
+										"text": "leather-jackets"
+									},
+									"hoodies": {
+										"text": "hoodies"
+									},
+									"denim": {
+										"text": "denim-jackets"
+									},
+									"overcoats": {
+										"text": "overcoats"
+									},
+									"ponchos": {
+										"text": "ponchos"
+									}
+								}
+							},
+							"buttonFronts": {
+								"text": "button-fronts",
+								"options": {
+									"buttonDowns": {
+										"text": "button-downs"
+									},
+									"dress": {
+										"text": "dress-shirts"
+									},
+									"fitted": {
+										"text": "fitted-shirts"
+									},
+									"flannels": {
+										"text": "flannel-shirts"
+									},
+									"blouses": {
+										"text": "blouses"
+									},
+									"henleys": {
+										"text": "henleys"
+									},
+									"hawaiians": {
+										"text": "hawaiian-shirts"
+									},
+									"oxfords": {
+										"text": "oxford-shirts"
+									},
+									"rugbys": {
+										"text": "rugby-shirts"
+									},
+									"polos": {
+										"text": "polos"
+									}
+								}
+							},
+							"sweaters": {
+								"text": "sweaters",
+								"options": {
+									"": {
+										"text": "sweaters"
+									},
+									"turtleNecks": {
+										"text": "turtle-necks"
+									},
+									"pullOvers": {
+										"text": "pull-overs"
+									},
+									"cardigans": {
+										"text": "cardigan"
+									},
+									"sweatshirts": {
+										"text": "sweatshirt"
+									}
+								}
+							},
+							"other": {
+								"text": "others",
+								"options": {
+									"tunics": {
+										"text": "tunics"
+									},
+									"wraps": {
+										"text": "wraps"
+									},
+									"jerseys": {
+										"text": "jerseys"
+									}
+								}
+							}
+						}
+					},
+					"bottoms": {
+						"text": "bottoms",
+						"options": {
+							"pants": {
+								"text": "pantses",
+								"options": {
+									"carpenter": {
+										"text": "carpenter-pants"
+									},
+									"cargo": {
+										"text": "cargo-pants"
+									},
+									"leather": {
+										"text": "leather-pants"
+									},
+									"chino": {
+										"text": "chinos"
+									},
+									"khaki": {
+										"text": "khakis"
+									},
+									"pleated": {
+										"text": "pleated-pants"
+									},
+									"fitted": {
+										"text": "fitted-pants"
+									},
+									"casual": {
+										"text": "casual-pants"
+									},
+									"corduroy": {
+										"text": "corduroys"
+									},
+									"trouser": {
+										"text": "trousers"
+									}
+								}
+							},
+							"shorts": {
+								"text": "shortses",
+								"options": {
+									"": {
+										"text": "shorts"
+									},
+									"denim": {
+										"text": "denim-shorts"
+									},
+									"board": {
+										"text": "board-shorts"
+									},
+									"surf": {
+										"text": "surf-shorts"
+									},
+									"khaki": {
+										"text": "khaki-shorts"
+									},
+									"bermuda": {
+										"text": "-bermuda-shorts"
+									},
+									"cargo": {
+										"text": "cargo-shorts"
+									},
+									"casual": {
+										"text": "casual-shorts"
+									},
+									"bike": {
+										"text": "bike-shorts"
+									},
+									"gym": {
+										"text": "gym-shorts"
+									}
+								}
+							},
+							"jeans": {
+								"text": "jeanses",
+								"options": {
+									"relaxed": {
+										"text": "relaxed-fit-jeans"
+									},
+									"bootCut": {
+										"text": "boot-cut-jeans"
+									},
+									"slimBoot": {
+										"text": "slim-boot-cut-jeans"
+									},
+									"slim": {
+										"text": "slim-fit-jeans"
+									},
+									"skinny": {
+										"text": "skinny-jeans"
+									},
+									"flare": {
+										"text": "flare-cut-jeans"
+									},
+									"bellBottom": {
+										"text": "bell-bottoms"
+									},
+									"straight": {
+										"text": "straight-fit-jeans"
+									},
+									"casual": {
+										"text": "casual-jeans"
+									},
+									"baggy": {
+										"text": "baggy-jeans"
+									}
+								}
+							},
+							"other": {
+								"text": "others",
+								"options": {
+									"croppedPant": {
+										"text": "cropped-pants"
+									},
+									"skort": {
+										"text": "skorts"
+									},
+									"capri": {
+										"text": "capris"
+									},
+									"legging": {
+										"text": "leggings"
+									},
+									"trackPant": {
+										"text": "track-pants"
+									},
+									"trackSuit": {
+										"text": "track-suits"
+									},
+									"sweatPant": {
+										"text": "sweat-pants"
+									},
+									"tight": {
+										"text": "tights"
+									},
+									"skirt": {
+										"text": "skirts"
+									}
+								}
+							}
+						}
+					},
+					"footwear": {
+						"text": "footwear",
+						"options": {
+							"other": {
+								"text": "others",
+								"options": {
+									"speciality": {
+										"text": "speciality-shoes"
+									},
+									"work": {
+										"text": "work-shoes"
+									},
+									"fashion": {
+										"text": "fashion-shoes"
+									},
+									"safety": {
+										"text": "safety-shoes"
+									}
+								}
+							},
+							"boots": {
+								"text": "boots",
+								"options": {
+									"workBoot": {
+										"text": "work-boots"
+									},
+									"cowboy": {
+										"text": "cowboy-boots"
+									},
+									"hiking": {
+										"text": "hiking-boots"
+									}
+								}
+							},
+							"sneaker": {
+								"text": "sneakers",
+								"options": {
+									"athletic": {
+										"text": "athletic-sneakers"
+									},
+									"skate": {
+										"text": "skate-sneakers"
+									},
+									"highTops": {
+										"text": "high-topses"
+									},
+									"runner": {
+										"text": "runner's-sneakers"
+									},
+									"basketball": {
+										"text": "basketball-sneakers"
+									},
+									"golf": {
+										"text": "golf-shoes"
+									},
+									"cleat": {
+										"text": "cleats"
+									}
+								}
+							},
+							"withHeel": {
+								"text": "with-heels",
+								"options": {
+									"highHeel": {
+										"text": "high-heels"
+									},
+									"wedge": {
+										"text": "wedges"
+									},
+									"sandal": {
+										"text": "heeledsandals"
+									},
+									"stiletto": {
+										"text": "stilettos"
+									}
+								}
+							},
+							"withoutHeel": {
+								"text": "without-heels",
+								"options": {
+									"loafer": {
+										"text": "loaders"
+									},
+									"derby": {
+										"text": "derbies"
+									},
+									"oxford": {
+										"text": "oxfords"
+									},
+									"sandal": {
+										"text": "sandals"
+									},
+									"flipFlop": {
+										"text": "flip-flops"
+									},
+									"mule": {
+										"text": "mules"
+									},
+									"clog": {
+										"text": "clogs"
+									},
+									"dressFlat": {
+										"text": "dress-flats"
+									}
+								}
+							}
+						}
+					},
+					"undergarmet": {
+						"text": "undergarments",
+						"options": {
+							"socks": {
+								"text": "sockses",
+								"options": {
+									"athletic": {
+										"text": "athletic-socks"
+									},
+									"crew": {
+										"text": "crew-socks"
+									},
+									"ankle": {
+										"text": "ankel-socks"
+									},
+									"kneeHigh": {
+										"text": "knee-high-socks"
+									},
+									"mid": {
+										"text": "mid-socks"
+									}
+								}
+							},
+							"men": {
+								"text": "men",
+								"options": {
+									"brief": {
+										"text": "brieves"
+									},
+									"boxer": {
+										"text": "boxers"
+									},
+									"jock": {
+										"text": "jocks"
+									}
+								}
+							},
+							"women": {
+								"text": "women",
+								"options": {
+									"bra": {
+										"text": "bras"
+									},
+									"panty": {
+										"text": "panties"
+									},
+									"stocking": {
+										"text": "stockings"
+									},
+									"pantyHose": {
+										"text": "panty-hoses"
+									}
+								}
+							},
+							"lingerie": {
+								"text": "lingeries",
+								"options": {
+									"negligee": {
+										"text": "negligees"
+									}
+								}
+							}
+						}
+					},
+					"accessory": {
+						"text": "accessories",
+						"options": {
+							"mid": {
+								"text": "mids",
+								"options": {
+									"belt": {
+										"text": "belts"
+									},
+									"suspender": {
+										"text": "suspenders"
+									},
+									"bowtie": {
+										"text": "bowties"
+									},
+									"necktie": {
+										"text": "neckties"
+									},
+									"wallet": {
+										"text": "wallets"
+									}
+								}
+							},
+							"head": {
+								"text": "heads",
+								"options": {
+									"ballCap": {
+										"text": "baseball-caps"
+									},
+									"cowboy": {
+										"text": "cowboy-hats"
+									},
+									"fedora": {
+										"text": "fedoras"
+									},
+									"skullCap": {
+										"text": "skull-caps"
+									},
+									"sunglasses": {
+										"text": "sunglasses"
+									},
+									"headband": {
+										"text": "headbands"
+									},
+									"visor": {
+										"text": "visors"
+									}
+								}
+							},
+							"hand": {
+								"text": "hands",
+								"options": {
+									"glove": {
+										"text": "gloves"
+									},
+									"mitten": {
+										"text": "mittens"
+									},
+									"utilityGlove": {
+										"text": "utility-gloves"
+									},
+									"watch": {
+										"text": "watches"
+									}
+								}
+							}
+						}
+					},
+					"outfits": {
+						"text": "outfits",
+						"options": {
+							"dresses": {
+								"text": "dresses"
+							},
+							"suits": {
+								"text": "suits",
+								"options": {
+									"tuxedo": {
+										"text": "tuxedoes"
+									},
+									"doubleBreasted": {
+										"text": "double-breasteds"
+									},
+									"oneButton": {
+										"text": "one-buttons"
+									},
+									"twoButton": {
+										"text": "two-buttons"
+									},
+									"threeButton": {
+										"text": "three-buttons"
+									},
+									"fourButton": {
+										"text": "four-buttons"
+									}
+								}
+							},
+							"overall": {
+								"text": "overallses",
+								"options": {
+									"jumpsuit": {
+										"text": "jumpsuits"
+									},
+									"rompers": {
+										"text": "rompers"
+									},
+									"denim": {
+										"text": "denim overalls"
+									},
+									"bodysuit": {
+										"text": "bodysuits"
+									}
+								}
+							},
+							"sleepwear": {
+								"text": "sleepwear",
+								"options": {
+									"pajamaBoth": {
+										"text": "pajama top & bottoms"
+									},
+									"pajamaTop": {
+										"text": "pajama tops"
+									},
+									"pajamaBottom": {
+										"text": "pajama bottoms"
+									},
+									"robe": {
+										"text": "robes"
+									},
+									"nightgown": {
+										"text": "nightgowns"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"boys": {
+				"text": "boys",
+				"options": {
+					"tops": {
+						"text": "tops",
+						"options": {
+							"tShirt": {
+								"text": "t-shirts",
+								"options": {
+									"under2yr": {
+										"text": "under2yrs"
+									},
+									"between2and4yr": {
+										"text": "between2and4yrs"
+									},
+									"over5yr": {
+										"text": "over5yrs"
+									}
+								}
+							},
+							"pullOver": {
+								"text": "pull-overs",
+								"options": {
+									"under2yr": {
+										"text": "under2yrs"
+									},
+									"between2and4yr": {
+										"text": "between2and4yrs"
+									},
+									"over5yr": {
+										"text": "over5yrs"
+									}
+								}
+							}
+						}
+					},
+					"bottoms": {
+						"text": "bottoms",
+						"options": {}
+					},
+					"footwear": {
+						"text": "footwear",
+						"options": {}
+					}
+				}
+			},
+			"girls": {
+				"text": "girls",
+				"options": {
+					"tops": {
+						"text": "tops",
+						"options": {
+							"tShirt": {
+								"text": "t-shirts",
+								"options": {
+									"under2yr": {
+										"text": "under2yrs"
+									},
+									"between2and4yr": {
+										"text": "between2and4yrs"
+									},
+									"over5yr": {
+										"text": "over5yrs"
+									}
+								}
+							},
+							"pullOver": {
+								"text": "pull-overs",
+								"options": {
+									"under2yr": {
+										"text": "under2yrs"
+									},
+									"between2and4yr": {
+										"text": "between2and4yrs"
+									},
+									"over5yr": {
+										"text": "over5yrs"
+									}
+								}
+							}
+						}
+					},
+					"bottoms": {
+						"text": "bottoms",
+						"options": {}
+					},
+					"footwear": {
+						"text": "footwear",
+						"options": {}
+					}
+				}
+			}
+		}
+	},
+	"media": {
+		"text": "media",
+		"options": {
+			"books": {
+				"text": "books",
+				"options": {}
+			},
+			"videos": {
+				"text": "videoes",
+				"options": {
+					"vhs": {
+						"text": "vhs",
+						"options": {
+							"drama": {
+								"text": "dramas"
+							},
+							"action": {
+								"text": "actia"
+							},
+							"documentary": {
+								"text": "documentaries"
+							},
+							"kids": {
+								"text": "kidses"
+							},
+							"horror": {
+								"text": "horrors"
+							},
+							"scifi": {
+								"text": "scifis"
+							}
+						}
+					},
+					"dvds": {
+						"text": "dvds",
+						"options": {
+							"drama": {
+								"text": "dramas"
+							},
+							"action": {
+								"text": "actia"
+							},
+							"documentary": {
+								"text": "documentaries"
+							},
+							"kids": {
+								"text": "kidses"
+							},
+							"horror": {
+								"text": "horrors"
+							},
+							"scifi": {
+								"text": "scifis"
+							}
+						}
+					},
+					"bluray": {
+						"text": "blurays",
+						"options": {
+							"drama": {
+								"text": "dramas"
+							},
+							"action": {
+								"text": "actia"
+							},
+							"documentary": {
+								"text": "documentaries"
+							},
+							"kids": {
+								"text": "kidses"
+							},
+							"horror": {
+								"text": "horrors"
+							},
+							"scifi": {
+								"text": "scifis"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

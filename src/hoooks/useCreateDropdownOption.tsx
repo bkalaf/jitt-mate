@@ -4,7 +4,7 @@ import { useCtor } from '../routes/loaders/useCtor';
 export function useCreateDropdownOption<T>(objectType: string, getId: (x: T) => string) {
     const { labelProperty } = useCtor(objectType);
     return useCallback(
-        (obj: RealmObj<T> | null, ix?: number) => {
+        (obj: Entity<T> | null, ix?: number) => {
             if (obj == null) return null;
             return {
                 key: ix,

@@ -15,7 +15,7 @@ export function useInsertRecord<T extends IRealmEntity>(objectType?: string) {
     const triggerUpdate = useUpdate();
     const submitter = useCallback((db: Realm, collectionName: string) => {
         return (args: { payload: T }) => {
-            let result: RealmObj<T> | undefined;
+            let result: Entity<T> | undefined;
             const func = () => {
                 result = db.create<T>(collectionName, args.payload);
             };

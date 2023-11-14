@@ -8,6 +8,7 @@ import { DebouncedInput } from './DebouncedInput';
 export function ReactTable<T>({ getId, table, SubComponent, setChildren }: { table: Table<T>; SubComponent: SubComponentFunction<T>; getId: (x: T) => string, setChildren: StateSetter<JSX.Element | null> }) {
     const inputID = `global-filter-input`;
     const labelID = `${inputID}-label`;
+    console.log(`global filter`, table.getState().globalFilter);
     useEffect(() => {
         setChildren(
             <div className='flex flex-row'>
@@ -20,7 +21,7 @@ export function ReactTable<T>({ getId, table, SubComponent, setChildren }: { tab
                     type='text'
                     name='global-filter'
                     className='flex w-full h-full p-1 text-base font-normal font-raleway'
-                    value={table.getState().globalFilter}
+                    value={''}
                     onChange={table.setGlobalFilter}
                 />
             </div>

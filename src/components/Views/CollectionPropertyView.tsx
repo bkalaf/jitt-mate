@@ -12,14 +12,16 @@ import { compR } from '../../common/functions/composeR';
 import { getRowIdFromIndex } from '../../schema/getRowId';
 import { collectionToArray } from '../CollectionView';
 import { useLog } from '../Contexts/useLogger';
-import { normalizeSchemaProperty } from '../../dal/TMercariSubSubCategory';
 import { createSubComponent } from '../../dal/createSubComponent';
 import { is } from '../../dal/is';
 import { useNestedColumnDefs } from '../../hooks/useNestedColumnDefs';
 import { AddRelationshipButton } from './commands/AddRelationshipButton';
 import { fuzzyFilter } from '../Table/fuzzy';
+import { normalizeSchemaProperty } from '../../dal/normalizeSchemaProperty';
+import { useCtor } from '../../routes/loaders/useCtor';
 
 export function CollectionPropertyView<T extends EntityBase, TValue>({ parentTable, row, propertyName }: { row: Row<T>; parentTable: Table<T>; propertyName: keyof T & string; }) {
+    const Ctor = useCtor(objectType)
     const { objectType: $collType, type: $listType } = normalizeSchemaProperty(parentTable.options.meta?.schema.properties[propertyName] ?? '');
     const log = useLog('view');
     log(`COLLECTION PROPERTY VIEW for ${propertyName ?? ''}`)
@@ -126,7 +128,7 @@ export function CollectionPropertyView<T extends EntityBase, TValue>({ parentTab
                     {/* <InsertRecordButton table={table} onInsert={onInsert} />
             <DeleteSelectionButton table={table} /> */}
                 </div>
-                <ReactTable setChildren={setChildren} getId={getRowId} table={table} SubComponent={SubComponent} />
+                <ReactTable setChildren={setChildren} getId={getRowId as any} table={table as any} SubComponent={SubComponent} />
                 {portal.current}
             </div>
         </CollectionViewProvider>

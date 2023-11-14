@@ -1,4 +1,4 @@
-///<reference path="./../global.d.ts" />
+// ///<reference path="./../global.d.ts" />
 import { toKVP } from '../toKVP';
 import { ISku } from './types';
 import { identity } from '../common/functions/identity';
@@ -6,6 +6,7 @@ import { flip } from './flip';
 import { is } from './is';
 import { joinText } from '../common/text/joinText';
 import { $css } from './$css';
+import { surroundText } from './surroundText';
 
 export type AttributeOperators = '=' | '*=' | '~=' | '$=' | '|=' | '^=';
 export type OperatorKeys = 'contains' | 'exact' | 'endsWith' | 'startsWith' | 'wordContains' | 'exactOrEndsWith';
@@ -19,10 +20,6 @@ const operators: Record<OperatorKeys, AttributeOperators> = {
     exactOrEndsWith: '|='
 };
 
-export const concatText = joinText('');
-export const prependText = concatText;
-export const appendText = flip(concatText);
-export const surroundText = (left: string) => (right: string) => flip(flip(joinText)(left))(right);
 export const baseAttribute = (baseName: string) => (op: OperatorKeys) => (name: string) => (value: string) => `[${baseName}-${name}${operators[op]}"${value}"]`
 export const dataAttribute = baseAttribute('data');
 export const dataAttributeEquals = dataAttribute('exact');

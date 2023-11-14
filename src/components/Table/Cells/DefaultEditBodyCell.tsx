@@ -19,18 +19,16 @@ export function DefaultEditBodyCell(noLabel = false) {
         const Wrapper = props.cell != null ? TableCell : React.Fragment;
         const initialValue = props.getValue ? props.getValue<any> : () => null;
         switch (props.column.columnDef?.meta?.datatype) {
-            case undefined:
-                return <Wrapper>{flexRender(props.column.columnDef.cell, props.cell?.getContext() as any)}</Wrapper>;
-            case 'bool':
+            case 'string':
                 return (
                     <Wrapper>
                         <TextFieldInput<T> noLabel={noLabel} initialValue={initialValue()} table={props.table} column={props.column} />
                     </Wrapper>
                 );
-            case 'string':
+            case 'object':
                 return (
                     <Wrapper>
-                        <TextFieldInput<T> noLabel={noLabel} initialValue={initialValue()} table={props.table} column={props.column} />
+                        <LookupDatalist noLabel={noLabel} initialValue={initialValue()} table={props.table} column={props.column} getId={props.getId} />
                     </Wrapper>
                 );
             case 'objectId':
@@ -39,20 +37,41 @@ export function DefaultEditBodyCell(noLabel = false) {
                         <TextFieldInput<T> noLabel={noLabel} initialValue={initialValue()} table={props.table} column={props.column} expected='objectId' />
                     </Wrapper>
                 );
-            case 'object':
+            case 'uuid':
+            case 'int':
+            case 'double':
+            case 'float':
+            case 'decimal128':
                 return (
                     <Wrapper>
-                        <LookupDatalist noLabel={noLabel} initialValue={initialValue()} table={props.table} column={props.column} getId={props.getId}/>
+                        <TextFieldInput<T> noLabel={noLabel} initialValue={initialValue()} table={props.table} column={props.column} />
                     </Wrapper>
                 );
+            case 'bool':
+                return (
+                    <Wrapper>
+                        <TextFieldInput<T> noLabel={noLabel} initialValue={initialValue()} table={props.table} column={props.column} />
+                    </Wrapper>
+                );
+            case 'date':
+                return (
+                    <Wrapper>
+                        <TextFieldInput<T> noLabel={noLabel} initialValue={initialValue()} table={props.table} column={props.column} />
+                    </Wrapper>
+                );
+            case 'data':
+            case 'list':
+            case 'dictionary':
+            case 'set':
+                return <Wrapper>{null}</Wrapper>;
             case 'enum':
                 return (
                     <Wrapper>
-                        <DropdownSelect noLabel={noLabel} initialValue={initialValue()} table={props.table} column={props.column} />
+                        <DropdownSelect noLabel={noLabel} initialValue={initialValue()} table={props.table} column={props.column} row={props.cell?.row as any} />
                     </Wrapper>
                 );
-            default:
-                break;
+            case undefined:
+                return <Wrapper>{flexRender(props.column.columnDef.cell, props.cell?.getContext() as any)}</Wrapper>;
         }
     };
 }

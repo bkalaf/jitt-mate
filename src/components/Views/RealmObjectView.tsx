@@ -30,13 +30,16 @@ import { createSubComponent } from '../../dal/createSubComponent';
 import { fuzzyFilter } from '../Table/fuzzy';
 import { ClearSelectionButton } from './commands/ClearSelectionButton';
 import { RunUpdateButton } from './commands/RunUpdateButton';
-import { ToggleFilteringButton } from './commands/ToggleFilteringButton';
+import { ToggleFilteringButton, TogglePinningButton } from './commands/ToggleFilteringButton';
+import { useToggler } from '../../hooks/useToggler';
+import { CollectionTableMRT } from '../Table/CollectionTableMRT';
 
 export function RealmObjectView<T extends EntityBase>() {
     const collectionName = useCollectionRoute();
     console.log(`collectionName`, collectionName);
     const { columns, getRowCanExpand, schema, subComponentTabPanels, visibility: columnVisibility, sorting } = useColumnDefs<T>(collectionName);
     const data = useFetchAll<T>(collectionName);
+    const [canPin, toggleCanPin] = useToggler(false);
     const getRowId = getRowIdFromOID;
     const table = useReactTable<T>({
         data,
@@ -55,15 +58,18 @@ export function RealmObjectView<T extends EntityBase>() {
         getFacetedRowModel: getFacetedRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
         getGroupedRowModel: getGroupedRowModel(),
+        autoResetPageIndex: false,
         enableMultiSort: true,
         enableColumnFilters: true,
+        enableColumnPinning: canPin,
+        enableGlobalFilter: true,
         debugAll: true,
         filterFns: {
             fuzzy: fuzzyFilter
         },
-        globalFilterFn: fuzzyFilter,
+        globalFilterFn: 'fuzzy',
         getRowId,
-        getRowCanExpand,        
+        getRowCanExpand,
         meta: {
             collectionName: collectionName,
             scope: 'top-level',
@@ -74,7 +80,7 @@ export function RealmObjectView<T extends EntityBase>() {
             sorting,
             pagination: {
                 pageIndex: 0,
-                pageSize: 25
+                pageSize: 100
             }
         }
     });
@@ -107,7 +113,7 @@ export function RealmObjectView<T extends EntityBase>() {
     const setPage = compR(table.setPageIndex)(delayedRerender);
     const firstPage = useCallback(() => compR(table.setPageIndex)(delayedRerender)(0), [delayedRerender, table.setPageIndex]);
     const lastPage = useCallback(() => compR(table.setPageIndex)(delayedRerender)(table.getPageCount() - 1), [delayedRerender, table]);
-    const SubComponent = useMemo(() => createSubComponent(subComponentTabPanels), [subComponentTabPanels]);
+    const SubComponent = useMemo(() => createSubComponent<T>(subComponentTabPanels), [subComponentTabPanels]);
     useLayoutEffect(() => {
         const el = document.getElementById('pagination-root');
         if (el != null) {
@@ -143,9 +149,11 @@ export function RealmObjectView<T extends EntityBase>() {
                     <ClearSelectionButton table={table} />
                     <RunUpdateButton table={table} />
                     <ToggleFilteringButton table={table} />
+                    <TogglePinningButton togglePinning={toggleCanPin} pinningEnabled={canPin} />
                     {children}
                 </div>
-                <ReactTable getId={getRowId} table={table} SubComponent={SubComponent} setChildren={setChildren} />
+                {/* <ReactTable getId={getRowId} table={table} SubComponent={SubComponent} setChildren={setChildren} /> */}
+                <CollectionTableMRT />
                 {portal.current}
             </div>
         </CollectionViewProvider>

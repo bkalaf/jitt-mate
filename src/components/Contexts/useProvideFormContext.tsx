@@ -11,7 +11,15 @@ import { runIf } from './runIf';
 import { identity } from '../../common/functions/identity';
 import { useLogger } from './useLogger';
 import { is, $tagIs } from '../../dal/is';
+import { getProperty, setProperty } from './setProperty';
+import { BSON } from 'realm';
 
+export function normalizeFormData(fd: Record<string, any>) {
+    const result = {};
+    return Object.entries(fd).reduce((res, [cvk, cvv]) => {
+        return setProperty(cvk)(res)(cvv)
+    }, result);
+}
 export function useProvideFormContext<T, TResultant = void>(resultant?: (x: TResultant) => void): IFormContext<T, TResultant> {
     const formID = useMemo(() => randomString(24), []);
     console.log(`formID`, formID);
@@ -47,7 +55,7 @@ export function useProvideFormContext<T, TResultant = void>(resultant?: (x: TRes
     }, []);
     const getValue = useCallback(
         <TKey extends keyof T>(name: TKey) => {
-            return () => data[name];
+            return () => getProperty(name as string)(data as AnyObject);
         },
         [data]
     );
@@ -55,7 +63,8 @@ export function useProvideFormContext<T, TResultant = void>(resultant?: (x: TRes
         <TKey extends keyof T>(name: TKey) =>
             (value: T[TKey]) => {
                 setData((prev) => {
-                    return { ...prev, [name]: value };
+                    const result = setProperty(name as string)({ ...(prev as AnyObject) } as any)(is.string(value) ? value.length > 0 ? value : null : value);
+                    return result as T;
                 });
                 setTimeout(() => memoize(), 150);
             },
@@ -64,7 +73,11 @@ export function useProvideFormContext<T, TResultant = void>(resultant?: (x: TRes
     const manualSetValue = useCallback(
         <TKey extends keyof T>(name: TKey & string, transform: (x: any) => any = identity) =>
             (value: T[TKey]) => {
-                setData(prev => ({ ...prev, [name]: transform(value) }))
+                setData((prev) => {
+                    const v = transform(value);
+                    const result = setProperty(name as string)({ ...(prev as AnyObject) } as any)(is.string(v) ? v.length > 0 ? v : null : v);
+                    return result as T;
+                });
             },
         []
     );
@@ -100,10 +113,11 @@ export function useProvideFormContext<T, TResultant = void>(resultant?: (x: TRes
                 }
                 // setErrorMessage((results.filter(x => x.type === 'invalid') as Invalid[]).map(x => x.message).join('\n'));
                 setData((prev) => {
-                    const current = Object.getOwnPropertyNames(prev).includes(name) ? prev[name] : undefined;
+                    const current = getProperty(name)(prev as AnyObject);
                     if (current === value) return prev;
                     appendDirty(name);
-                    return { ...prev, [name]: is.string(value) ? value.length > 1 ? transform(value) : null : transform(value) };
+                    const result = setProperty(name)({...prev as AnyObject})(is.string(value) ? value.length > 0 ? transform(value) : null : transform(value))
+                    return result as T;
                 });
             },
         [appendDirty, setError]
@@ -136,7 +150,11 @@ export function useProvideFormContext<T, TResultant = void>(resultant?: (x: TRes
                 const $onSuccess = combineEvents(toToast, combineEvents(resultant ?? ignore, onSuccess ?? ignore));
 
                 try {
-                    const result = submitter(data, dirtyProperties);
+                    console.log(`data for submitter`, data);
+                    console.log(`fd for submitter`, normalizeFormData(data as any));
+                    const formData = Object.getOwnPropertyNames(data).includes('_id') ? { ...data, _id: new BSON.ObjectId((data as any)._id.replaceAll('-', ''))} : data;
+                    console.log(`formData`, formData);
+                    const result = submitter(formData, dirtyProperties);
                     if (result instanceof Promise) {
                         const r = await result;
                         runIf($onSuccess)(r);

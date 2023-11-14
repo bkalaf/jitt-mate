@@ -4,7 +4,7 @@ import Realm from 'realm';
 import $$schema from './dal';
 import { IDraft } from './dal/db';
 import { IBarcode, IClassifier, ILocationSegment, IProduct, ISku } from './dal/types';
-import { Barcode } from './dal/TBarcode';
+import { Barcode } from './dto/collections/Barcode';
 import { checkTransaction } from './util/checkTransaction';
 const BSON = Realm.BSON;
 

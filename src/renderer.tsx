@@ -25,8 +25,20 @@
  *  });
  * ```
  */
+(Symbol.prototype as any).dispose??= Symbol('@@Symbol.dispose');
+(Symbol.prototype as any).asyncDispose??= Symbol('@@Symbol.asyncDispose');
+(Symbol.prototype as any).metadata??= Symbol('@@Symbol.metadata');
+(Symbol.prototype as any).convertToRealm??= Symbol('@@Symbol.convertToRealm');
+(Symbol.prototype as any).convertFromRealm??= Symbol('@@Symbol.convertFromRealm');
+(Symbol.prototype as any).calculatedFields??= Symbol('@@Symbol.calculatedFields');
+(Symbol.prototype as any).init??= Symbol('@@Symbol.init');
+(Symbol.prototype as any).setValues ??= Symbol('@@Symbol.setValues');
+(Symbol.prototype as any).getValues ??= Symbol('@@Symbol.getValues');
+(Symbol.prototype as any).setDefaultValues ??= Symbol('@@Symbol.setDefaultValues');
+
+
+(Symbol as any).metadata = Symbol('Symbol.metadata');
 import { createRoot } from 'react-dom/client';
-import './components/test';
 import './assets/css/app.css';
 import { App } from './components/App';
 

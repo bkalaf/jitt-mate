@@ -8,9 +8,8 @@ import { normalizeNewLine } from './normalizeNewLine';
 import { nextScan } from './nextScan';
 import { IBarcode, ILocationSegment, IScan, ISku } from './types';
 import { dateFromNow } from './dateFromNow';
-import { Def } from './Def';
 import { createColumnHelper } from '@tanstack/react-table';
-import { Barcode } from './TBarcode';
+import { Barcode } from '../dto/collections/Barcode';
 
 export const RESET_ALL = '029999999999';
 
@@ -31,7 +30,7 @@ export const Scanning = {
             .reduce((pv, cv) => [...pv, ...cv], []);
     },
     skus: (realm: Realm) => {
-        return realm.objects<ISku>($db.sku()).map((x) => [x.sku?.scanValue, $db.sku(), x] as SkuBarcodeInfo);
+        return realm.objects<ISku>($db.sku()).map((x) => x.upcs.map((upc) => [upc.scanValue, $db.sku(), x] as SkuBarcodeInfo)).reduce((pv, cv) => [...pv, ...cv], []);
     },
     controls: () => {
         return [[RESET_ALL, 'reset-all', undefined]] as ControlBarcodeInfo[];
@@ -46,7 +45,7 @@ export const Scanning = {
     getItem: (realm: Realm, bc: string) => {
         const result = Scanning.barcodes(realm)[bc];
         if (result == null) {
-            return ['sku', realm.create<ISku>($db.sku(), { _id: new BSON.ObjectId(), sku: Barcode.ctor(bc.padStart(13, '0')) as unknown as IBarcode })] as ['sku', ISku];
+            return ['sku', realm.create<ISku>($db.sku(), { _id: new BSON.ObjectId(), upcs: [Barcode.ctor(bc.padStart(13, '0')) as unknown as IBarcode] })] as ['sku', ISku];
         }
         return result;
     },
@@ -87,9 +86,9 @@ export const Scanning = {
 };
 
 export class Scan extends Realm.Object<IScan> implements IScan {
-    fixture: Optional<ILocationSegment>;
-    shelf: Optional<ILocationSegment>;
-    bin: Optional<ILocationSegment>;
+    fixture: Optional<Entity<ILocationSegment>>;
+    shelf: Optional<Entity<ILocationSegment>>;
+    bin: Optional<Entity<ILocationSegment>>;
     timestamp: Date = dateFromNow();
 
     static ctor(fixture?: ILocationSegment, shelf?: ILocationSegment, bin?: ILocationSegment) {
@@ -108,9 +107,9 @@ export class Scan extends Realm.Object<IScan> implements IScan {
     static labelProperty: keyof IScan = 'bin';
     static defaultSort: Realm.SortDescriptor[] = ['fixture', 'shelf', 'bin'];
     static columns: DefinedColumns = [
-        Def.ctor('fixture').asLookup('locationSegment').$$(helper),
-        Def.ctor('shelf').asLookup('locationSegment').$$(helper),
-        Def.ctor('bin').asLookup('locationSegment').$$(helper),
-        Def.ctor('timestamp').asDate(false, true).$$(helper)
+        // Def.ctor('fixture').asLookup('locationSegment').$$(helper),
+        // Def.ctor('shelf').asLookup('locationSegment').$$(helper),
+        // Def.ctor('bin').asLookup('locationSegment').$$(helper),
+        // Def.ctor('timestamp').asDate(false, true).$$(helper)
     ];
 }

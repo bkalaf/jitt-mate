@@ -51,7 +51,8 @@ const tagIs =
 export const $tagIs = {
     input: tagIs<HTMLInputElement>('input'),
     select: tagIs<HTMLSelectElement>('select'),
-    textarea: tagIs<HTMLTextAreaElement>('textarea')
+    textarea: tagIs<HTMLTextAreaElement>('textarea'),
+    form: tagIs<HTMLFormElement>('form')
 };
 export const cleanup = (input: string) => ['?', '[', ']', '{', '}', '<', '>'].map((toReplace) => (s: string) => s.replaceAll(toReplace, '')).reduce((pv, cv) => cv(pv), input);
 

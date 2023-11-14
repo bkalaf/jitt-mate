@@ -22,6 +22,7 @@ export function DeleteSelectionButton<T extends EntityBase>({ table }: { table: 
             onClick={onClick}
             renderCondition={canDeleteObject}
             disabledCondition={!rowsSelected()}
+            title='Permanently delete the selected rows from the database.'
             type='button'
             className='w-6 h-6 bg-transparent border border-sky-500 text-rose-700'
         />

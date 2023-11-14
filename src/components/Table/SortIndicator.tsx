@@ -2,7 +2,7 @@ import { SortDirection } from '@tanstack/react-table';
 import { $cn } from '../../util/$cn';
 import { faArrowDownAZ, faArrowUpZA } from '@fortawesome/pro-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { getNumericDuotoneIcons } from '../getNumericDuotoneIcons';
+import { getNumericDuotoneIcons } from '../../common/fa/getNumericDuotoneIcons';
 
 
 export function SortIndicator({ canSort, isSorted, sortIndex }: { canSort: boolean; isSorted: false | SortDirection; sortIndex: number; }) {

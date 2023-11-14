@@ -7,9 +7,8 @@ import { addDefaultHash } from './addDefaultHash';
 import { findHashTag } from './findHashTag';
 import { is } from './is';
 import { checkTransaction } from '../util/checkTransaction';
-import { Def } from './Def';
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
-import { HashTag } from './HashTag';
+import { HashTag } from '../dto/collections/HashTag';
 
 const updateFunction = function (item: IBrand, realm: Realm) {
     item.folder = normalizeStringForFS('-')(item.name.toLowerCase());
@@ -43,14 +42,14 @@ export class Brand extends Realm.Object<IBrand> implements IBrand {
     parent: OptObj<IBrand>;
     hashTags!: DBSet<IHashTag>;
     _id: ObjectId = new BSON.ObjectId();
-    update<T>(this: T, realm: Realm): T {
+    update<T>(this: T): T {
         const $this = this as IBrand;
         addDefaultHash<IBrand>('name', updateFunction).bind($this);
         const func = () => {
             $this.folder = normalizeStringForFS('-')($this.name);
-            HashTag.update(realm, ...$this.hashTags.values());
+            // HashTag.update(realm, ...$this.hashTags.values());
         };
-        checkTransaction(realm)(func);
+        // checkTransaction(realm)(func);
         return this;
     }
 
@@ -69,14 +68,14 @@ export class Brand extends Realm.Object<IBrand> implements IBrand {
     };
     static labelProperty: keyof IBrand = 'name';
     static defaultSort: Realm.SortDescriptor[] = ['name'];
-    static columns: DefinedColumns = [
-        Def.OID(helper),
-        Def.ctor('name').required().max(100).$$(helper),
-        Def.ctor('mercariBrand').asLookup().labelBy('name').$$(helper),
-        Def.ctor('website').url().max(150).$$(helper),
-        Def.ctor('folder').validator().$$(helper),
-        Def.ctor('parent').asLookup('brand').labelBy('name').$$(helper),
-        Def.ctor('hashTags').list('hashTag').$(helper)
-    ];
+    // static columns: DefinedColumns = [
+    //     Def.OID(helper),
+    //     Def.ctor('name').required().max(100).$$(helper),
+    //     Def.ctor('mercariBrand').asLookup().labelBy('name').$$(helper),
+    //     Def.ctor('website').url().max(150).$$(helper),
+    //     Def.ctor('folder').validator().$$(helper),
+    //     Def.ctor('parent').asLookup('brand').labelBy('name').$$(helper),
+    //     Def.ctor('hashTags').list('hashTag').$(helper)
+    // ];
 }
 

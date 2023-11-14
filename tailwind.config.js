@@ -13,13 +13,14 @@ const plugin = require('tailwindcss/plugin');
 module.exports = {
     content: ['./src/**/*.{js,jsx,ts,tsx,jsx,html,txt,ejs}'],
     presets: [],
-    important: false,
+    important: true,
     darkMode: 'media',
     corePlugins: {
         preflight: false
     },
     theme: {
         data: {
+            active: 'active="true"',
             file: 'discriminator="file"',
             folder: 'discriminator="folder"',
             'is-alt-text': 'is-alt-text="true"',
@@ -1006,9 +1007,9 @@ module.exports = {
             addBase({
                 html: { fontFamily: 'Open Sans', fontSize: '18px' },
                 caption: { captionSide: 'top' },
-                table: { tableLayout: 'auto', borderCollapse: 'seperate', borderWidth: '2px', borderColor: black, borderStyle: 'solid' },
-                th: { borderWidth: '2px', borderColor: black, padding: '2px 4px' },
-                td: { borderWidth: '2px', borderColor: black }
+                // table: { tableLayout: 'auto', borderCollapse: 'seperate', borderWidth: '2px', borderColor: black, borderStyle: 'solid' },
+                // th: { borderWidth: '2px', borderColor: black, padding: '2px 4px' },
+                // td: { borderWidth: '2px', borderColor: black }
                 // table: { tableLayout: 'auto', borderCollapse: 'separate' },
             });
             addComponents({

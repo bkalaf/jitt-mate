@@ -58,7 +58,7 @@ export class Rn extends Realm.Object<Rn> implements IRn {
     productLine: Optional<string>;
     material: Optional<string>;
     url: Optional<string>;
-    brand: OptObj<IBrand>;
+    brand: OptionalEntity<IBrand>;
     products: DBBacklink<IProduct> = [] as any;
     get scrapedOn(): Date {
         const genTime = toOID(this._id)?.getTimestamp();

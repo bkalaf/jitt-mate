@@ -34,3 +34,5 @@ export const MaterialTypes = {
     W: 'wool',
     X: 'spandex'
 };
+
+export type MaterialTypesKey = keyof MaterialTypes;

@@ -6,23 +6,27 @@ import { useSpinnerContext } from '../components/Contexts/useSpinnerContext';
 import { useLocalRealm } from '../routes/loaders/useLocalRealm';
 import { useInvalidator } from './useInvalidator';
 import { toNotNullOID } from '../dal/toOID';
+import { getProperty } from '../components/Contexts/setProperty';
 
 export function useUpdateRecord<T extends EntityBase>(objectType?: string) {
     const { setSpinner } = useSpinnerContext();
     const db = useLocalRealm();
     const { onSuccess } = useInvalidator(objectType ?? '');
     const submitter = useCallback(
-        (db: Realm, collectionName: string) => (args: { payload: Partial<T> & AnyObject; dirtyProperties: string[]; id: OID }) => {
+        (db: Realm, collectionName: string) => (args: { payload: Partial<T> & AnyObject; id: OID }) => {
             const func = () => {
-                const obj: (RealmObj<T> & T) | null = db.objectForPrimaryKey<T>(collectionName, toNotNullOID(args.id) as T[keyof T]);
+                const obj: (Entity<T> & T) | null = db.objectForPrimaryKey<T>(collectionName, toNotNullOID(args.id) as T[keyof T]);
                 if (obj == null) {
                     console.error(`no object from id`, args.id);
                     throw new Error('could not find obj');
                 }
-                args.dirtyProperties.forEach((name) => {
-                    const n = name as keyof typeof obj;
-                    obj[n] = Object.getOwnPropertyNames(args.payload).includes(name) ? args.payload[name] : undefined;
-                });
+                // args.dirtyProperties.forEach((name) => {
+                //     console.log(`setting:`, name, args.payload);
+                //     const n = name as keyof typeof obj;
+                //     obj[n] = getProperty(name)(args.payload);
+                // });
+                console.log(objectType, args.payload, Realm.UpdateMode.Modified)
+                db.create(objectType ?? '', args.payload, Realm.UpdateMode.Modified);
             };
             checkTransaction(db)(func);
             return Promise.resolve();

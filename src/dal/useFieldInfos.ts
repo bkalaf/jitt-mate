@@ -1,8 +1,8 @@
 import { PropertySchema } from 'realm';
 import { useCtor } from '../routes/loaders/useCtor';
 import { useCallback } from 'react';
-import { normalizeSchemaProperty } from './TMercariSubSubCategory';
-import { any } from './any';
+import { normalizeSchemaProperty } from './normalizeSchemaProperty';
+import { any } from '../common/functions/any';
 
 export function useFieldInfos(objectType: string) {
     const {
@@ -10,12 +10,15 @@ export function useFieldInfos(objectType: string) {
     } = useCtor(objectType);
     const _containsType = useCallback(
         (toFind: string) => {
+            console.group('useFieldInfo._containsType');
             const entries = Object.entries(properties)
             const normalized = entries
                 .map(([k, v]) => [k, normalizeSchemaProperty(v)] as [string, PropertySchema]);
             const result = normalized.some(([k, v]) => {
                 return v.type.endsWith(toFind);
             });
+            console.log(result);
+            console.groupEnd();
             return result;
         },
         [properties]

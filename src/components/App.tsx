@@ -7,7 +7,6 @@ import { OverlayContextProvider } from './Contexts/OverlayContext';
 import { LocalForageProvider } from './Providers/LocalForageProvider';
 import { router } from './router';
 import { SpinnerProvider } from './Contexts/SpinnerContext';
-import { ReactQueryDevtools } from 'react-query/devtools';
 export function alertError(err: unknown) {
     alert((err as Error).message);
     catchError(err);
@@ -70,7 +69,6 @@ export function App() {
                             </OverlayContextProvider>
                         </RealmProvider>
                     </ToasterProvider>
-                    <ReactQueryDevtools initialIsOpen={true} />
                 </SpinnerProvider>
             </QueryClientProvider>
         </LocalForageProvider>

@@ -1,6 +1,7 @@
-import Realm, { BSON, SortDescriptor, ObjectSchema } from 'realm';
-import { ColumnDef } from '@tanstack/react-table';
+import Realm, { BSON, SortDescriptor, ObjectSchema, PropertyTypeName, PropertySchema } from 'realm';
+import { ColumnDef, ColumnMeta, FilterFn, IdentifiedColumnDef, Row, RowData, Table } from '@tanstack/react-table';
 import { UseMutateFunction } from '@tanstack/react-query';
+import { RankingInfo } from '@tanstack/match-sorter-utils';
 
 declare global {
     export type Equals<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? true : false;
@@ -11,8 +12,8 @@ declare global {
     export type GetReadOnlyProperties<A extends Record<string, any>> = Exclude<{ [P in keyof A]: IsReadonly<A, P> extends true ? P : never }[keyof A], undefined>;
     export type GetNonReadOnlyProperties<A extends Record<string, any>> = Exclude<{ [P in keyof A]: IsReadonly<A, P> extends true ? never : P }[keyof A], undefined>;
     // eslint-disable-next-line @typescript-eslint/ban-types
-    export type FunctionProperties<T> = { [P in keyof T]: T[P] extends Function ? P : never }[keyof T]
-    export type WithoutAccessors<T> = Pick<T, Exclude<Exclude<keyof T, FunctionProperties<T>>, GetReadOnlyProperties<T>>>;
+    export type FunctionProperties<T> = { [P in keyof T]: T[P] extends Function ? P : never }[keyof T];
+    export type WithoutAccessors<T extends AnyObject> = Pick<T, Exclude<Exclude<keyof T, FunctionProperties<T>>, GetReadOnlyProperties<T>>>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     export type OID = BSON.ObjectId | string;
     export type Updater<T> = (x: T) => T;
@@ -22,24 +23,26 @@ declare global {
     export type RealmTypes = 'objectId' | 'uuid' | 'string' | 'int' | 'double' | 'float' | 'decimal128' | 'bool' | 'object' | 'date' | 'data' | 'list' | 'dictionary' | 'set' | 'enum';
     export type CompareResult = -1 | 0 | 1;
     export type EnumMap<TKey extends string = string, TValue = string> = Record<TKey, TValue>;
-    export type MonoidFunction = <T, TResult>(left: T) => (right: T) => TResult;
+    export type MonoidFunction<T, TResult> = (left: T) => (right: T) => TResult;
     export type CompareFunction<T> = MonoidFunction<T, CompareResult>;
     export type EqualityFunction<T> = MonoidFunction<T, boolean>;
     export type DropDownOptionInfo<T> = {
         key: number;
         value: string;
         label: string;
-        obj: RealmObj<T>;
+        obj: Entity<T>;
     };
     export type RealmFilter = [string, any[]];
     export type EntityConstructor<T extends EntityBase> = {
         schema: ObjectSchema;
-        columns?: ColumnDef<T, any>[];
-        embeddedColumns?: (x?: string) => DefinedColumns[];
+        columns?: (...prefixes: string[]) => DefinedColumns;
+        // embeddedColumns?: (x?: string) => DefinedColumns[];
         defaultSort?: SortDescriptor[];
         defaultFilters?: RealmFilter[];
         labelProperty?: keyof T;
     };
+    export type ComboBoxOption = { label: string; value: string; node: number; parent?: string } | string;  
+    export type FieldDecoratorFunc = (_target: any, context: ClassFieldDecoratorContext | ClassGetterDecoratorContext) => void;
     export interface IEquatable<T> {
         (left: T): (right: T) => boolean;
     }
@@ -65,19 +68,24 @@ declare global {
         | 'rn'
         | 'customItemField'
         | 'barcode'
-        | 'address';
+        | 'address'
+        | 'productTaxonomy'
+        | 'measurements'
+        | 'flags'
+        | 'madeOf'
+        | 'dimensions';
     export type ContentsTypes = 'icon' | 'label';
     export type ProductAttribute<T = string> = [isSkipped: boolean, text: string | undefined, kvp: string | undefined, selector: string | undefined, value?: T];
     export type TableInfo = { defaultSort?: SortDescriptor[]; defaultFilter?: [string, any[]]; columns?: ColumnDef<any, any>[] };
     export type AnyFunction = <T extends any[]>(...args: T) => any;
     export type AnyArray = any[];
     export type AnyObject = Record<string, any>;
-    export type Children = React.Node | React.Node[] | undefined;
+    export type Children = React.ReactNode | React.ReactNode[] | undefined;
     export type Props = { className?: string; children?: Children };
-    export type MadeOf = Partial<Record<MaterialKeys, number>>;
+    export type MadeOf = Partial<Record<string, number>>;
     export type Optional<T> = T | undefined;
-    export type RealmObj<T> = Realm.Object<T> & T;
-    export type OptObj<T> = RealmObj<T> | undefined;
+    export type Entity<T> = Realm.Object<T> & T;
+    export type OptionalEntity<T> = Entity<T> | undefined;
     export type DBList<T> = Realm.Types.List<T>;
     export type DBDictionary<T> = Realm.Types.Dictionary<T>;
     export type DBSet<T> = Realm.Types.Set<T>;
@@ -103,20 +111,6 @@ declare global {
         zero: { type: PropertyTypeName; default: number };
         two: { type: PropertyTypeName; default: number };
     }
-    type RealmObjects =
-        | 'mercariBrand'
-        | 'mercariCategory'
-        | 'mercariSubCategory'
-        | 'mercariSubSubCategory'
-        | 'brand'
-        | 'classifier'
-        | 'product'
-        | 'sku'
-        | 'listing'
-        | 'draft'
-        | 'productImage'
-        | 'scan'
-        | 'locationSegment';
     type DB = { [P in RealmObjects]: IRealmType } & {
         objectId: string;
         bool: BoolType;
@@ -222,7 +216,18 @@ declare global {
         },
         unknown
     >;
-    export type InsertRecordMutation<T> = UseMutateFunction<RealmObj<T>, Error, { payload: T }, unknown>;
+
+    export interface IParseSuccess<T> {
+        kind: 'success';
+        value: T;
+    }
+    export interface IParseFailure {
+        kind: 'failure';
+        value: string;
+        message: string;
+    }
+    export type ParseResult<T> = IParseSuccess<T> | IParseFailure;
+    export type InsertRecordMutation<T> = UseMutateFunction<Entity<T>, Error, { payload: T }, unknown>;
     export type TableScope = 'top-level' | 'links' | 'list' | 'selection';
     export type SubComponentFunction<T> = React.FunctionComponent<{ row: Row<T>; collectionName: string; table: Table<T> }>;
     export type DefinedColumn = ColumnDef<any, any>;
@@ -231,7 +236,8 @@ declare global {
     export type PreProcessFunction<TInput, TOutput> = (x?: TInput) => TOutput;
     export type RealmCollectionTypes = 'list' | 'dictionary' | 'set' | 'linkingObjects';
     export type RealmCollections<T> = DBSet<T> | DBDictionary<T> | DBList<T>;
-
+    export type HTMLRadioInputElements = HTMLInputElement[];
+    export type DataControlElements = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | HTMLRadioInputElements;
     export type LaundryCareItemInfo = {
         SvgElement: React.FunctionComponent<{ className?: string }>;
         name: string;
@@ -243,11 +249,21 @@ declare global {
         title: string;
         register: (n: string) => void;
     };
+    export interface SymbolConstructor {
+        readonly convertToRealm: unique symbol;
+        readonly convertFromRealm: unique symbol;
+        readonly calculatedFields: unique symbol;
+        readonly init: unique symbol;
+        readonly getValues: unique symbol;
+        readonly setValues: unique symbol;
+        readonly setDefaultValues: unique symbol;
+    }
 }
 
 declare module '@tanstack/table-core' {
     interface ColumnMeta<TData extends RowData, TValue> {
         accessorFn?: (x: TData) => TValue;
+        valuesGetter: (ctor: any) => EnumMap<string>;
         datatype: RealmTypes;
         objectType?: RealmObjects | RealmTypes;
         labelProperty?: string;
@@ -268,6 +284,7 @@ declare module '@tanstack/table-core' {
         multiple?: boolean;
         multiplier?: number;
         precision?: number;
+        embedded?: boolean;
         colorMap?: Record<string, string>;
         justify?: 'justify-center' | 'justify-start' | 'justify-end' | 'justify-between' | 'justify-evenly' | 'justify-around';
         preprocess?: PreProcessFunction<any, any>[];

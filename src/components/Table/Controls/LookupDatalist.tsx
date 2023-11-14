@@ -19,7 +19,7 @@ export function LookupDatalist<T>({ noLabel, table, column, initialValue, getId 
     const selectId = `${fieldName}-input`;
     const labelId = `${fieldName}-select-label`;
     const listId = `${fieldName}-datalist`;
-    const lookupMap = useMemo(() => Object.fromEntries((options ?? []).map(({ value, obj }) => [value, obj] as [string, RealmObj<T>])), [options]);
+    const lookupMap = useMemo(() => Object.fromEntries((options ?? []).map(({ value, obj }) => [value, obj] as [string, Entity<T>])), [options]);
     const onChange = useMemo(() => setValue(fieldName, datatype, (x: string) => lookupMap[x], ...(validators ?? [])), [datatype, fieldName, lookupMap, setValue, validators]);
     const onInsert = useLoadInsertForm(
         objectType ?? '',

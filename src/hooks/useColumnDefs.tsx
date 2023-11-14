@@ -57,7 +57,7 @@ export function useColumnDefs<T extends EntityBase>(collectionFor?: string) {
                 maxSize: 15,
                 footer: ''
             }),
-            ...(schema?.columns ?? [])
+            ...((schema?.columns as any)() ?? [])
         ],
         [getRowCanExpand, helper, schema?.columns]
     );

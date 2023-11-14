@@ -12,11 +12,25 @@ export function TableRow<T extends EntityBase>({ row, table, SubComponent, getId
     if (context == null) throw new Error('no collection view');
     const { isRowEdittable, updateRecord, setRowEdittable } = context;
     const toggleSelected = row.getToggleSelectedHandler();
+    const setSelection = table.setRowSelection;
     const onSubmit = useCallback((data: T, dirty: string[]) => {
         updateRecord({ payload: data, dirtyProperties: dirty, id: fromOID(data._id) }, {
             onSuccess: () => setRowEdittable(undefined)
         })
     }, [setRowEdittable, updateRecord])
+    const onClick = useCallback((ev: React.MouseEvent) => {
+        if (ev.detail === 2) {
+            setRowEdittable(row);
+        } else if (ev.detail === 1) {
+            if (ev.ctrlKey) {
+                toggleSelected(ev);
+            } else if (ev.shiftKey) {
+                toggleSelected(ev);
+            } else {
+                setSelection({ [row.id]: true })
+            }
+        }
+    }, [row, setRowEdittable, setSelection, toggleSelected])
     return (
         <>
             <tr key={row.id} className='group even:row-even odd:row-odd aria-selected:bg-amber-500 aria-selected:text-black' onClick={toggleSelected} aria-selected={row.getIsSelected()}>

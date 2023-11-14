@@ -20,7 +20,7 @@ export class Draft extends Realm.Object<IDraft> implements IDraft {
     isReadyToPost = false;
     listingBackLink!: Types.LinkingObjects<IListing, 'draft'>;
     _id: BSON.ObjectId = new BSON.ObjectId();
-    sku: OptObj<ISku>;
+    sku: OptionalEntity<ISku>;
     title = '';
     description = '';
     hashes: string[] = [];

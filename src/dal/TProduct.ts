@@ -5,9 +5,9 @@ import { ObjectId } from 'mongodb';
 
 export class Product extends Realm.Object<IProduct> implements IProduct {
     _barcodes: string[] = [];
-    brand: OptObj<IBrand>;
+    brand: OptionalEntity<IBrand>;
     circa: Optional<string>;
-    classifier: OptObj<IClassifier>;
+    classifier: OptionalEntity<IClassifier>;
     color: Optional<
         | 'red'
         | 'orange'

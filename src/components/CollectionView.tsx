@@ -1,4 +1,3 @@
-import { Table } from '@tanstack/react-table';
 import { is } from '../dal/is';
 
 export type PaginationButtonProps = [() => boolean, () => void];

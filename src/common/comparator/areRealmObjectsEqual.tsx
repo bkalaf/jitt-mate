@@ -2,6 +2,7 @@
 import { BSON } from 'realm';
 import { comparableToEquatable } from './comparableToEquatable';
 import { createMonads } from './createMonads';
+import { distinctBy } from '../array/distinctBy';
 
 // export function areRealmObjectsEqual<T extends EntityBase>(left: T) {
 //     return function (right: T) {
@@ -32,7 +33,10 @@ export const $$ = {
     date: createMonads(getTimestamp),
     string: createMonads((x: string) => x),
     number: createMonads((x: number) => x),
-    realmObject: createMonads<{ _id: BSON.ObjectId }, BSON.ObjectId>((x: { _id: BSON.ObjectId }) => x._id, (a, b) => getHexString(a).localeCompare(getHexString(b)) as CompareResult)
+    realmObject: createMonads<{ _id: BSON.ObjectId }, BSON.ObjectId>((x: { _id: BSON.ObjectId }) => x._id, (a, b) => getHexString(a).localeCompare(getHexString(b)) as CompareResult),
+    object: {
+        distinct: <T extends AnyObject, TKey extends keyof T>(key: TKey) => distinctBy<T[TKey]>(createEqualTo((obj: T) => obj[key]))
+    }
 };
 // const oid1 = new BSON.ObjectId();
 // const oid2 = new BSON.ObjectId();

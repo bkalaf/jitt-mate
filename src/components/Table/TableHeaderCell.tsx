@@ -1,13 +1,17 @@
 import { Column, ColumnMeta, FilterFn, Header, Table, flexRender } from '@tanstack/react-table';
 import { useCallback, useState } from 'react';
-import { faSortDown, faSortUp } from '@fortawesome/pro-solid-svg-icons';
-import { getNumericIconFromText } from '../getNumericIconFromText';
+import { faArrowSquareLeft, faArrowSquareRight, faCancel, faSortDown, faSortUp } from '@fortawesome/pro-solid-svg-icons';
+import { getNumericIconFromText } from '../../common/fa/getNumericIconFromText';
 import { SortIndicator } from './SortIndicator';
 import { useCollectionViewContext } from '../../hooks/useCollectionViewContext';
 import React from 'react';
 import { DebouncedInput } from './DebouncedInput';
 import { konst } from '../../common/functions/konst';
 import { FALSE } from '../../common/FALSE';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Button } from '../Buttons/Button';
+import { both } from '../../common/functions/both';
+import { not } from '../../dal/not';
 
 export function TableHeaderCell({ header, table }: { header: Header<any, unknown>; table: Table<any> }) {
     const size = header.getSize();
@@ -19,6 +23,34 @@ export function TableHeaderCell({ header, table }: { header: Header<any, unknown
             header.column.toggleSorting(undefined, true);
         }
     }, [header.column]);
+    header.column.getCanPin;
+    header.column.getIsPinned;
+    header.column.pin;
+
+    const pinLeft = useCallback(
+        (ev: React.MouseEvent) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            header.column.pin('left');
+        },
+        [header.column]
+    );
+    const pinRight = useCallback(
+        (ev: React.MouseEvent) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            header.column.pin('right');
+        },
+        [header.column]
+    );
+    const unpin = useCallback(
+        (ev: React.MouseEvent) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            header.column.pin(false);
+        },
+        [header.column]
+    );
 
     return (
         <th className='relative text-lg font-extrabold text-center text-white whitespace-pre align-middle border border-white bg-sky-800' key={header.id} onClick={onClick}>
@@ -28,6 +60,26 @@ export function TableHeaderCell({ header, table }: { header: Header<any, unknown
                     <SortIndicator canSort={header.column.getCanSort()} sortIndex={header.column.getSortIndex()} isSorted={header.column.getIsSorted()} />
                 </span>
                 <span className='flex w-full'>{filteringEnabled() && <ColumnFilter column={header.column} table={table} />}</span>
+                <span className='flex justify-around w-full'>
+                    <Button
+                        icon={faArrowSquareLeft}
+                        onClick={pinLeft}
+                        renderCondition={both(header.column.getCanPin)(() => header.column.getIsPinned() !== 'left')}
+                        className='flex p-0.5 w-5 h-5 bg-cyan-500 fa-fw'
+                    />
+                    <Button
+                        className='flex p-0.5 w-5 h-5 bg-cyan-500 fa-fw'
+                        icon={faCancel}
+                        onClick={unpin}
+                        renderCondition={both(header.column.getCanPin)(() => header.column.getIsPinned() !== false)}
+                    />
+                    <Button
+                        className='flex p-0.5 w-5 h-5 bg-cyan-500 fa-fw'
+                        icon={faArrowSquareRight}
+                        onClick={pinRight}
+                        renderCondition={both(header.column.getCanPin)(() => header.column.getIsPinned() !== 'right')}
+                    />
+                </span>
             </span>
         </th>
     );

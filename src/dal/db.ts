@@ -86,7 +86,8 @@ export const $db: DB = {
     hashTag: toType('hashTag'),
     rn: toType('rn'),
     barcode: toType('barcode'),
-    address: toType('address')
+    address: toType('address'),
+    productTaxonomy: toType('productTaxonomy')
 } as any;
 
 $db.backlink = (name: keyof typeof $db, property: string) =>

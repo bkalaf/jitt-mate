@@ -7,6 +7,7 @@ export function useGetRowCanExpand(objectType: string) {
         return containsType('list', 'dictionary', 'set');
     }, [containsType]);
     const subComponentTabPanels = useMemo(() => ofType('list', 'dictionary', 'set'), [ofType]);
+    console.log(`subCompontentTabPanels`, subComponentTabPanels);
     const visibility = useMemo(() => {
         return Object.fromEntries(subComponentTabPanels.map(([propertyName]) => [propertyName, false]));
     }, [subComponentTabPanels]);

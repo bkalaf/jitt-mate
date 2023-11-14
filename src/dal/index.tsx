@@ -1,23 +1,24 @@
 import { Brand } from './TBrand';
-import { Classifier } from './TClassifier';
+import { Classifier } from '../dto/collections/Classifier';
 import { CustomItemField } from './CustomItemField';
 import { Draft } from './Draft';
-import { HashTag } from './HashTag';
-import { HashTagUsage } from './HashTagUsage';
+import { HashTag } from '../dto/collections/HashTag';
+import { HashTagUsage } from '../dto/embedded/HashTagUsage';
 import { Listing } from './Listing';
-import { LocationSegment } from './TLocationSegment';
-import { MercariBrand } from './TMercariBrand';
-import { MercariCategory } from './TMercariCategory';
-import { MercariSubCategory } from './TMercariSubCategory';
-import { MercariSubSubCategory } from './TMercariSubSubCategory';
+import { LocationSegment } from '../dto/collections/LocationSegment';
+import { MercariBrand } from '../dto/collections/MercariBrand';
+import { MercariCategory } from '../dto/collections/MercariCategory';
+import { MercariSubCategory } from '../dto/collections/MercariSubCategory';
+import { MercariSubSubCategory } from '../dto/collections/MercariSubSubCategory';
 import { Product } from './TProduct';
 import { ProductImage } from './ProductImage';
 import { Scan } from './TScan';
 import { Sku } from './Sku';
 import * as Realm from 'realm';
-import { Barcode } from './TBarcode';
+import { Barcode } from '../dto/collections/Barcode';
 import { Address } from './TAddress';
 import { Rn } from './TRn';
+import { ProductTaxonomy } from '../dto/collections/ProductTaxonomy';
 
 const $$schema: Realm.ObjectClass<any>[] = [
     Address,
@@ -38,7 +39,8 @@ const $$schema: Realm.ObjectClass<any>[] = [
     HashTagUsage,
     HashTag,
     CustomItemField,
-    Barcode
+    Barcode,
+    ProductTaxonomy
 ];
 
 export default $$schema;
