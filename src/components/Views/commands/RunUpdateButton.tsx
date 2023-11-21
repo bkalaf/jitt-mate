@@ -7,7 +7,7 @@ import { useLocalRealm } from '../../../routes/loaders/useLocalRealm';
 import { IRealmEntity } from '../../../dal/types';
 import { checkTransaction } from '../../../util/checkTransaction';
 import { useInvalidator } from '../../../hooks/useInvalidator';
-import { not } from '../../../dal/not';
+import { not } from '../../../common/not';
 
 export function RunUpdateButton<T extends EntityBase>({ table }: { table: Table<T> }) {
     const db = useLocalRealm();

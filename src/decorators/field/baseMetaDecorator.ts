@@ -6,7 +6,7 @@ import { strategy } from '../../dal/types/wrappedSetMetadata';
 import { pipeDecorators } from '../../schema/pipeDecorators';
 import { _ } from '../../metadata/decorators/_';
 import { rightMap } from '../../metadata/decorators/rightMap';
-import { dateFromNow } from '../../dal/dateFromNow';
+import { dateFromNow } from '../../common/date/dateFromNow';
 import { IHashTag } from '../../dal/types';
 
 export function baseMetaDecorator(metaPropertyName: string, valueGenerator: (ctxt: ClassFieldDecoratorContext | ClassGetterDecoratorContext) => any) {

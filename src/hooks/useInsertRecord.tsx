@@ -1,18 +1,17 @@
 import { useCallback } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { MutateOptions, MutationStatus, useMutation } from '@tanstack/react-query';
 import { useCollectionRoute } from './useCollectionRoute';
 import { checkTransaction } from '../util/checkTransaction';
 import { useLocalRealm } from '../routes/loaders/useLocalRealm';
 import { useInvalidator } from './useInvalidator';
 import Realm from 'realm';
-import { useSpinnerContext } from '../components/Contexts/useSpinnerContext';
 import { IRealmEntity } from '../dal/types';
-import { combineEvents } from '../components/Contexts/combineEvents';
-import { useUpdate } from './useUpdate';
+import { catchError } from '../components/catchError';
+import { useNavigate } from 'react-router';
 
-export function useInsertRecord<T extends IRealmEntity>(objectType?: string) {
-    const { setSpinner } = useSpinnerContext();
-    const triggerUpdate = useUpdate();
+export function useInsertRecord<T extends IRealmEntity<T>>(
+    objectType?: string
+): [execute: (payload: T, opts?: MutateOptions<Awaited<Entity<T>>, Error, { payload: T }, unknown>) => void, isError: boolean, isPending: boolean, status: MutationStatus] {
     const submitter = useCallback((db: Realm, collectionName: string) => {
         return (args: { payload: T }) => {
             let result: Entity<T> | undefined;
@@ -27,14 +26,21 @@ export function useInsertRecord<T extends IRealmEntity>(objectType?: string) {
     const db = useLocalRealm();
     const collectionName = useCollectionRoute(objectType);
     const { onSuccess } = useInvalidator(collectionName);
-    const { mutate } = useMutation({
-        mutationFn: setSpinner(submitter(db, collectionName)),
-        onSuccess: combineEvents(onSuccess, triggerUpdate)
+    const navigate = useNavigate();
+    const { mutate, isError, isPending, status } = useMutation({
+        mutationFn: submitter(db, collectionName),
+        onSuccess: onSuccess,
+        onError: err => {
+            catchError(err);
+            navigate('/');
+        }
     });
-    return useCallback(
-        (payload: T) => {
-            mutate({ payload });
+    const execute = useCallback(
+        (...params: [T, Parameters<typeof mutate>[1]]) => {
+            console.log(`params`, params);
+            mutate({ payload: params[0] }, params[1]);
         },
         [mutate]
     );
+    return [execute, isError, isPending, status];
 }

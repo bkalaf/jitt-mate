@@ -1,6 +1,6 @@
 import { CellContext } from '@tanstack/react-table';
 import { OIDTableCell } from './OIDTableCell';
-import { useColumnMeta } from '../../../hooks/useColumnMeta';
+import { useColumnMeta } from '../../../hooks/_useColumnMeta';
 import { BSON } from 'realm';
 import { StringTableCell } from './StringTableCell';
 import { EnumChipTableCell, EnumTableCell } from './EnumTableCell';

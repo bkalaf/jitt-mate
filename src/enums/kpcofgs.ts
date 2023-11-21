@@ -1,4 +1,4 @@
-///<reference path="./../global.d.ts" />
+// ///<reference path="./../global.d.ts" />
 import { toProperFromCamel } from '../common/text/toProperCase';
 import { taxonomy } from '../dal/enums/taxa';
 import { is } from '../dal/is';
@@ -50,7 +50,7 @@ export const $families = $orders
     .map((x) => {
         const [$k, $p, $c] = x.parent?.split('.') ?? [];
         const p = (taxonomy[$k as keyof typeof taxonomy] as any)[$p][$c][x.value];
-        return typeof p === 'string' ? (x.value === p ? [] : [toComboBoxOption(p, x, 4)]) : Object.keys(p).map((p2) => toComboBoxOption(p2, x, 4));
+        return typeof p === 'string' ? (x.value === p ? [] : [toComboBoxOption(p, x, 4)]) : Object.keys(p ?? {}).map((p2) => toComboBoxOption(p2, x, 4));
     })
     .reduce((p, c) => [...p, ...c], [])
     .sort(sorter);
@@ -59,7 +59,7 @@ export const $genuses = $families
     .map((x) => {
         const [$k, $p, $c, $o] = x.parent?.split('.') ?? [];
         const p = (taxonomy[$k as keyof typeof taxonomy] as any)[$p][$c][$o][x.value];
-        return typeof p === 'string' ? (x.value === p ? [] : [toComboBoxOption(p, x, 5)]) : Object.keys(p).map((p2) => toComboBoxOption(p2, x, 5));
+        return typeof p === 'string' ? (x.value === p ? [] : [toComboBoxOption(p, x, 5)]) : Object.keys(p ?? {}).map((p2) => toComboBoxOption(p2, x, 5));
     })
     .reduce((p, c) => [...p, ...c], [])
     .sort(sorter);

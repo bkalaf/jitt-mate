@@ -12,7 +12,7 @@ export function handlePayload<T>(data: T) {
 }
 
 export function InsertForm<T extends IRealmEntity, TValue>({ onSuccess, getId, collectionName, table, resultant }: { collectionName: string; table: Table<T>; resultant?: (x: TValue) => void; onSuccess?: (x: TValue) => void; getId: (x: T) => string }) {
-    const insertRecord = useInsertRecord<T>(collectionName);
+    const [insertRecord] = useInsertRecord<T>(collectionName);
     const logger = useLogger()
     return (
         <FormProvider submit={insertRecord} resultant={resultant} onSuccess={onSuccess}>

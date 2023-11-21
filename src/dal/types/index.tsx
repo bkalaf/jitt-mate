@@ -106,6 +106,8 @@ export interface IProductTaxonomy extends IRealmObject<IProductTaxonomy> {
     family: Optional<string>;
     genus: Optional<string>;
     species: Optional<string>; //apparel
+    name: Optional<string>;
+    lock: Optional<boolean>;
 }
 export interface ICategorySelector extends IProductAttributes {
     id: string;

@@ -7,6 +7,7 @@ import { OverlayContextProvider } from './Contexts/OverlayContext';
 import { LocalForageProvider } from './Providers/LocalForageProvider';
 import { router } from './router';
 import { SpinnerProvider } from './Contexts/SpinnerContext';
+import { ReflectionProvider } from './Contexts/ReflectionProvider';
 export function alertError(err: unknown) {
     alert((err as Error).message);
     catchError(err);
@@ -64,9 +65,11 @@ export function App() {
                 <SpinnerProvider>
                     <ToasterProvider>
                         <RealmProvider>
-                            <OverlayContextProvider>
-                                <RouterProvider router={router} />
-                            </OverlayContextProvider>
+                            <ReflectionProvider>
+                                <OverlayContextProvider>
+                                    <RouterProvider router={router} />
+                                </OverlayContextProvider>
+                            </ReflectionProvider>
                         </RealmProvider>
                     </ToasterProvider>
                 </SpinnerProvider>

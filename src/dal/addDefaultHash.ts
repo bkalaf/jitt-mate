@@ -5,7 +5,7 @@ import { findHashTag } from './findHashTag';
 import { is } from './is';
 import { ignore } from '../common/functions/ignore';
 
-export function addDefaultHash<T extends { hashTags: DBSet<IHashTag> }>(property: keyof T & string, updater: (item: T, realm: Realm) => void = ignore) {
+export function addDefaultHash<T extends { hashTags: DBSet<Entity<IHashTag>> }>(property: keyof T & string, updater: (item: T, realm: Realm) => void = ignore) {
     return function (this: T, realm: Realm): T {
         const hashTags = findHashTag(realm)(this[property] as string);
         if (hashTags.length > 0) {

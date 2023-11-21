@@ -4,12 +4,12 @@ import { IBarcode, ILocationSegment } from '../../dal/types';
 import { LocationKinds } from '../../dal/enums/locationKinds';
 import { LocationLabelColors, LocationLabelColorsColors, LocationLabelColorsKey, _LocationLabelColors } from '../../dal/enums/locationLabelColors';
 import { LocationTypes, LocationTypesColors } from '../../dal/enums/locationTypes';
-import { realmCollectionDecorator } from './realmCollectionDecorator';
-import { basicListDecorator, basicLookupDecorator, basicTextboxDecorator } from './basicTextboxDecorator';
+import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
+import { basicListDecorator, basicLookupDecorator, basicTextboxDecorator } from './_basicTextboxDecorator';
 import { Barcode } from './Barcode';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { META } from '../../dal/types/META';
-import { basicEnumDecorator } from './basicEnumDecorator';
+import { basicEnumDecorator } from './_basicEnumDecorator';
 import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
 
 @realmCollectionDecorator('name', 'barcode.rawValue')

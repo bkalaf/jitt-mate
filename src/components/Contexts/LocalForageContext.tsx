@@ -4,9 +4,6 @@ export type SettingsValues = number | string | null | Record<string, number> | [
 
 export type ILocalForageContext = {
     forager: LocalForage;
-    getDefaultValue: (setting: keyof SettingsConfig) => SettingsValues;
-    getValue: (key: 'page-size' | 'page-index' | 'max-page-index', coll?: string) => () => number;
-    setValue: (key: 'page-size' | 'page-index' | 'max-page-index', coll?: string) => (value: number | Updater<number>) => void;
 };
 
 export const LocalForageContext = createContext<ILocalForageContext | undefined>(undefined);

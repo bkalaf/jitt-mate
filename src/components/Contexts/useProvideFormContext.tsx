@@ -11,7 +11,8 @@ import { runIf } from './runIf';
 import { identity } from '../../common/functions/identity';
 import { useLogger } from './useLogger';
 import { is, $tagIs } from '../../dal/is';
-import { getProperty, setProperty } from './setProperty';
+import { setProperty } from '../../common/object/setProperty';
+import { getProperty } from './getProperty';
 import { BSON } from 'realm';
 
 export function normalizeFormData(fd: Record<string, any>) {

@@ -423,6 +423,7 @@ module.exports = {
             'open-sans': ['Open Sans'],
             'pala-dark': ['Palanquin Dark'],
             itim: ['Itim'],
+            rubik: ['Rubik'],
             righteous: ['Righteous'],
             'concert-one': ['Concert One'],
             'fira-sans': ['Fira Sans'],

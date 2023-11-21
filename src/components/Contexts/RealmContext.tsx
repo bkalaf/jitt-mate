@@ -9,6 +9,7 @@ export type     IRealmContext = {
     logOut: () => Promise<void>;
     logIn: (creds: { email: string; password: string }) => Promise<void>;
     dbIsOpen: () => boolean;
+    schema: Realm.RealmObjectConstructor<any>[];
 };
 
 export const RealmContext = createContext<IRealmContext | undefined>(undefined);

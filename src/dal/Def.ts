@@ -2,7 +2,7 @@ import { BSON } from 'realm';
 import { $db } from './db';
 import { ColumnDef, ColumnHelper, ColumnMeta, DeepKeys, IdentifiedColumnDef } from '@tanstack/react-table';
 import { fromOID } from './fromOID';
-import { dateFromNow } from './dateFromNow';
+import { dateFromNow } from '../common/date/dateFromNow';
 import { capitalize, decapitalize } from '../common/text/capitalize';
 import { toDollarString } from './toDollarString';
 import { toDateString } from './toDateString';

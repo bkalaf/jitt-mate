@@ -2,6 +2,7 @@ import Realm, { BSON, SortDescriptor, ObjectSchema, PropertyTypeName, PropertySc
 import { ColumnDef, ColumnMeta, FilterFn, IdentifiedColumnDef, Row, RowData, Table } from '@tanstack/react-table';
 import { UseMutateFunction } from '@tanstack/react-query';
 import { RankingInfo } from '@tanstack/match-sorter-utils';
+import { MRT_ColumnDef, MRT_Row, MRT_RowData, MRT_TableOptions } from 'material-react-table';
 
 declare global {
     export type Equals<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? true : false;
@@ -12,7 +13,7 @@ declare global {
     export type GetReadOnlyProperties<A extends Record<string, any>> = Exclude<{ [P in keyof A]: IsReadonly<A, P> extends true ? P : never }[keyof A], undefined>;
     export type GetNonReadOnlyProperties<A extends Record<string, any>> = Exclude<{ [P in keyof A]: IsReadonly<A, P> extends true ? never : P }[keyof A], undefined>;
     // eslint-disable-next-line @typescript-eslint/ban-types
-    export type FunctionProperties<T> = { [P in keyof T]: T[P] extends Function ? P : never }[keyof T];
+    // export type FunctionProperties<T> = { [P in keyof T]: T[P] extends Function ? P : never }[keyof T];
     export type WithoutAccessors<T extends AnyObject> = Pick<T, Exclude<Exclude<keyof T, FunctionProperties<T>>, GetReadOnlyProperties<T>>>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     export type OID = BSON.ObjectId | string;
@@ -41,7 +42,14 @@ declare global {
         defaultFilters?: RealmFilter[];
         labelProperty?: keyof T;
     };
-    export type ComboBoxOption = { label: string; value: string; node: number; parent?: string } | string;  
+    export type StaticTableDefinitions<T extends MRT_RowData> = {
+        getColumns: (...p: string[]) => DefinedMRTColumns<T>;
+        createRenderDetailPanel: (fields: FieldInfo[]) => MRT_TableOptions<T>['renderDetailPanel'];
+    };
+    export type ComboBoxOption = { label: string; value: string; node: number; parent?: string } | string;
+    export type MRT_TableOptionFunctionParams<T extends AnyObject, K extends keyof MRT_TableOptions<T>> = Parameters<Exclude<MRT_TableOptions<T>[K], undefined>>[0];
+    export type MRT_TableOptionFunctionReturn<T extends AnyObject, K extends keyof MRT_TableOptions<T>> = ReturnType<Exclude<MRT_TableOptions<T>[K], undefined>>;
+    export type MRT_ColumnDefFunctionParams<K extends FunctionProperties<MRT_ColumnDef<T, V>>, V = unknown, T extends MRT_RowData = AnyObject> = Parameters<Exclude<MRT_ColumnDef<T, V>[K] & AnyFunction, undefined>>[0];
     export type FieldDecoratorFunc = (_target: any, context: ClassFieldDecoratorContext | ClassGetterDecoratorContext) => void;
     export interface IEquatable<T> {
         (left: T): (right: T) => boolean;
@@ -231,7 +239,11 @@ declare global {
     export type TableScope = 'top-level' | 'links' | 'list' | 'selection';
     export type SubComponentFunction<T> = React.FunctionComponent<{ row: Row<T>; collectionName: string; table: Table<T> }>;
     export type DefinedColumn = ColumnDef<any, any>;
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    export type FunctionProperties<T extends AnyObject> = keyof{ [P in keyof T]: T[P] extends AnyFunction ? keyof T : T[P] extends (AnyFunction | undefined) ? keyof T : never }
+    export type DefinedMRTColumn<T extends MRT_RowData> = MRT_ColumnDef<T, any>;
     export type DefinedColumns = DefinedColumn[];
+    export type DefinedMRTColumns<T  extends MRT_RowData = any> = DefinedMRTColumn<T>[];
     export type StringOr<T = string> = string | T | undefined;
     export type PreProcessFunction<TInput, TOutput> = (x?: TInput) => TOutput;
     export type RealmCollectionTypes = 'list' | 'dictionary' | 'set' | 'linkingObjects';

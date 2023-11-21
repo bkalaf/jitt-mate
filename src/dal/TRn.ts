@@ -1,7 +1,7 @@
 import Realm, { BSON, PropertyTypeName } from 'realm';
 import { RnNumberTypes, RnNumberTypesKey } from './enums/rnNumberType';
 import { IAddress, IBrand, IProduct, IRn } from './types';
-import { dateFromNow } from './dateFromNow';
+import { dateFromNow } from '../common/date/dateFromNow';
 import { $css, Selector } from './$css';
 import { lookupByLongName } from './enums/provinces';
 import { $db } from './db';

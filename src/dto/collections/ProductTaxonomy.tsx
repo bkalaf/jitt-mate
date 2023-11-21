@@ -1,77 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // ///<reference path="./../../global.d.ts" />
 import Realm from 'realm';
+import React from 'react';
 import { IProductTaxonomy } from '../../dal/types';
 import { $db } from '../../dal/db';
-import { realmCollectionDecorator } from './realmCollectionDecorator';
-import { basicEnumDecorator } from './basicEnumDecorator';
+import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { taxonomy } from '../../dal/enums/taxa';
 import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
-import { Autocomplete, AutocompleteProps, AutocompleteRenderGroupParams, CircularProgress, TextField, createFilterOptions, darken, lighten, styled } from '@mui/material';
-import { useCallback, useMemo, useState } from 'react';
+import { AutocompleteRenderGroupParams, darken, lighten, styled } from '@mui/material';
 import { is } from '../../dal/is';
-import { MRT_ColumnDef, MRT_Row, MRT_TableInstance } from 'material-react-table';
+import { MRT_Row, MRT_TableInstance } from 'material-react-table';
 import { toProperFromCamel } from '../../common/text/toProperCase';
 import { charRange } from '../../common/array/charRange';
-import { useQuery } from '@tanstack/react-query';
-import { fromOID } from '../../dal/fromOID';
-import { useCollectionRoute } from '../../hooks/useCollectionRoute';
 import { $families, $genuses, $kingdoms, $klasses, $orders, $phlyums } from '../../enums/kpcofgs';
-
-export const colors = {
-    red: 'bg-red-500 text-white',
-    orange: 'bg-orange-600 text-white',
-    yellow: 'bg-yellow-600 text-black',
-    lime: 'bg-lime-500 text-black',
-    green: 'bg-emerald-600 text-white',
-    blue: 'bg-sky-500 text-white',
-    cyan: 'bg-cyan-500 text-black',
-    purple: 'bg-indigo-500 text-white',
-    pink: 'bg-pink-700 text-white',
-    rose: 'bg-rose-400 text-black',
-    white: 'bg-white text-black',
-    slate: 'bg-slate-600 text-white',
-    black: 'bg-black text-white'
-};
-export const Kingdoms = {
-    apparel: {
-        text: 'apparel',
-        color: colors.red
-    },
-    media: {
-        text: 'media',
-        color: colors.green
-    }
-};
-export type Kingdoms = typeof Kingdoms;
-export type KingdomKeys = keyof Kingdoms;
-
-const toPhyla = (parent: KingdomKeys) => (text: string, color: keyof typeof colors) => ({
-    parent,
-    text,
-    color: colors[color]
-});
-const $apparel = toPhyla('apparel');
-const $media = toPhyla('media');
-
-export const Phylums = {
-    mens: $apparel('mens', 'red'),
-    womens: $apparel('womens', 'cyan'),
-    boys: $apparel('boys', 'yellow'),
-    girls: $apparel('girls', 'pink'),
-
-    books: $media('books', 'red'),
-    videos: $media('videos', 'green'),
-    audios: $media('audios', 'pink'),
-    games: $media('games', 'blue')
-};
-
-export type Phylums = typeof Phylums;
-export type PhylumKeys = keyof Phylums;
-const toKlass = (parent: KingdomKeys) => (text: string, color: keyof typeof colors) => ({
-    parent,
-    text,
-    color: colors[color]
-});
+import { $cn } from '../../util/$cn';
 
 @realmCollectionDecorator('kingdom')
 export class ProductTaxonomy extends Realm.Object<IProductTaxonomy> implements IProductTaxonomy {
@@ -103,26 +46,15 @@ export class ProductTaxonomy extends Realm.Object<IProductTaxonomy> implements I
             ).map(([k, v]) => [k, v != null ? (typeof v === 'function' ? v() : v) : undefined] as [string, string])
         );
     }
-    @basicEnumDecorator({
-        valuesGetter: (x: IProductTaxonomy) => {
-            console.log(`valuesGetter`, x);
-            return ProductTaxonomy.lookupEnumMap();
-        }
-    })
-    kingdom: Optional<KingdomKeys>;
-    @basicEnumDecorator({ valuesGetter: (x: { taxon: IProductTaxonomy }) => ProductTaxonomy.lookupEnumMap(x.taxon?.kingdom) })
+    kingdom: Optional<string>;
     phylum: Optional<string>;
-    @basicEnumDecorator({ valuesGetter: (x: { taxon: IProductTaxonomy }) => ProductTaxonomy.lookupEnumMap(x.taxon?.kingdom, x.taxon?.phylum) })
     klass: Optional<string>;
-    @basicEnumDecorator({ valuesGetter: (x: { taxon: IProductTaxonomy }) => ProductTaxonomy.lookupEnumMap(x.taxon?.kingdom, x.taxon?.phylum, x.taxon?.klass) })
     order: Optional<string>;
-    @basicEnumDecorator({ valuesGetter: (x: { taxon: IProductTaxonomy }) => ProductTaxonomy.lookupEnumMap(x.taxon?.kingdom, x.taxon?.phylum, x.taxon?.klass, x.taxon?.order) })
     family: Optional<string>;
-    @basicEnumDecorator({ valuesGetter: (x: { taxon: IProductTaxonomy }) => ProductTaxonomy.lookupEnumMap(x.taxon?.kingdom, x.taxon?.phylum, x.taxon?.klass, x.taxon?.order, x.taxon?.family) })
     genus: Optional<string>;
-    @basicEnumDecorator({ valuesGetter: (x: { taxon: IProductTaxonomy }) => ProductTaxonomy.lookupEnumMap(x.taxon?.kingdom, x.taxon?.phylum, x.taxon?.klass, x.taxon?.order, x.taxon?.genus) })
     species: Optional<string>;
-
+    name: Optional<string>;
+    lock: Optional<boolean> = false;
     update() {
         this.kingdom = this.kingdom?.length === 0 ? undefined : this.kingdom;
         this.phylum = this.phylum?.length === 0 ? undefined : this.phylum;
@@ -131,6 +63,7 @@ export class ProductTaxonomy extends Realm.Object<IProductTaxonomy> implements I
         this.family = this.family?.length === 0 ? undefined : this.family;
         this.genus = this.genus?.length === 0 ? undefined : this.genus;
         this.species = this.species?.length === 0 ? undefined : this.species;
+        this.name = [this.kingdom, this.phylum, this.klass, this.order, this.family, this.genus, this.species].filter((x) => x != null && x.length > 0).join('-');
         return this;
     }
     static schema: Realm.ObjectSchema = {
@@ -143,7 +76,9 @@ export class ProductTaxonomy extends Realm.Object<IProductTaxonomy> implements I
             order: $db.string.opt,
             family: $db.string.opt,
             genus: $db.string.opt,
-            species: $db.string.opt
+            species: $db.string.opt,
+            name: $db.string.opt,
+            lock: $db.bool.false
         }
     };
 
@@ -154,7 +89,7 @@ export class ProductTaxonomy extends Realm.Object<IProductTaxonomy> implements I
 }
 
 export type IComboBoxProps<T extends AnyObject> = {
-    creatable?: (x: string) => Promise<void>;
+    // creatable?: (x: string) => Promise<void>;
     // options: ComboBoxOption[];
     // groupBy?: (opt: ComboBoxOption) => string;
     // getOptionLabel?: (opt: ComboBoxOption) => string;
@@ -163,10 +98,12 @@ export type IComboBoxProps<T extends AnyObject> = {
     // filterSelectedOptions?: boolean;
     // filterOptions?: AutocompleteProps<ComboBoxOption, false, true, true>['filterOptions'];
     // renderOption?: AutocompleteProps<ComboBoxOption, false, true, true>['renderOption'];
-    row: MRT_Row<AnyObject>;
+    row: MRT_Row<T>;
     label: string;
+    table: MRT_TableInstance<T>;
+};
+export type ITaxonomyComboBoxProps<T extends AnyObject> = IComboBoxProps<T> & {
     name: keyof IProductTaxonomy;
-    table: MRT_TableInstance<AnyObject>;
 };
 
 const GroupHeader = styled('div')(({ theme }) => ({
@@ -182,10 +119,15 @@ const GroupItems = styled('ul')({
 });
 export function renderGroup(props: AutocompleteRenderGroupParams) {
     const { key, group, children } = props;
+    console.log('renderGroup', React.Children.toArray(children));
+    console.log(React.Children.toArray(children)[0]);
+    const disabled = (React.Children.toArray(children)[0] as JSX.Element).props['aria-disabled'];
+    console.log(disabled);
+    const cn = $cn({}, { hidden: disabled ?? false }, 'flex flex-col-reverse empty:hidden');
     return (
-        <li key={key}>
-            <GroupHeader>{toProperFromCamel(group)}</GroupHeader>
-            <GroupItems>{children}</GroupItems>
+        <li key={key} {...cn}>
+            <GroupItems className='empty:hidden'>{children}</GroupItems>
+            <GroupHeader className='only:hidden'>{toProperFromCamel(group)}</GroupHeader>
         </li>
     );
 }
@@ -283,13 +225,13 @@ console.log(
         .filter((x) => x.split('').some((y) => charRange('A', 'Z').includes(y)))
 );
 
-function getOptionLabel(option: ComboBoxOption) {
+export function getOptionLabel(option: ComboBoxOption) {
     return is.string(option) ? option : option.label;
 }
-function groupBy(option: ComboBoxOption) {
+export function groupBy(option: ComboBoxOption) {
     return is.string(option) ? 'n/a' : option.parent ?? 'n/a';
 }
-function getOptionDisabledTaxonomy(table: MRT_TableInstance<IProductTaxonomy>, row: MRT_Row<IProductTaxonomy>) {
+export function getOptionDisabledTaxonomy(table: MRT_TableInstance<IProductTaxonomy>, row: MRT_Row<IProductTaxonomy>) {
     return function (option: ComboBoxOption) {
         if (is.string(option)) return false;
         const { editingRow, creatingRow } = table.getState();
@@ -318,32 +260,14 @@ function getOptionDisabledTaxonomy(table: MRT_TableInstance<IProductTaxonomy>, r
         }
     };
 }
-const filterOpt = createFilterOptions<ComboBoxOption>({
-    ignoreCase: true,
-    ignoreAccents: true,
-    matchFrom: 'start',
-    stringify: (option) => (is.string(option) ? option : option.label)
-});
+// const filterOpt = createFilterOptions<ComboBoxOption>({
+//     ignoreCase: true,
+//     ignoreAccents: true,
+//     matchFrom: 'start',
+//     stringify: (option) => (is.string(option) ? option : option.label)
+// });
 
-function filterOptions(name: keyof IProductTaxonomy) {
-    return function (...params: Parameters<Exclude<AutocompleteProps<ComboBoxOption, false, true, true>['filterOptions'], undefined>>) {
-        const [options, state] = params;
-        const { inputValue } = state;
-        const isExisting = options.some((option) => inputValue === (is.string(option) ? option : option.label));
-        const filters = filterOpt(options, state);
-        if (inputValue !== '' && !isExisting) {
-            filters.push({
-                value: inputValue,
-                node: getNode(name),
-                parent: 'n/a',
-                label: `Add "${inputValue}"`
-            });
-        }
-        return filters;
-    };
-}
-
-function isOptionEqualTo(left: ComboBoxOption, right: ComboBoxOption) {
+export function isOptionEqualTo(left: ComboBoxOption, right: ComboBoxOption) {
     return is.string(left) && is.string(right) ? left === right : is.string(left) || is.string(right) ? false : left.value === right.value && left.node === right.node;
 }
 export function getNode(name: keyof IProductTaxonomy) {
@@ -386,71 +310,4 @@ export function ddOptions(name: keyof IProductTaxonomy) {
         default:
             return [];
     }
-}
-export function OuterTaxonomyComboBox<T extends { taxon: IProductTaxonomy }>(outerProps: Pick<IComboBoxProps<T>, 'label' | 'name' | 'creatable'>) {
-    function TaxonomyComboBox(props: Pick<IComboBoxProps<T>, 'row' | 'table'>) {
-        const { creatable, label, row, name } = { ...props, ...outerProps };
-        const { creatingRow, editingRow } = props.table.getState();
-        const isCreating = creatingRow?.id === props.row.id;
-        const isEditting = editingRow?.id === props.row.id;
-        const [inputValue, setInputValue] = useState<ComboBoxOption | undefined>(undefined);
-        const getOptionDisabled = useMemo(() => getOptionDisabledTaxonomy(props.table as any, props.row as any), [props.row, props.table]);
-        const collectionName = useCollectionRoute();
-        const data = ddOptions(name);
-        const onChange = useCallback(
-            (...params: Parameters<Exclude<AutocompleteProps<ComboBoxOption, false, true, true>['onChange'], undefined>>) => {
-                console.log('ONCHANGE', ...params);
-                const [event, value, reason, details] = params;
-                if (typeof value === 'string') {
-                    setInputValue({ value, label: toProperFromCamel(value), node: getNode(name), parent: undefined });
-                } else if (value && (value as any).inputValue) {
-                    setInputValue({ value: (value as any).inputValue, label: toProperFromCamel((value as any).inputValue), node: getNode(name), parent: undefined });
-                } else {
-                    setInputValue(value);
-                    props.row._valuesCache[name as keyof typeof props.row._valuesCache] = value?.value ?? undefined;
-                    if (isEditting) props.table.setEditingRow(props.row);
-                    if (isCreating) props.table.setCreatingRow(props.row);
-                }
-            },
-            [isCreating, isEditting, name, props]
-        );
-        const $filterOptions = useMemo(() => filterOptions(name), [name]);
-        const isLoading = false;
-        return (
-            <Autocomplete<ComboBoxOption, false, true, true>
-                options={data ?? []}
-                value={inputValue}
-                getOptionDisabled={getOptionDisabled}
-                filterOptions={$filterOptions}
-                filterSelectedOptions
-                freeSolo
-                getOptionLabel={getOptionLabel}
-                isOptionEqualToValue={isOptionEqualTo}
-                groupBy={groupBy}
-                handleHomeEndKeys
-                renderGroup={renderGroup}
-                onChange={onChange}
-                selectOnFocus
-                className='font-open-sans'
-                clearOnBlur
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        label={label}
-                        InputProps={{
-                            ...params.InputProps,
-                            name,
-                            endAdornment: (
-                                <>
-                                    {isLoading ? <CircularProgress color='inherit' size={20} /> : null}
-                                    {params.InputProps.endAdornment}
-                                </>
-                            )
-                        }}
-                    />
-                )}
-            />
-        );
-    }
-    return TaxonomyComboBox as any as MRT_ColumnDef<{ taxon: IProductTaxonomy }>['Edit'];
 }

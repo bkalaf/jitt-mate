@@ -3,7 +3,7 @@ import { konst } from '../../common/functions/konst';
 import { toProperFromCamel } from '../../common/text/toProperCase';
 import { fromOID } from '../../dal/fromOID';
 import { toOID } from '../../dal/toOID';
-import { dateFromNow } from '../../dal/dateFromNow';
+import { dateFromNow } from '../../common/date/dateFromNow';
 import { identity } from '../../common/functions/identity';
 import { normalizeSchemaProperty } from '../../dal/normalizeSchemaProperty';
 import { ignore } from '../../common/functions/ignore';

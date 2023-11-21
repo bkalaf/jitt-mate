@@ -67,7 +67,7 @@ import { pipeDecorators } from '../../schema/pipeDecorators';
 import { strategy } from './wrappedSetMetadata';
 import { identity } from '../../common/functions/identity';
 import { composeR } from '../../common/functions/composeR';
-import { appendText } from '../appendText';
+import { appendText } from '../../common/text/appendText';
 import { prependText } from '../prependText';
 import { fromOID } from '../fromOID';
 import { chunkDashes } from './chunkDashes';

@@ -138,16 +138,40 @@ export function toNode<T extends Record<string, any>>(name: string, obj?: T, ove
 // const toNode2= (name: string) => (obj?: Record<any, any>) => obj == null ? name : Object.assign(() => name, obj);
 
 export const taxonomy = {
+    jewelry: toNode('jewelry', {
+        unisex: toNode('unisex', {
+            ring: toNode('ring'),
+            earring: toNode('earring'),
+            bracelet: toNode('bracelet'),
+            pins: toNode('pins'),
+            'nose-ring': toNode('nose-ring'),
+            'toe-ring': toNode('toe-ring')
+        })
+    }),
+    bags: toNode('bags', {
+        personal: toNode('personal', {
+            handbags: toNode('handbags', {
+                shoulder: toNode('shoulder'),
+                bucket: toNode('bucket'),
+                tote: toNode('tote'),
+                purse: toNode('purse')
+            }),
+            crossbody: toNode('crossbody'),
+            backpack: toNode('backpack'),
+            satchel: toNode('satchel'),
+            cosmetic: toNode('cosmetic'),
+            messenger: toNode('messenger'),
+            hobo: toNode('hobo'),
+            'fanny-pack': toNode('fanny-pack')
+        })
+    }),
     apparel: toNode('apparel', {
         men: toNode('men', {
             tops: toNode('tops', {
                 'pull-over': toNode('pull-over', {
                     'tee-shirt': toNode('tee-shirt'),
-                    camisole: toNode('camisole'),
                     sleeveless: toNode('sleeveless'),
-                    'tank-top': toNode('tank-top'),
-                    'tube-top': toNode('tube-top'),
-                    'halter-top': toNode('halter-top')
+                    'tank-top': toNode('tank-top')
                 }),
                 jackets: toNode('jackets', {
                     windbreaker: toNode('windbreaker'),
@@ -159,14 +183,16 @@ export const taxonomy = {
                     hoodie: toNode('hoodie'),
                     denim: toNode('denim'),
                     overcoat: toNode('overcoat'),
-                    poncho: toNode('poncho')
+                    poncho: toNode('poncho'),
+                    blazer: toNode('blazer'),
+                    'sport-coat': toNode('sport-coat')
                 }),
+                swimwear: toNode('swimwear', {}),
                 'button-front': toNode('button-front', {
                     'button-down': toNode('button-down'),
                     'dress-shirt': toNode('dress-shirt'),
                     'fitted-shirt': toNode('fitted-shirt'),
                     flannel: toNode('flannel'),
-                    blouse: toNode('blouse'),
                     henley: toNode('henley'),
                     'hawaiian-shirt': toNode('hawaiian-shirt'),
                     'oxford-shirt': toNode('oxford-shirt'),
@@ -177,8 +203,7 @@ export const taxonomy = {
                     sweater: toNode('sweater'),
                     'turtle-neck': toNode('turtle-neck'),
                     'pull-over': toNode('pull-over'),
-                    cardigan: 'cardigan',
-                    sweatshirt: 'sweatshirt'
+                    cardigan: 'cardigan'
                 }),
                 other: toNode('other', {
                     tunic: toNode('tunic'),
@@ -277,6 +302,7 @@ export const taxonomy = {
                 })
             }),
             accessories: toNode('accessories', {
+                jewelry: toNode('jewelry', {}),
                 mid: toNode('mid', {
                     belt: toNode('belt'),
                     suspender: toNode('suspender'),
@@ -300,8 +326,13 @@ export const taxonomy = {
                     watch: toNode('watch')
                 })
             }),
+            activewear: toNode('activewear', {
+                'track-pants': toNode('track-pants'),
+                sweatshirt: toNode('sweatshirt'),
+                'track-suit': toNode('track-suit'),
+                sweatpants: toNode('sweatpants')
+            }),
             outfits: toNode('outfit', {
-                dresses: toNode('dresses'),
                 suits: toNode('suits', {
                     tuxedo: toNode('tuxedo'),
                     'double-breasted': toNode('double-breasted'),
@@ -313,8 +344,7 @@ export const taxonomy = {
                 overalls: toNode('overalls', {
                     jumpsuit: toNode('jumpsuit'),
                     romper: toNode('romper'),
-                    denim: toNode('denim'),
-                    bodysuit: toNode('bodysuit')
+                    denim: toNode('denim')
                 }),
                 sleepwear: toNode('sleepwear', {
                     'pajama-top-bottom': toNode('pajama-top-bottom'),
@@ -326,6 +356,12 @@ export const taxonomy = {
             })
         }),
         women: toNode('women', {
+            swimwear: toNode('swimwear', {
+                'one-piece': toNode('one-piece'),
+                'two-piece': toNode('two-piece'),
+                'cover-up': toNode('cover-up'),
+                beachwear: toNode('beachwear')
+            }),
             tops: toNode('tops', {
                 'pull-over': toNode('shirts', {
                     'tee-shirt': toNode('tee-shirt'),
@@ -345,7 +381,14 @@ export const taxonomy = {
                     hoodie: toNode('hoodie'),
                     denim: toNode('denim'),
                     overcoat: toNode('overcoat'),
-                    poncho: toNode('poncho')
+                    parka: toNode('parka'),
+                    peacoat: toNode('peacoat'),
+                    poncho: toNode('poncho'),
+                    puffer: toNode('puffer'),
+                    cape: toNode('cape'),
+                    blazer: toNode('blazer'),
+                    military: toNode('military'),
+                    'sport-coat': toNode('sport-coat')
                 }),
                 'button-front': toNode('button-front', {
                     'button-down': toNode('button-down'),
@@ -364,7 +407,14 @@ export const taxonomy = {
                     'turtle-neck': toNode('turtle-neck'),
                     'pull-over': toNode('pull-over'),
                     cardigan: 'cardigan',
-                    sweatshirt: 'sweatshirt'
+                    vest: toNode('vest'),
+                    'turtle-neck-sweater': toNode('turtle-neck-sweater'),
+                    'mock-sweater': toNode('mock-sweater'),
+                    'full-zip': toNode('full-zip'),
+                    crewneck: toNode('crewneck'),
+                    'v-neck-sweater': toNode('v-neck-sweater'),
+                    sweatercoat: toNode('sweatercoat'),
+                    'sweater-vest': toNode('sweater-vest')
                 }),
                 other: toNode('other', {
                     tunic: toNode('tunic'),
@@ -376,6 +426,9 @@ export const taxonomy = {
                 pants: toNode('pants', {
                     carpenter: toNode('carpenter'),
                     cargo: toNode('cargo'),
+                    cropped: toNode('cropped'),
+                    capri: toNode('capri'),
+                    linen: toNode('linen'),
                     leather: toNode('leather'),
                     chino: toNode('chino'),
                     khaki: toNode('khaki'),
@@ -395,8 +448,10 @@ export const taxonomy = {
                     cargo: toNode('cargo'),
                     casual: toNode('casual'),
                     bike: toNode('bike'),
-                    gym: toNode('gym')
+                    gym: toNode('gym'),
+                    'high-waisted': toNode('high-waisted')
                 }),
+                maternity: toNode('maternity'),
                 jeans: toNode('jeans', {
                     'relaxed-fit': toNode('relaxed-fit'),
                     'boot-cut': toNode('boot-cut'),
@@ -407,19 +462,36 @@ export const taxonomy = {
                     'bell-bottom': toNode('bell-bottom'),
                     'straight-fit': toNode('straight-fit'),
                     casual: toNode('casual'),
-                    baggy: toNode('baggy')
+                    baggy: toNode('baggy'),
+                    cargo: toNode('cargo'),
+                    boyfriend: toNode('boyfriend'),
+                    'wide-leg': toNode('wide-leg'),
+                    capri: toNode('capri')
                 }),
                 other: toNode('other', {
-                    'cropped-pants': toNode('cropped-pants'),
                     skort: toNode('skort'),
-                    capri: toNode('capri'),
-                    legging: toNode('legging'),
-                    'track-pants': toNode('track-pants'),
-                    'track-suit': toNode('track-suit'),
-                    sweatpants: toNode('sweatpants'),
                     tights: toNode('tights'),
-                    skirt: toNode('skirt')
+                    skirt: toNode('skirt', {
+                        'a-line': toNode('a-line'),
+                        assymetrical: toNode('assymetrical'),
+                        bubble: toNode('bubble'),
+                        full: toNode('full'),
+                        maxi: toNode('maxi'),
+                        mini: toNode('mini'),
+                        peasant: toNode('peasant'),
+                        pleated: toNode('pleated'),
+                        pencil: toNode('pencil'),
+                        tiered: toNode('tiered')
+                    })
                 })
+            }),
+            activewear: toNode('activewear', {
+                legging: toNode('legging'),
+                'track-pants': toNode('track-pants'),
+                sweatshirt: toNode('sweatshirt'),
+                'track-suit': toNode('track-suit'),
+                sweatpants: toNode('sweatpants'),
+                'track-jacket': toNode('track-jacket')
             }),
             footwear: toNode('footwear', {
                 other: toNode('other', {
@@ -449,6 +521,7 @@ export const taxonomy = {
                     stiletto: toNode('stiletto')
                 }),
                 flats: toNode('flats', {
+                    slippers: toNode('slippers'),
                     loafers: toNode('loafers'),
                     derbys: toNode('derbys'),
                     oxfords: toNode('oxfords'),
@@ -469,12 +542,16 @@ export const taxonomy = {
                 }),
                 intimates: toNode('intimates', {
                     bra: toNode('bra'),
-                    panties: toNode('panties'),
                     stockings: toNode('stockings'),
-                    'panty-hose': toNode('panty-hose')
+                    'panty-hose': toNode('panty-hose'),
+                    'sports-bra': 'sports-bra',
+                    'thermal-undies': toNode('thermal-undies')
                 }),
                 lingerie: toNode('lingerie', {
-                    negligee: toNode('negligee')
+                    negligee: toNode('negligee'),
+                    panties: toNode('panties'),
+                    'g-string': toNode('g-string'),
+                    thong: toNode('thong')
                 })
             }),
             accessories: toNode('accessories', {
@@ -492,24 +569,40 @@ export const taxonomy = {
                     'skull-cap': toNode('skull-cap'),
                     sunglasses: toNode('sunglasses'),
                     headband: toNode('headband'),
-                    visor: toNode('visor')
+                    visor: toNode('visor'),
+                    hair: toNode('hair'),
+                    bandanas: toNode('bandanas')
                 }),
                 hand: toNode('hand', {
                     glove: toNode('glove'),
                     mitten: toNode('mitten'),
                     'utility-glove': toNode('utility-glove'),
-                    watch: toNode('watch')
-                })
+                    watch: toNode('watch'),
+                    'fashion-gloves': toNode('fashion-gloves'),
+                    hijabs: toNode('hijabs'),
+                    umbrella: toNode('umbrella')
+                }),
+                jewelry: toNode('jewelry', {})
             }),
             outfits: toNode('outfit', {
-                dresses: toNode('dresses'),
+                dresses: toNode('dresses', {
+                    'above-knee': toNode('above-knee'),
+                    'knee-length': toNode('knee-length'),
+                    midi: toNode('midi'),
+                    maxi: toNode('maxi'),
+                    'high-low': toNode('high-low')
+                }),
                 suits: toNode('suits', {
                     tuxedo: toNode('tuxedo'),
                     'double-breasted': toNode('double-breasted'),
                     'one-button': toNode('one-button'),
                     'two-button': toNode('two-button'),
                     'three-button': toNode('three-button'),
-                    'four-button': toNode('four-button')
+                    'four-button': toNode('four-button'),
+                    'dress-suit': toNode('dress-suit'),
+                    'skirt-suit': toNode('skirt-suit'),
+                    'pant-suit': toNode('pant-suit'),
+                    bodysuit: toNode('bodysuit')
                 }),
                 overalls: toNode('overalls', {
                     jumpsuit: toNode('jumpsuit'),

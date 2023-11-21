@@ -1,6 +1,6 @@
 import { Column, Table, flexRender } from '@tanstack/react-table';
 import React, { useEffect, useMemo } from 'react';
-import { usePropertyInfo } from '../../../hooks/usePropertyInfo';
+import { usePropertyInfo } from '../../../hooks/_usePropertyInfo';
 import { useFormContext } from '../../Contexts/useFormContext';
 import { identity } from '../../../common/functions/identity';
 

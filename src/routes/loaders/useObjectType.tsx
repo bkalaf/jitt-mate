@@ -1,5 +1,5 @@
 import { Column } from '@tanstack/react-table';
-import { useColumnMeta } from '../../hooks/useColumnMeta';
+import { useColumnMeta } from '../../hooks/_useColumnMeta';
 
 export function useObjectType<T extends EntityBase>(column: Column<T, any>) {
     const { objectType, labelProperty } = useColumnMeta<T>(column);

@@ -1,9 +1,9 @@
-// ///<reference path="./../../global.d.ts" />
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// ///< reference path="./../../global.d.ts" />
 import Realm, { BSON } from 'realm';
 import { $db } from '../../dal/db';
 import { IClassifier, IMercariSubSubCategory, IHashTag, IProductTaxonomy } from '../../dal/types';
-import { META } from '../../dal/types/META';
-import { recalculateDecorator } from '../../decorators/method/recalculateDecorator';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { wrapDistinctArrayAccessorDecorator } from '../../decorators/accessor/distinctArray';
 import {
@@ -18,13 +18,9 @@ import {
     $$accessorFnDBListDecorator,
     $$autoAccessorKey
 } from '../../decorators/field/baseMetaDecorator';
-import { withDefaultValueDecorator } from '../../schema/decorators/defaultValue';
 import { strategy } from '../../dal/types/wrappedSetMetadata';
-import { realmCollectionDecorator } from './realmCollectionDecorator';
-import { basicCheckboxDecorator } from './basicCheckboxDecorator';
+import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
-import { basicLookupDecorator, basicTextboxDecorator } from './basicTextboxDecorator';
-import { MercariSubSubCategory } from './MercariSubSubCategory';
 import { surroundText } from '../../dal/surroundText';
 
 @realmCollectionDecorator('name', 'name')
@@ -41,6 +37,9 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
     get effectiveTaxon(): OptionalEntity<IProductTaxonomy> {
         return this.mercariSubSubCategory?.effectiveTaxon ?? this.taxon;
     }
+    static generateTitle(brandText: string, attributeText: string, descriptiveText?: string) {
+        return '';
+    }
     static generateName(classifier: IClassifier) {
         const { family, genus, kingdom, phylum, klass, order, species } = classifier.taxon ?? {};
         const extra = classifier.shortname ? surroundText(' (')(')')(classifier.shortname) : '';
@@ -49,52 +48,22 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
             .join('-')
             .concat(extra);
     }
-    @$$string
-    @withInputElementDecorator
-    @withTextTypeInputDecorator
-    @withImmutable
-    @withHeaderDecorator('CategoryID')
-    @$$autoAccessorKey
     get categoryID(): Optional<string> {
         return this.mercariSubSubCategory?.categoryID;
     }
-    @$$string
-    @withInputElementDecorator
-    @withTextTypeInputDecorator
-    @withImmutable
-    @withHeaderDecorator('SubCategoryID')
-    @$$autoAccessorKey
     get subCategoryID(): Optional<string> {
         return this.mercariSubSubCategory?.subCategoryID;
     }
-    @$$string
-    @withInputElementDecorator
-    @withTextTypeInputDecorator
-    @withImmutable
-    @withHeaderDecorator('SubSubCategoryID')
-    @$$autoAccessorKey
     get subSubCategoryID(): Optional<string> {
         return this.mercariSubSubCategory?.id;
     }
-
-    @wrapDistinctArrayAccessorDecorator('name')
-    @asListDecorator('hashTag')
-    @baseMetaDecorator('enableEditting', strategy.falsey())
-    @withAutoIDDecorator
-    @$$accessorFnDBListDecorator
     get allHashTags(): Entity<IHashTag>[] {
         return [...(this.mercariSubSubCategory?.allHashTags ?? []), ...Array.from(this.hashTags.values() ?? [])];
     }
 
-    @META.col.taxon
-    taxon: Optional<Entity<IProductTaxonomy>>;
-
     get athletic(): Optional<string> {
         return this.isAthletic ? 'athletic' : undefined;
     }
-
-    @META.col.shipWeightPercent
-    shipWeightPercent: Optional<number>;
 
     @wrapInTransactionDecorator()
     update() {
@@ -117,61 +86,50 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
             ]
                 .filter((x) => x != null && x.length > 0)
                 .forEach((value, ix) => {
-                    if (this.taxon == null) this.taxon = {} as any;
-                    switch (ix) {
-                        case 0:
-                            (this.taxon as any).kingdom = value;
-                            break;
-                        case 1:
-                            (this.taxon as any).phylum = value;
-                            break;
-                        case 2:
-                            (this.taxon as any).klass = value;
-                            break;
-                        case 3:
-                            (this.taxon as any).order = value;
-                            break;
-                        case 4:
-                            (this.taxon as any).family = value;
-                            break;
-                        case 5:
-                            (this.taxon as any).genus = value;
-                            break;
-                        case 6:
-                            (this.taxon as any).species = value;
-                            break;
+                    if (!(this.taxon?.lock ?? false)) {
+                        if (this.taxon == null) this.taxon = {} as any;
+                        switch (ix) {
+                            case 0:
+                                (this.taxon as any).kingdom = value;
+                                break;
+                            case 1:
+                                (this.taxon as any).phylum = value;
+                                break;
+                            case 2:
+                                (this.taxon as any).klass = value;
+                                break;
+                            case 3:
+                                (this.taxon as any).order = value;
+                                break;
+                            case 4:
+                                (this.taxon as any).family = value;
+                                break;
+                            case 5:
+                                (this.taxon as any).genus = value;
+                                break;
+                            case 6:
+                                (this.taxon as any).species = value;
+                                break;
+                        }
                     }
                 });
         }
         this.taxon?.update();
-        this.name = Classifier.generateName(this);
+        this.name = this.taxon?.name ?? '';
         return this;
     }
-
-    @META.col.name
+    _id: BSON.ObjectId = new BSON.ObjectId();
+    taxon: Optional<Entity<IProductTaxonomy>>;
+    shipWeightPercent: Optional<number>;
     name = '';
-
-    @basicTextboxDecorator({ max: 40 })
     shortname: Optional<string>;
-
-    @basicCheckboxDecorator()
-    @withDefaultValueDecorator(false)
     isAthletic = false;
-
-    @basicLookupDecorator(MercariSubSubCategory, 'fullname', { header: 'Classification' })
     mercariSubSubCategory: OptionalEntity<IMercariSubSubCategory>;
-
-    @META.col.hashTags
     hashTags!: DBSet<Entity<IHashTag>>;
 
-    @basicCheckboxDecorator()
-    @withImmutable
     get isMediaMail(): boolean {
         return this.taxon?.kingdom === 'media';
     }
-
-    @META.col.oid
-    _id: BSON.ObjectId = new BSON.ObjectId();
 
     static schema: Realm.ObjectSchema = {
         name: $db.classifier(),

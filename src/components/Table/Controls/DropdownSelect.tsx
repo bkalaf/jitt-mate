@@ -1,6 +1,6 @@
 import { Column, Row, Table } from '@tanstack/react-table';
 import { useEffect, useMemo } from 'react';
-import { usePropertyInfo } from '../../../hooks/usePropertyInfo';
+import { usePropertyInfo } from '../../../hooks/_usePropertyInfo';
 import { useFormContext } from '../../Contexts/useFormContext';
 import { identity } from '../../../common/functions/identity';
 import { ControlLabel } from './ControlLabel';

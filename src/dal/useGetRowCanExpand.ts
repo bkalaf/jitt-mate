@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { useFieldInfos } from './useFieldInfos';
+import { useFieldInfos } from './_useFieldInfos';
 
 export function useGetRowCanExpand(objectType: string) {
     const { containsType, ofType } = useFieldInfos(objectType);

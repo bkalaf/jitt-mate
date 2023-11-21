@@ -1,5 +1,5 @@
 import { CellContext } from '@tanstack/react-table';
-import { usePropertyInfo } from '../../../hooks/usePropertyInfo';
+import { usePropertyInfo } from '../../../hooks/_usePropertyInfo';
 import { convertToLookup } from '../../../dal/enums/convertToLookup';
 import { $cn } from '../../../util/$cn';
 import { useMemo } from 'react';

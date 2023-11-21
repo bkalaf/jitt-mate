@@ -2,7 +2,7 @@
 import { BSON } from 'realm';
 import { both } from '../common/functions/both';
 import { either } from './either';
-import { not } from './not';
+import { not } from '../common/not';
 import { toInstanceOf } from '../common/toInstanceOf';
 import { toTypeOf } from '../common/toTypeOf';
 import { endsWith } from './endsWith';

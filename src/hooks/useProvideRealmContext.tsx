@@ -17,6 +17,7 @@ export function useProvideRealmContext(): IRealmContext {
     const setGlobal = useCallback((db?: Realm) => {
         window.$$store = db;
         document.dispatchEvent(new CustomEvent('realm-change'))
+        alert('Database opened');
     }, [])
     const changeCurrentUser = useCallback((nextUser: null | Realm.User) => {
         if (nextUser == null) {
@@ -81,6 +82,8 @@ export function useProvideRealmContext(): IRealmContext {
         isAuthenticated,
         logOut,
         logIn,
-        dbIsOpen
+        dbIsOpen,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        schema: useMemo(() => $$schema as Realm.RealmObjectConstructor<any>[], [])
     };
 }

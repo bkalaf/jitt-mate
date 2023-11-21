@@ -10,7 +10,8 @@
       },
       "project": "/home/bobby/Desktop/jitt/jitt/tsconfig.json",
       "ecmaVersion": "latest",
-      "sourceType": "module"
+      "sourceType": "module",
+      "exclude": ["./tailwind.config.js"]
   },
   "extends": [
       "eslint:recommended",

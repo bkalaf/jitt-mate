@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // ///<reference path="./../../global.d.ts" />
 (Symbol as any).metadata ??= Symbol('Symbol.metadata');
 import Realm, { BSON } from 'realm';
@@ -5,12 +7,9 @@ import { $db } from '../../dal/db';
 import { IHashTag, IMercariCategory, IProductTaxonomy } from '../../dal/types';
 import { ItemGroups } from '../../dal/enums/itemGroups';
 import { Genders } from '../../dal/enums/genders';
-import { META } from '../../dal/types/META';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
-import { recalculateDecorator } from '../../decorators/method/recalculateDecorator';
-import { defineCalculatedField } from '../../decorators/field/defineCalculatedField';
 import { prependText } from '../../dal/prependText';
-import { realmCollectionDecorator } from './realmCollectionDecorator';
+import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
 
 @realmCollectionDecorator('name', 'name')
@@ -41,22 +40,11 @@ export class MercariCategory extends Realm.Object<IMercariCategory> implements I
         return this;
     }
 
-    @META.col.oid
     _id: BSON.ObjectId = new BSON.ObjectId();
-
-    @META.col.name
     name = '';
-
-    @META.col.categoryID
     id = '';
-
-    @META.col.hashTags
     hashTags: DBSet<Entity<IHashTag>> = [] as any;
-
-    @META.col.shipWeightPercent
     shipWeightPercent: Optional<number>;
-
-    @META.col.taxon
     taxon: OptionalEntity<IProductTaxonomy>;
 
     static schema: Realm.ObjectSchema = {
@@ -79,9 +67,4 @@ export class MercariCategory extends Realm.Object<IMercariCategory> implements I
         return [];
     }
 }
-console.log('COLUMNS');
-console.log((MercariCategory as any).columns(), null, '\t');
 
-console.log('** METADATA **');
-console.log(MercariCategory[Symbol.metadata]);
-console.log(JSON.stringify((MercariCategory as any).columns(), null, '\t'));

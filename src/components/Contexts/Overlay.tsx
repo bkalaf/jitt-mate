@@ -3,6 +3,7 @@ import { useOverlayContext } from './useOverlayContext';
 import { Button } from '../Buttons/Button';
 import { faWindowClose } from '@fortawesome/pro-solid-svg-icons';
 import { $cn } from '../../util/$cn';
+import { BoundingClientElement } from '../BoundingClientElement';
 
 export function Overlay() {
     const { children, state, popFrame, cycleState } = useOverlayContext();
@@ -26,7 +27,7 @@ export function Overlay() {
     return (
         <div {...spread} onAnimationEnd={cycleState}>
             <Button icon={faWindowClose} className='absolute top-0 right-0 mt-1 mr-2' title='Close this window.' onClick={popFrame} />
-            <div className='flex w-auto h-auto'>{children}</div>
+            <BoundingClientElement>{children}</BoundingClientElement>
         </div>
     );
 }

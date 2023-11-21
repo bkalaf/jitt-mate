@@ -1,6 +1,5 @@
-import { identity } from '../../common/functions/identity';
-
-export function recalculateDecorator<T extends AnyObject>(original: (this: T) => T, context: ClassMethodDecoratorContext) {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export function recalculateDecorator<T extends AnyObject>(original: (this: T) => T) {
     function innerDecorator(this: T) {
         console.log(original);
         console.log(this);

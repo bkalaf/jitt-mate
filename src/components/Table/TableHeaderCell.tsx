@@ -5,13 +5,13 @@ import { getNumericIconFromText } from '../../common/fa/getNumericIconFromText';
 import { SortIndicator } from './SortIndicator';
 import { useCollectionViewContext } from '../../hooks/useCollectionViewContext';
 import React from 'react';
-import { DebouncedInput } from './DebouncedInput';
+import { DebouncedInput } from './Controls/DebouncedInput';
 import { konst } from '../../common/functions/konst';
 import { FALSE } from '../../common/FALSE';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button } from '../Buttons/Button';
 import { both } from '../../common/functions/both';
-import { not } from '../../dal/not';
+import { not } from '../../common/not';
 
 export function TableHeaderCell({ header, table }: { header: Header<any, unknown>; table: Table<any> }) {
     const size = header.getSize();

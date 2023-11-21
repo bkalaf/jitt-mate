@@ -1,29 +1,17 @@
-import { Klass } from './../../../dist/dal/enums/taxa.d';
-import Realm, { BSON, SortDescriptor } from 'realm';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import Realm, { BSON } from 'realm';
 import { $db } from '../../dal/db';
 import { IHashTag, IMercariCategory, IMercariSubCategory, IProductTaxonomy } from '../../dal/types';
 import { ApparelGroups } from '../../dal/enums/apparelGroups';
 import { ApparelTypes } from '../../dal/enums/apparelType';
 import { ItemGroups } from '../../dal/enums/itemGroups';
-import { $css } from '../../dal/$css';
-import { createColumnHelper } from '@tanstack/react-table';
-import { gatherReport } from '../../dal/gatherReport';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
-import { defineColumnsDecorator, staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
-import { updateImmediatelyAfterConstruction } from '../../decorators/class/updateImmediatelyAfterConstruction';
-import { labelledByDecorator } from '../../decorators/class/labelledByDecorator';
-import { defaultSortDecorator } from '../../decorators/class/defaultSortDecorator';
-import { META } from '../../dal/types/META';
-import { $$ } from '../../common/comparator/areRealmObjectsEqual';
-import { $$ctor, $$embedded, withHeaderDecorator, asLookupObjectDecorator, $$object } from '../../decorators/field/baseMetaDecorator';
-import { MercariCategory } from './MercariCategory';
+import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
 import { wrapDistinctArrayAccessorDecorator } from '../../decorators/accessor/distinctArray';
-import { withLabelPropertyDecorator } from '../../schema/decorators/labelProperty';
 import { prependText } from '../../dal/prependText';
-import { defineCalculatedField } from '../../decorators/field/defineCalculatedField';
-import { recalculateDecorator } from '../../decorators/method/recalculateDecorator';
-import { realmCollectionDecorator } from './realmCollectionDecorator';
-import { basicListDecorator, basicLookupDecorator } from './basicTextboxDecorator';
+import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
+import { basicListDecorator } from './_basicTextboxDecorator';
 
 @realmCollectionDecorator('name', 'parent.name', 'name')
 export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implements IMercariSubCategory {
@@ -42,7 +30,7 @@ export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implem
         if (!this.id.startsWith('#')) {
             this.id = prependText('#')(this.id);
         }
-        if (this.parent) {
+        if (this.parent && !(this.taxon?.lock ?? false)) {
             [this.parent.taxon?.kingdom, this.parent.taxon?.phylum, this.parent.taxon?.klass, this.parent.taxon?.order, this.parent.taxon?.family, this.parent.taxon?.genus, this.parent.taxon?.species].filter(x => x != null && x.length > 0).forEach((value, ix) => {
                 if (this.taxon == null) this.taxon = {} as any;
                 console.log(`updating`, value, ix);
@@ -97,25 +85,12 @@ export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implem
     // apparelType: Optional<ApparelTypeKeys>;
     // apparelGroup: Optional<ApparelGroupKeys>;
     // itemGroup: Optional<ItemGroupKeys>;
-    @META.col.oid
     _id: BSON.ObjectId = new BSON.ObjectId();
-
-    @META.col.name
     name = '';
-
-    @META.col.categoryID
     id = '';
-
-    @basicLookupDecorator(MercariCategory, 'name')
     parent: OptionalEntity<IMercariCategory>;
-
-    @META.col.hashTags
     hashTags: DBSet<Entity<IHashTag>> = [] as any;
-
-    @META.col.shipWeightPercent
     shipWeightPercent: Optional<number>;
-
-    @META.col.taxon
     taxon: OptionalEntity<IProductTaxonomy>;
 
     static schema: Realm.ObjectSchema = {

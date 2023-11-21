@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es2022",
-    "lib": ["es2022", "ESNEXT.Symbol", "ESNEXT.WeakRef", "ESNEXT", "ES2015.Reflect", "DOM", "DOM.Iterable"],
+    "target": "es6",
+    "lib": ["es2022", "es2023", "ESNEXT.Symbol", "ESNEXT.WeakRef", "ESNEXT", "ES2015.Reflect", "DOM", "DOM.Iterable"],
     "allowJs": true,
     "jsx": "react-jsx",
     "module": "commonjs",
@@ -21,5 +21,5 @@
     "declaration": true,
     "skipDefaultLibCheck": false
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts", "src/global.d.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/global.d.ts"]
 }

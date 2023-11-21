@@ -1,5 +1,5 @@
 import { CellContext } from '@tanstack/react-table';
-import { useColumnMeta } from '../../../hooks/useColumnMeta';
+import { useColumnMeta } from '../../../hooks/_useColumnMeta';
 
 export function LookupTableCell<T, TValue extends EntityBase>({ getValue, ...props }: CellContext<T, any>) {
     const { labelProperty } = useColumnMeta<T>(props.column);

@@ -7,7 +7,7 @@ import * as Config from '../config.json';
 import { normalizeNewLine } from './normalizeNewLine';
 import { nextScan } from './nextScan';
 import { IBarcode, ILocationSegment, IScan, ISku } from './types';
-import { dateFromNow } from './dateFromNow';
+import { dateFromNow } from '../common/date/dateFromNow';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Barcode } from '../dto/collections/Barcode';
 

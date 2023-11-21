@@ -1,4 +1,3 @@
-import { Brand } from './TBrand';
 import { Classifier } from '../dto/collections/Classifier';
 import { CustomItemField } from './CustomItemField';
 import { Draft } from './Draft';
@@ -19,6 +18,7 @@ import { Barcode } from '../dto/collections/Barcode';
 import { Address } from './TAddress';
 import { Rn } from './TRn';
 import { ProductTaxonomy } from '../dto/collections/ProductTaxonomy';
+import { Brand } from '../dto/collections/Brand';
 
 const $$schema: Realm.ObjectClass<any>[] = [
     Address,

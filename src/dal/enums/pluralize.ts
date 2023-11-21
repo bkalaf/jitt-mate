@@ -1,6 +1,6 @@
 import { endsWith } from '../endsWith';
 import { flip } from '../flip';
-import { not } from '../not';
+import { not } from '../../common/not';
 import { ifAny } from './ifAny';
 
 export function isIn<T>(...arr: T[]) {

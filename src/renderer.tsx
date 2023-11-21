@@ -35,9 +35,8 @@
 (Symbol.prototype as any).setValues ??= Symbol('@@Symbol.setValues');
 (Symbol.prototype as any).getValues ??= Symbol('@@Symbol.getValues');
 (Symbol.prototype as any).setDefaultValues ??= Symbol('@@Symbol.setDefaultValues');
-
-
 (Symbol as any).metadata = Symbol('Symbol.metadata');
+import Realm from 'realm';
 import { createRoot } from 'react-dom/client';
 import './assets/css/app.css';
 import { App } from './components/App';

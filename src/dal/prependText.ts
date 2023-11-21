@@ -1,3 +1,3 @@
-import { concatText } from './concatText';
+import { concatText } from '../common/text/concatText';
 
 export const prependText = concatText;

@@ -1,8 +1,9 @@
 import { useRealmContext } from '../hooks/useRealmContext';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/pro-duotone-svg-icons';
 import { Button } from './Buttons/Button';
+import { useReflectionContext } from './Contexts/useReflectionContext';
 
 export function TopBarAuthSegment() {
     const { isAuthenticated, currentUser, logOut } = useRealmContext();
@@ -21,6 +22,7 @@ export function TopBarAuthSegment() {
                     </span>
                 </span>
             ) : null}
+            {isAuthenticated() && <SchemaLoader />}
             <Button route='login' renderCondition={isNotAuthenticated}>
                 Log In
             </Button>
@@ -29,4 +31,16 @@ export function TopBarAuthSegment() {
             </Button>
         </span>
     );
+}
+
+export function SchemaLoader() {
+    const { schema } = useRealmContext();
+    const { register } = useReflectionContext();
+    useEffect(() => {
+        schema.forEach((s) => {
+            console.log(`Registering: ${s.schema?.name}`);
+            register(s as any);
+        })
+    }, [register, schema])
+    return <></>
 }

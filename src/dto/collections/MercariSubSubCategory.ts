@@ -1,40 +1,34 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Realm, { PropertySchema, PropertyTypeName } from 'realm';
 import { $db } from '../../dal/db';
 import { ICustomItemField, IHashTag, IMercariSubCategory, IMercariSubSubCategory, IProductTaxonomy } from '../../dal/types';
 import { cleanup, is } from '../../dal/is';
-import { defineColumnsDecorator, staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
-import { updateImmediatelyAfterConstruction } from '../../decorators/class/updateImmediatelyAfterConstruction';
-import { labelledByDecorator } from '../../decorators/class/labelledByDecorator';
-import { defaultSortDecorator } from '../../decorators/class/defaultSortDecorator';
+import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
 import { META } from '../../dal/types/META';
 import { wrapDistinctArrayAccessorDecorator } from '../../decorators/accessor/distinctArray';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import {
-    withAutoHeaderDecorator,
-    asListDecorator,
-    withAutoIDDecorator,
-    $$accessorFnDBListDecorator,
     $$string,
     withTextTypeInputDecorator,
     withImmutable,
-    $$object,
-    asLookupObjectDecorator,
-    $$ctor,
-    withHeaderDecorator,
     $$autoAccessorKey
 } from '../../decorators/field/baseMetaDecorator';
-import { withLabelPropertyDecorator } from '../../schema/decorators/labelProperty';
 import { MercariSubCategory } from './MercariSubCategory';
-import { ignore } from '../../common/functions/ignore';
-import { identity } from '../../common/functions/identity';
-import { recalculateDecorator } from '../../decorators/method/recalculateDecorator';
-import { defineCalculatedField } from '../../decorators/field/defineCalculatedField';
 import { prependText } from '../../dal/prependText';
-import { realmCollectionDecorator } from './realmCollectionDecorator';
-import { basicListDecorator, basicLookupDecorator } from './basicTextboxDecorator';
+import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
+import { basicListDecorator, basicLookupDecorator } from './_basicTextboxDecorator';
 
 export const ifList = (s: string): string | PropertySchema => (is.realmType.list(s) ? { type: 'list', objectType: cleanup(s) } : s);
-export const ifOpt = (s: string): string | PropertySchema => (is.realmType.optional(s) ? { type: cleanup(s) as Realm.PropertyTypeName, optional: true } : s);
+export const ifOpt = (s: string): string | PropertySchema => {
+    const result = is.realmType.optional(s) ? { type: cleanup(s) as Realm.PropertyTypeName, optional: true } : s;
+    if (!is.string(result) && is.realmType.primitive(result.type)) {
+        return result;
+    }
+    if (is.string(result)) return result;
+    if (['list', 'dictionary', 'set', 'linkingObjects'].includes(result.type)) return result;
+    return { optional: result.optional, type: 'object', objectType: result.type }
+}
 export const ifDictionary = (s: string): string | PropertySchema => (is.realmType.dictionary(s) ? { type: 'dictionary', objectType: cleanup(s) } : s);
 export const ifSet = (s: string): string | PropertySchema => (is.realmType.set(s) ? { type: 'set', objectType: cleanup(s) } : s);
 export const ifPrimitive = (s: string): PropertySchema | string => (is.realmType.primitive(s) ? { type: s as PropertyTypeName, optional: false } : s);
@@ -52,33 +46,14 @@ export class MercariSubSubCategory extends Realm.Object<IMercariSubSubCategory> 
         return [arg.parent?.parent?.name, arg.parent?.name, arg.name].filter((x) => x != null).join('::') ?? '';
     }
 
-    @META.col.categoryID
     id!: string;
-
-    @META.col.shipWeightPercent
     shipWeightPercent: Optional<number>;
-
-    @META.col.taxon
     taxon: OptionalEntity<IProductTaxonomy>;
-
-    @META.col.hashTags
     hashTags!: DBSet<Entity<IHashTag>>;
-
-    @META.col.name
     name!: string;
-
-    @basicLookupDecorator(MercariSubCategory, 'name', { header: 'SubCategory' })
     parent: OptionalEntity<IMercariSubCategory>;
-
-    @$$string
-    @withTextTypeInputDecorator
-    @withImmutable
-    @$$autoAccessorKey
     fullname!: string;
-
-    @basicListDecorator('customItemField')
     customItemFields!: DBList<ICustomItemField>;
-
     get categoryID(): Optional<string> {
         return this.parent?.categoryID;
     }
@@ -86,7 +61,6 @@ export class MercariSubSubCategory extends Realm.Object<IMercariSubSubCategory> 
         return this.parent?.id;
     }
 
-    @META.col.oid
     _id!: OID;
 
     @wrapInTransactionDecorator()
@@ -95,7 +69,7 @@ export class MercariSubSubCategory extends Realm.Object<IMercariSubSubCategory> 
             this.id = prependText('#')(this.id);
         }
         let shouldUpdateTaxon = true;
-        if (this.parent) {
+        if (this.parent && !(this.taxon?.lock ?? false)) {
             [this.parent.taxon?.kingdom, this.parent.taxon?.phylum, this.parent.taxon?.klass, this.parent.taxon?.order, this.parent.taxon?.family, this.parent.taxon?.genus, this.parent.taxon?.species]
                 .filter((x) => x != null && x.length > 0)
                 .forEach((value, ix) => {
@@ -144,7 +118,6 @@ export class MercariSubSubCategory extends Realm.Object<IMercariSubSubCategory> 
         return this.parent?.effectiveTaxon ?? this.taxon;
     }
 
-    @wrapDistinctArrayAccessorDecorator('name')
     get allHashTags(): Entity<IHashTag>[] {
         return [...(this.parent?.allHashTags ?? []), ...Array.from(this.hashTags.values() ?? [])];
     }

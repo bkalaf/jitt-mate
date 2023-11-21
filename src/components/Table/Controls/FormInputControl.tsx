@@ -3,7 +3,7 @@ import { $cn } from '../../../util/$cn';
 import { toProperFromCamel } from '../../../common/text/toProperCase';
 import { usePossibleFormContext } from './usePossibleFormContext';
 import { FormControlLabel } from './FormControlLabel';
-import { useControlID } from './useControlID';
+import { useControlID } from '../../../hooks/useControlID';
 
 export type IFormControlProps = ({
     orientation: 'horizontal' | 'vertical';
