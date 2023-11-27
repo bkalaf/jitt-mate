@@ -1,7 +1,6 @@
 import { $db } from './db';
 import Realm, { BSON } from 'realm';
 import { IBarcode, IBrand, IClassifier, IHashTag, IProduct } from './types';
-import { ObjectId } from 'mongodb';
 
 export class Product extends Realm.Object<IProduct> implements IProduct {
     _barcodes: string[] = [];

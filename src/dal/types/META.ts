@@ -68,7 +68,7 @@ import { strategy } from './wrappedSetMetadata';
 import { identity } from '../../common/functions/identity';
 import { composeR } from '../../common/functions/composeR';
 import { appendText } from '../../common/text/appendText';
-import { prependText } from '../prependText';
+import { prependText } from '../../common/text/prependText';
 import { fromOID } from '../fromOID';
 import { chunkDashes } from './chunkDashes';
 import { toFixed } from './toFixed';

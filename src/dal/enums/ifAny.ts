@@ -1,4 +1,4 @@
-import { flip } from '../flip';
+import { flip } from '../../common/flip';
 
 
 export function ifAny<T>(...arr: T[]) {

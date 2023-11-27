@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Icon } from '@mui/material';
+import { Icon, createFilterOptions } from '@mui/material';
 import { AutocompleteElement, SelectElement } from 'react-hook-form-mui';
 import { faSpinner } from '@fortawesome/pro-duotone-svg-icons';
 import { useQuery } from '@tanstack/react-query';
@@ -15,6 +15,9 @@ export function MRTEnumControl<T extends AnyObject>(name: string, header: string
         return <SelectElement name={name} label={header} options={options} type='string' />;
     };
 }
+
+
+
 export function MRTLookupControl<T extends AnyObject>(objectType: string, name: string, label: string, itemValue: string, itemKey = '_ID') {
     return function MRT_LookupControl() {
         const db = useLocalRealm();

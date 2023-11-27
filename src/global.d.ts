@@ -14,7 +14,7 @@ declare global {
     export type GetReadOnlyProperties<A extends Record<string, any>> = Exclude<{ [P in keyof A]: IsReadonly<A, P> extends true ? P : never }[keyof A], undefined>;
     export type GetNonReadOnlyProperties<A extends Record<string, any>> = Exclude<{ [P in keyof A]: IsReadonly<A, P> extends true ? never : P }[keyof A], undefined>;
     // eslint-disable-next-line @typescript-eslint/ban-types
-    // export type FunctionProperties<T> = { [P in keyof T]: T[P] extends Function ? P : never }[keyof T];
+    export type FunctionProperties<T> = { [P in keyof T]: T[P] extends Function ? P : never }[keyof T];
     export type WithoutAccessors<T extends AnyObject> = Pick<T, Exclude<Exclude<keyof T, FunctionProperties<T>>, GetReadOnlyProperties<T>>>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     export type OID = BSON.ObjectId | string;

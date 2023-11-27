@@ -1,5 +1,5 @@
 import { endsWith } from '../endsWith';
-import { flip } from '../flip';
+import { flip } from '../../common/flip';
 import { not } from '../../common/not';
 import { ifAny } from './ifAny';
 

@@ -5,19 +5,9 @@ import { $db } from '../../dal/db';
 import { ICustomItemField, IHashTag, IMercariSubCategory, IMercariSubSubCategory, IProductTaxonomy } from '../../dal/types';
 import { cleanup, is } from '../../dal/is';
 import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
-import { META } from '../../dal/types/META';
-import { wrapDistinctArrayAccessorDecorator } from '../../decorators/accessor/distinctArray';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
-import {
-    $$string,
-    withTextTypeInputDecorator,
-    withImmutable,
-    $$autoAccessorKey
-} from '../../decorators/field/baseMetaDecorator';
-import { MercariSubCategory } from './MercariSubCategory';
-import { prependText } from '../../dal/prependText';
+import { prependText } from '../../common/text/prependText';
 import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
-import { basicListDecorator, basicLookupDecorator } from './_basicTextboxDecorator';
 import { $$queryClient } from '../../components/App';
 import { HashTag } from './HashTag';
 

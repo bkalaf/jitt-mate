@@ -30,7 +30,7 @@ import { toOID } from '../../dal/toOID';
 import { BSON } from 'realm';
 import { MRTIntegerControl, MRTPercentageControl } from './MRTPercentageControl';
 import { MRTTextControl } from './MRTTextControl';
-import { MRTDbSetControl } from './MRTDbSetControl';
+import { MRTDbSetAutoCompleteControl } from './MRTDbSetControl';
 import { MRTEnumControl, MRTLookupControl } from './MRTLookupControl';
 import { MRTListControl } from './MRTListControl';
 import { MRTBoolControl } from './MRTBoolControl';
@@ -118,7 +118,7 @@ const entityDbSetMeta = function <TItem extends EntityBase>(objectType: string, 
             type: 'hidden',
             className: 'hidden'
         },
-        Edit: MRTDbSetControl<IHashTag>(objectType, name, opts.header ?? [toProperFromCamel(name), '#'].join(' '), lookupProperty, '_ID')
+        // Edit: MRTDbSetControl<IHashTag>(objectType, name, opts.header ?? [toProperFromCamel(name), '#'].join(' '), lookupProperty, '_ID')
     };
 };
 const lookupMeta = <TLookup extends AnyObject, TParent extends EntityBase>(name: string, objectType: string, lookupProperty: string, opts: { maxSize?: number; header?: string } = {}) => ({
@@ -276,7 +276,9 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
                     ...lookupMeta<IBrand, IBrand>('parent', 'brand', 'name', { header: 'Parent' })
                 }),
                 brandHelper.accessor('hashTags', {
-                    ...entityDbSetMeta<IHashTag>('hashTag', 'hashTags', 'name')
+                    header: 'Hash Tags',
+                    Cell: DBSetDetailCell<Entity<IHashTag>, IBrand>(({ payload }) => payload.name),
+                    Edit: MRTDbSetAutoCompleteControl<Entity<IHashTag>, IBrand>('hashTag', 'brand', 'hashTags', 'Hash Tags', 'name', '_id') as any
                 })
             ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns,
         createRenderDetailPanel:
@@ -369,7 +371,9 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
                     ...stringMeta({ propertyName: 'name', header: 'Name', required: true, maxLength: 100 })
                 }),
                 mercariBrandHelper.accessor('hashTags', {
-                    ...entityDbSetMeta<IHashTag>('hashTag', 'hashTags', 'name')
+                    header: 'Hash Tags',
+                    Cell: DBSetDetailCell<Entity<IHashTag>, IMercariBrand>(({ payload }) => payload.name),
+                    Edit: MRTDbSetAutoCompleteControl<Entity<IHashTag>, IMercariBrand>('hashTag', 'mercariBrand', 'hashTags', 'Hash Tags', 'name', '_id') as any
                 })
             ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns,
         createRenderDetailPanel:
@@ -614,6 +618,20 @@ function DBListDetailCell<T>(ItemComponent: ({ payload }: { payload: T }) => str
         return value == null || value.length === 0 ? null : (
             <List dense>
                 {(value ?? []).map((item, ix) => (
+                    <ListItem key={ix}>
+                        <ListItemText primary={ItemComponent({ payload: item })} />
+                    </ListItem>
+                ))}
+            </List>
+        );
+    };
+}
+function DBSetDetailCell<T, TParent extends EntityBase>(ItemComponent: ({ payload }: { payload: T }) => string) {
+    return function DBListDetailCellInner(props: Parameters<Exclude<MRT_ColumnDef<TParent, DBSet<T>>['Cell'], undefined>>[0]) {
+        const value = props.cell.getValue();
+        return value == null || value.length === 0 ? null : (
+            <List dense>
+                {(Array.from(value.values())).map((item, ix) => (
                     <ListItem key={ix}>
                         <ListItemText primary={ItemComponent({ payload: item })} />
                     </ListItem>

@@ -1,7 +1,7 @@
-import { flip } from './flip';
+import { flip } from '../common/flip';
 import { joinText } from '../common/text/joinText';
 import { dataAttributeEquals, ariaAttributeEquals, attribute, typeAttribute, pseudo } from './createAttribute';
-import { prependText } from './prependText';
+import { prependText } from '../common/text/prependText';
 
 export function Selector({ tagName, id, className, dataToggle }: { tagName?: string, id?: string, className?: string; dataToggle?: string }) {
     const $tagName = tagName ? [tagName] : [];

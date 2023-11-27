@@ -8,7 +8,7 @@ import { IHashTag, IMercariCategory, IProductTaxonomy } from '../../dal/types';
 import { ItemGroups } from '../../dal/enums/itemGroups';
 import { Genders } from '../../dal/enums/genders';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
-import { prependText } from '../../dal/prependText';
+import { prependText } from '../../common/text/prependText';
 import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
 import { $$queryClient } from '../../components/App';

@@ -7,7 +7,7 @@ import { IClassifier, IMercariSubSubCategory, IHashTag, IProductTaxonomy } from 
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
-import { surroundText } from '../../dal/surroundText';
+import { surroundText } from '../../common/text/surroundText';
 import { $$queryClient } from '../../components/App';
 import { HashTag } from './HashTag';
 

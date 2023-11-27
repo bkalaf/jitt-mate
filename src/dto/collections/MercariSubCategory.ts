@@ -8,7 +8,7 @@ import { ApparelTypes } from '../../dal/enums/apparelType';
 import { ItemGroups } from '../../dal/enums/itemGroups';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
-import { prependText } from '../../dal/prependText';
+import { prependText } from '../../common/text/prependText';
 import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { $$queryClient } from '../../components/App';
 import { HashTag } from './HashTag';

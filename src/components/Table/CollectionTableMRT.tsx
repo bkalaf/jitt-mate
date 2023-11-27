@@ -18,7 +18,7 @@ export function CollectionTableMRT<T extends MRT_RowData & EntityBase & IRealmEn
     const table = useMaterialReactTable({
         ...options,
         sortingFns: {
-            sortBarcode: (rowA: Row<{ barcode: IBarcode }>, rowB: Row<{ barcode: IBarcode }>, columnId) => {
+            sortBarcode: (rowA: Row<{ barcode: IBarcode }>, rowB: Row<{ barcode: IBarcode }>) => {
                 const bcA = parseInt(rowA.original.barcode.rawValue, 10);
                 const bcB = parseInt(rowB.original.barcode.rawValue, 10);
                 return bcA < bcB ? -1 : bcA > bcB ? 1 : 0;

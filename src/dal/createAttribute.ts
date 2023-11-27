@@ -2,11 +2,11 @@
 import { toKVP } from '../toKVP';
 import { ISku } from './types';
 import { identity } from '../common/functions/identity';
-import { flip } from './flip';
+import { flip } from '../common/flip';
 import { is } from './is';
 import { joinText } from '../common/text/joinText';
 import { $css } from './$css';
-import { surroundText } from './surroundText';
+import { surroundText } from '../common/text/surroundText';
 
 export type AttributeOperators = '=' | '*=' | '~=' | '$=' | '|=' | '^=';
 export type OperatorKeys = 'contains' | 'exact' | 'endsWith' | 'startsWith' | 'wordContains' | 'exactOrEndsWith';

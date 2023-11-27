@@ -36,9 +36,9 @@ const createWindow = () => {
             nodeIntegrationInWorker: true,
             webSecurity: false,
             contextIsolation: false,
-            zoomFactor: 1.0,
+            zoomFactor: 0.8,
             spellcheck: true
-        }
+        }        
     });
 
     enable(mainWindow.webContents);
@@ -46,6 +46,7 @@ const createWindow = () => {
     return mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY).then(() => {
         mainWindow.webContents.openDevTools();
         mainWindow.maximize();
+        mainWindow.setTitle('JUNK IN THE TRUNK, INC')
     });
 };
 

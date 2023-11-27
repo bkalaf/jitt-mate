@@ -1,10 +1,8 @@
 import { useCallback, useMemo, useState } from 'react';
-import { BSON } from 'realm';
 import { useGetRowId } from '../schema/useGetRowId';
 import { Row } from '@tanstack/react-table';
 import { ICollectionViewContext } from '../components/Contexts/CollectionViewContext';
 import { useUpdateRecord } from './useUpdateRecord';
-import { useInsertRecord } from './useInsertRecord';
 import { useCollectionViewContext } from './useCollectionViewContext';
 import { useLog } from '../components/Contexts/useLogger';
 import { fromOID } from '../dal/fromOID';

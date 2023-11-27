@@ -1,4 +1,3 @@
-
 export const elementColors = {
     red: 'bg-red-500 text-white',
     orange: 'bg-orange-400 text-white',
@@ -13,6 +12,6 @@ export const elementColors = {
     white: 'bg-white text-white',
     slate: 'bg-slate-600 text-white',
     black: 'bg-black text-white',
-    neutral: 'bg-neutral-400 text-white', 
-    magenta: 'bg-fuchsia-500 text-white' 
+    neutral: 'bg-neutral-400 text-white',
+    magenta: 'bg-fuchsia-500 text-white'
 };
