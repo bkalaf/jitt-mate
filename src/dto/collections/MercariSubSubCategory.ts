@@ -18,6 +18,8 @@ import { MercariSubCategory } from './MercariSubCategory';
 import { prependText } from '../../dal/prependText';
 import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { basicListDecorator, basicLookupDecorator } from './_basicTextboxDecorator';
+import { $$queryClient } from '../../components/App';
+import { HashTag } from './HashTag';
 
 export const ifList = (s: string): string | PropertySchema => (is.realmType.list(s) ? { type: 'list', objectType: cleanup(s) } : s);
 export const ifOpt = (s: string): string | PropertySchema => {
@@ -39,7 +41,19 @@ export const handleIf = (func: (s: string) => string | PropertySchema) => (item:
 export class MercariSubSubCategory extends Realm.Object<IMercariSubSubCategory> implements IMercariSubSubCategory {
     constructor(realm: Realm, args: any) {
         super(realm, args);
-        setTimeout(this.update, 500);
+        setImmediate(() =>
+            Promise.resolve(this.update()).then(() => {
+                $$queryClient
+                    .invalidateQueries({
+                        queryKey: [MercariSubSubCategory.schema.name]
+                    })
+                    .then(() => {
+                        $$queryClient.refetchQueries({
+                            queryKey: [MercariSubSubCategory.schema.name]
+                        });
+                    });
+            })
+        );    
     }
 
     static generateFullName(arg: IMercariSubSubCategory) {
@@ -68,16 +82,17 @@ export class MercariSubSubCategory extends Realm.Object<IMercariSubSubCategory> 
         if (!this.id.startsWith('#')) {
             this.id = prependText('#')(this.id);
         }
-        let shouldUpdateTaxon = true;
+        if (this.parent) {
+            this.parent = this.parent.update();
+        }
+        if (this.hashTags) {
+            HashTag.pruneList(this.hashTags);
+        }
+        if (this.taxon == null) this.taxon = {} as Entity<IProductTaxonomy>;
         if (this.parent && !(this.taxon?.lock ?? false)) {
             [this.parent.taxon?.kingdom, this.parent.taxon?.phylum, this.parent.taxon?.klass, this.parent.taxon?.order, this.parent.taxon?.family, this.parent.taxon?.genus, this.parent.taxon?.species]
                 .filter((x) => x != null && x.length > 0)
                 .forEach((value, ix) => {
-                    if (this.taxon == null) {
-                        this.taxon = {} as any;
-                        shouldUpdateTaxon = false;
-                    }
-                    console.log('update', value, ix);
                     switch (ix) {
                         case 0:
                             (this.taxon as any).kingdom = value;
@@ -103,8 +118,8 @@ export class MercariSubSubCategory extends Realm.Object<IMercariSubSubCategory> 
                     }
                 });
         }
-        if (shouldUpdateTaxon) {
-            this.taxon?.update();
+        if (this.taxon && this.taxon.update) {
+            this.taxon = this.taxon?.update();
         }
         this.fullname = MercariSubSubCategory.generateFullName(this);
         return this;

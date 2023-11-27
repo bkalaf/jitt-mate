@@ -2,54 +2,53 @@ import Realm, { BSON } from 'realm';
 import { $db } from '../../dal/db';
 import { IBarcode, ILocationSegment } from '../../dal/types';
 import { LocationKinds } from '../../dal/enums/locationKinds';
-import { LocationLabelColors, LocationLabelColorsColors, LocationLabelColorsKey, _LocationLabelColors } from '../../dal/enums/locationLabelColors';
-import { LocationTypes, LocationTypesColors } from '../../dal/enums/locationTypes';
+import { LocationLabelColorsKey, _LocationLabelColors } from '../../dal/enums/locationLabelColors';
+import { LocationTypesObj } from '../../dal/enums/locationTypes';
 import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
-import { basicListDecorator, basicLookupDecorator, basicTextboxDecorator } from './_basicTextboxDecorator';
-import { Barcode } from './Barcode';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
-import { META } from '../../dal/types/META';
-import { basicEnumDecorator } from './_basicEnumDecorator';
-import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
+import { $$queryClient } from '../../components/App';
 
 @realmCollectionDecorator('name', 'barcode.rawValue')
 export class LocationSegment extends Realm.Object<ILocationSegment> implements ILocationSegment {
     constructor(realm: Realm, args: any) {
         super(realm, args);
-        setTimeout(this.update, 500);
+        setImmediate(() =>
+            Promise.resolve(this.update()).then(() => {
+                $$queryClient
+                    .invalidateQueries({
+                        queryKey: [LocationSegment.schema.name]
+                    })
+                    .then(() => {
+                        $$queryClient.refetchQueries({
+                            queryKey: [LocationSegment.schema.name]
+                        });
+                    });
+            })
+        );  
     }
-    @basicLookupDecorator(Barcode, 'rawValue', { header: 'UPC' })
     get barcode(): OptionalEntity<IBarcode> {
         return this.upcs.length > 0 ? this.upcs[0] : undefined;
     }
-
-    @basicListDecorator('barcode')
     upcs!: DBList<Entity<IBarcode>>;
 
-    _barcode = '';
-    
     @wrapInTransactionDecorator()
     update() {
-        // const func = () => {
-        //     t.barcode = t.barcode.padStart(12, '0');
-        // };
-        // checkTransaction(realm)(() => { return; });
+        if (this.upcs == null) {
+            this.upcs = [] as any;
+        }
         this.upcs.forEach((upc) => upc.update());
         return this;
     }
-    @basicEnumDecorator({ enumMap: LocationTypes, colorMap: LocationTypesColors })
-    type: Optional<keyof LocationTypes>;
-    @basicEnumDecorator({ enumMap: LocationLabelColors, colorMap: LocationLabelColorsColors })
+    // @basicEnumDecorator({ enumMap: LocationTypes, colorMap: LocationTypesColors })
+    type: Optional<keyof typeof LocationTypesObj>;
+    // @basicEnumDecorator({ enumMap: LocationLabelColors, colorMap: LocationLabelColorsColors })
     color: Optional<LocationLabelColorsKey>;
-    @basicTextboxDecorator()
+    // @basicTextboxDecorator()
     notes: Optional<string>;
-    @basicEnumDecorator({ enumMap: LocationKinds })
+    // @basicEnumDecorator({ enumMap: LocationKinds })
     kind: Optional<keyof LocationKinds>;
-
-    @META.col.oid
     _id: BSON.ObjectId = new BSON.ObjectId();
     // barcode: Optional<IBarcode>;
-    @META.col.name
     name = '';
 
     static schema: Realm.ObjectSchema = {
@@ -57,20 +56,15 @@ export class LocationSegment extends Realm.Object<ILocationSegment> implements I
         primaryKey: '_id',
         properties: {
             _id: $db.objectId,
-            barcode: $db.barcode.opt,
-            // obs
-            _barcode: $db.string.opt,
             name: $db.string.empty,
             type: $db.string.empty,
             color: $db.string.opt,
             notes: $db.string.opt,
-            kind: $db.string.opt
+            kind: $db.string.opt,
+            upcs: $db.barcode.list
         }
     };
-    @staticColumnsDecorator
-    static columns(...prefixes: string[]): DefinedColumns {
-        return [];
-    }
+
     // static columns: DefinedColumns = [
     //     // Def.OID(helper),
     //     // // Def.ctor('barcode.rawValue').barcode().displayName('UPC').$$(helper),

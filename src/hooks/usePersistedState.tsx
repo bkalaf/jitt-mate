@@ -2,6 +2,7 @@ import { MRT_ColumnFiltersState, MRT_ColumnSizingState, MRT_DensityState, MRT_So
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocalForageContext } from './useLocalForageContext';
 import { useParams } from 'react-router-dom';
+import { PaginationState } from '@tanstack/react-table';
 
 export function usePersistedState(collectionOverride?: string) {
     const loadedCollections = useRef<string[]>([]);
@@ -13,6 +14,22 @@ export function usePersistedState(collectionOverride?: string) {
     const [showColumnFilters, setShowColumnFilters] = useState(false);
     const [sorting, setSorting] = useState<MRT_SortingState>([]);
     const [columnSizing, setColumnSizing] = useState<MRT_ColumnSizingState>({});
+    const [pageSize, setPageSize] = useState<number>(100);
+    const [pageIndex, setPageIndex] = useState<number>(0);
+    const setPagination = useCallback(
+        (pagination: PaginationState | ((x: PaginationState) => PaginationState)) => {
+            setPageIndex((prevPageIndex) => {
+                let result = 0;
+                setPageSize((prevPageSize) => {
+                    const { pageIndex: nextPageIndex, pageSize: nextPageSize } = typeof pagination === 'function' ? pagination({ pageIndex: prevPageIndex, pageSize: prevPageSize }) : pagination;
+                    result = nextPageIndex;
+                    return nextPageSize;
+                });
+                return result;
+            });
+        },
+        []
+    );
     const route = useParams<{ collection: string }>().collection;
     const collection = collectionOverride ?? route ?? 'n/a';
     const keys = useMemo(
@@ -24,7 +41,8 @@ export function usePersistedState(collectionOverride?: string) {
             globalFilter: ['mrt_global_filter', collection].join('_'),
             showGlobalFiler: ['mrt_show_global_filter', collection].join('_'),
             showColumnFilters: ['mrt_show_column_filters', collection].join('_'),
-            columnSizing: ['mt_column_sizing', collection].join('_')
+            columnSizing: ['mt_column_sizing', collection].join('_'),
+            pageSize: ['mrt_page_size', collection].join('_')
         }),
         [collection]
     );
@@ -40,7 +58,8 @@ export function usePersistedState(collectionOverride?: string) {
             const showGlobalFilter = (await forager.getItem<boolean>(keys.showGlobalFiler)) ?? false;
             const showColumnFilters = (await forager.getItem<boolean>(keys.showColumnFilters)) ?? false;
             const sorting = (await forager.getItem<MRT_SortingState>(keys.sorting)) ?? [];
-            const columnSizing = (await forager.getItem<MRT_ColumnSizingState>(keys.columnSizing) ?? {});
+            const columnSizing = (await forager.getItem<MRT_ColumnSizingState>(keys.columnSizing)) ?? {};
+            const pageSize = (await forager.getItem<number>(keys.pageSize)) ?? 100;
             if (columnFilters) setColumnFilters(columnFilters);
             if (columnVisibility) setColumnVisibility(columnVisibility);
             if (density) setDensity(density);
@@ -49,11 +68,12 @@ export function usePersistedState(collectionOverride?: string) {
             if (showColumnFilters) setShowColumnFilters(showColumnFilters);
             if (sorting) setSorting(sorting);
             if (columnSizing) setColumnSizing(columnSizing);
+            if (pageSize) setPageSize(pageSize);
         }
         getter()
             .then(() => (loadedCollections.current = [...loadedCollections.current, collection]))
             .finally(() => console.error(`LOCALFORAGER: settings loaded for ${collection}`));
-    }, [collection, forager, keys.columnFilters, keys.columnSizing, keys.columnVisibility, keys.density, keys.globalFilter, keys.showColumnFilters, keys.showGlobalFiler, keys.sorting]);
+    }, [collection, forager, keys.columnFilters, keys.columnSizing, keys.columnVisibility, keys.density, keys.globalFilter, keys.pageSize, keys.showColumnFilters, keys.showGlobalFiler, keys.sorting]);
     useEffect(() => {
         if (isFirstRender()) return;
         forager.setItem(keys.columnFilters, columnFilters);
@@ -85,7 +105,11 @@ export function usePersistedState(collectionOverride?: string) {
     useEffect(() => {
         if (isFirstRender()) return;
         forager.setItem(keys.columnSizing, columnSizing);
-    }, [columnSizing, forager, isFirstRender, keys.columnSizing])
+    }, [columnSizing, forager, isFirstRender, keys.columnSizing]);
+    useEffect(() => {
+        if (isFirstRender()) return;
+        forager.setItem(keys.pageSize, pageSize);
+    }, [forager, isFirstRender, keys.pageSize, pageSize]);
     const resetState = useCallback(() => {
         forager.setItem(keys.columnFilters, []);
         forager.setItem(keys.columnVisibility, {});
@@ -95,7 +119,8 @@ export function usePersistedState(collectionOverride?: string) {
         forager.setItem(keys.showColumnFilters, false);
         forager.setItem(keys.sorting, []);
         forager.setItem(keys.columnSizing, {});
-    }, [forager, keys.columnFilters, keys.columnSizing, keys.columnVisibility, keys.density, keys.globalFilter, keys.showColumnFilters, keys.showGlobalFiler, keys.sorting]);
+        forager.setItem(keys.pageSize, 100);
+    }, [forager, keys.columnFilters, keys.columnSizing, keys.columnVisibility, keys.density, keys.globalFilter, keys.pageSize, keys.showColumnFilters, keys.showGlobalFiler, keys.sorting]);
 
     return {
         resetState,
@@ -107,7 +132,11 @@ export function usePersistedState(collectionOverride?: string) {
             showColumnFilters,
             showGlobalFilter,
             sorting,
-            columnSizing
+            columnSizing,
+            pagination: {
+                pageSize,
+                pageIndex
+            }
         },
         handlers: {
             onColumnSizingChange: setColumnSizing,
@@ -117,7 +146,8 @@ export function usePersistedState(collectionOverride?: string) {
             onGlobalFilterChange: setGlobalFilter,
             onSortingChange: setSorting,
             onShowColumnFiltersChange: setShowColumnFilters,
-            onShowGlobalFilterChange: setShowGlobalFilter
+            onShowGlobalFilterChange: setShowGlobalFilter,
+            onPaginationChange: setPagination
         }
     };
 }

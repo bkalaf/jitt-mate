@@ -49,5 +49,7 @@ export default {
     mercariBrandHelper,
     brandHelper,
     hashTagHelper,
-    hashTagUsageHelper
+    hashTagUsageHelper,
+    locationSegmentHelper,
+    barcodeHelper
 };

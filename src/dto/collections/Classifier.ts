@@ -3,31 +3,31 @@
 // ///< reference path="./../../global.d.ts" />
 import Realm, { BSON } from 'realm';
 import { $db } from '../../dal/db';
-import { IClassifier, IMercariSubSubCategory, IHashTag, IProductTaxonomy, IProduct } from '../../dal/types';
+import { IClassifier, IMercariSubSubCategory, IHashTag, IProductTaxonomy } from '../../dal/types';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
-import { wrapDistinctArrayAccessorDecorator } from '../../decorators/accessor/distinctArray';
-import {
-    withAutoIDDecorator,
-    withHeaderDecorator,
-    withInputElementDecorator,
-    withImmutable,
-    $$string,
-    withTextTypeInputDecorator,
-    asListDecorator,
-    baseMetaDecorator,
-    $$accessorFnDBListDecorator,
-    $$autoAccessorKey
-} from '../../decorators/field/baseMetaDecorator';
-import { strategy } from '../../dal/types/wrappedSetMetadata';
 import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
 import { surroundText } from '../../dal/surroundText';
+import { $$queryClient } from '../../components/App';
+import { HashTag } from './HashTag';
 
 @realmCollectionDecorator('name', 'name')
 export class Classifier extends Realm.Object<IClassifier> implements IClassifier {
     constructor(realm: Realm, args: any) {
         super(realm, args);
-        setTimeout(this.update, 500);
+        setImmediate(() =>
+            Promise.resolve(this.update()).then(() => {
+                $$queryClient
+                    .invalidateQueries({
+                        queryKey: [Classifier.schema.name]
+                    })
+                    .then(() => {
+                        $$queryClient.refetchQueries({
+                            queryKey: [Classifier.schema.name]
+                        });
+                    });
+            })
+        );
     }
 
     get effectiveShipWeightPercent(): Optional<number> {
@@ -43,7 +43,7 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
     static generateName(classifier: IClassifier) {
         const { family, genus, kingdom, phylum, klass, order, species } = classifier.taxon ?? {};
         const extra = classifier.shortname ? surroundText(' (')(')')(classifier.shortname) : '';
-        return [kingdom, phylum, klass, order, family, genus, species]
+        return [kingdom, phylum, klass, order, family, genus, species, classifier.athletic]
             .filter((x) => x != null && x.length > 0)
             .join('-')
             .concat(extra);
@@ -67,17 +67,15 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
 
     @wrapInTransactionDecorator()
     update() {
-        // const $this = this as IClassifier;
-        // const name = toClassifierName($this);
-        // const func = () => {
-        //     // $this.name = name;
-        //     // HashTag.update(realm, ...$this.hashTags.values());
-        // };
-        // checkTransaction(realm)(func);
         if (this.taxon == null) {
             this.taxon = {} as Entity<IProductTaxonomy>;
         }
+        if (this.hashTags) {
+            HashTag.pruneList(this.hashTags);
+        }
+        if (this.isAthletic == null) this.isAthletic = false;
         if (this.mercariSubSubCategory) {
+            this.mercariSubSubCategory.update();
             [
                 this.mercariSubSubCategory.taxon?.kingdom,
                 this.mercariSubSubCategory.taxon?.phylum,
@@ -90,7 +88,6 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
                 .filter((x) => x != null && x.length > 0)
                 .forEach((value, ix) => {
                     if (!(this.taxon?.lock ?? false)) {
-                        if (this.taxon == null) this.taxon = {} as any;
                         switch (ix) {
                             case 0:
                                 (this.taxon as any).kingdom = value;
@@ -117,13 +114,13 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
                     }
                 });
         }
-        console.log(`update.this.1`, this);
         if (this.taxon.update != null && typeof this.taxon.update === 'function') {
-            this.taxon.update();
+            this.taxon = this.taxon.update();
         }
-        console.log(`update.this.2`, this);
-        this.name = this.taxon?.name ?? '';
-        console.log(`update.this.3`, this);
+        const newName = this.taxon?.name;
+        if (newName != null && newName.length > 0) {
+            this.name = Classifier.generateName(this);
+        }
         return this;
     }
     _id: BSON.ObjectId = new BSON.ObjectId();

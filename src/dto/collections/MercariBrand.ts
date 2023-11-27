@@ -9,12 +9,26 @@ import { IHashTag, IMercariBrand } from '../../dal/types';
 import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
+import { $$queryClient } from '../../components/App';
+import { HashTag } from './HashTag';
 
 @realmCollectionDecorator('name', 'name')
 export class MercariBrand extends Realm.Object<IMercariBrand> implements IMercariBrand {
     constructor(realm: Realm, args: any) {
         super(realm, args);
-        setTimeout(this.update, 500);
+        setImmediate(() =>
+            Promise.resolve(this.update()).then(() => {
+                $$queryClient
+                    .invalidateQueries({
+                        queryKey: [MercariBrand.schema.name]
+                    })
+                    .then(() => {
+                        $$queryClient.refetchQueries({
+                            queryKey: [MercariBrand.schema.name]
+                        });
+                    });
+            })
+        );  
     }
     get allHashTags(): Entity<IHashTag>[] {
         return Array.from(this.hashTags.values() ?? []);
@@ -22,6 +36,7 @@ export class MercariBrand extends Realm.Object<IMercariBrand> implements IMercar
 
     @wrapInTransactionDecorator()
     update() {
+        HashTag.pruneList(this.hashTags);
         return this;
     }
 

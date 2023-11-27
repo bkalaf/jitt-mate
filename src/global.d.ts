@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Realm, { BSON, SortDescriptor, ObjectSchema, PropertyTypeName, PropertySchema } from 'realm';
-import { ColumnDef, ColumnMeta, FilterFn, IdentifiedColumnDef, Row, RowData, Table } from '@tanstack/react-table';
+import { ColumnDef, ColumnMeta, FilterFn, IdentifiedColumnDef, Row, RowData, SortingFn, Table } from '@tanstack/react-table';
 import { UseMutateFunction } from '@tanstack/react-query';
 import { RankingInfo } from '@tanstack/match-sorter-utils';
 import { MRT_ColumnDef, MRT_RowData, MRT_TableOptions } from 'material-react-table';
@@ -295,6 +295,9 @@ declare module '@tanstack/table-core' {
 }
 
 declare module '@tanstack/table-core' {
+    interface SortingFns {
+        sortBarcode: SortingFn<any>;
+    }
     interface FilterFns {
         fuzzy: FilterFn<unknown>;
     }

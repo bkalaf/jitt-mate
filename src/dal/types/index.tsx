@@ -1,5 +1,5 @@
 import Realm from 'realm';
-import { LocationTypesKey } from '../enums/locationTypes';
+import { LocationTypesKey, LocationTypesObj } from '../enums/locationTypes';
 import { LocationLabelColorsKey } from '../enums/locationLabelColors';
 import { LocationKindsKey } from '../enums/locationKinds';
 import { BarcodeTypesKey } from '../enums/barcodeTypes';
@@ -152,10 +152,10 @@ export interface IUPC {
     upcs: DBList<Entity<IBarcode>>;
     readonly barcode: OptionalEntity<IBarcode>;
 }
+
 export interface ILocationSegment extends IRealmEntity<ILocationSegment>, IUPC {
-    _barcode: string;
     name: string;
-    type: Optional<LocationTypesKey>;
+    type: Optional<keyof typeof LocationTypesObj>;
     color: Optional<LocationLabelColorsKey>;
     notes: Optional<string>;
     kind: Optional<LocationKindsKey>;

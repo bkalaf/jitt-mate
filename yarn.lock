@@ -6402,6 +6402,11 @@ js-yaml@^4.1.0:
   dependencies:
     argparse "^2.0.1"
 
+jsbarcode@^3.11.3:
+  version "3.11.6"
+  resolved "https://registry.yarnpkg.com/jsbarcode/-/jsbarcode-3.11.6.tgz#96e8fbc3395476e162982a6064b98a09b5ea02c0"
+  integrity sha512-G5TKGyKY1zJo0ZQKFM1IIMfy0nF2rs92BLlCz+cU4/TazIc4ZH+X1GYeDRt7TKjrYqmPfTjwTBkU/QnQlsYiuA==
+
 jsesc@^2.5.1:
   version "2.5.2"
   resolved "https://registry.yarnpkg.com/jsesc/-/jsesc-2.5.2.tgz#80564d2e483dacf6e8ef209650a67df3f0c283a4"
@@ -8216,6 +8221,13 @@ rcedit@^3.0.1:
   integrity sha512-WRlRdY1qZbu1L11DklT07KuHfRk42l0NFFJdaExELEu4fEQ982bP5Z6OWGPj/wLLIuKRQDCxZJGAwoFsxhZhNA==
   dependencies:
     cross-spawn-windows-exe "^1.1.0"
+
+react-barcodes@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/react-barcodes/-/react-barcodes-1.2.0.tgz#3daf1d5180426a31b2c3b9cc1b64a1ff01e9fe9f"
+  integrity sha512-OAJMVnbZP1EqNG8YT7E5sCN8G+ke7rMvHOicCvwHfbAh5+IMCXVuT2b0t6/B1GJjVO1HHkXudqB+wow0IiiTig==
+  dependencies:
+    jsbarcode "^3.11.3"
 
 react-dom@^18.2.0:
   version "18.2.0"

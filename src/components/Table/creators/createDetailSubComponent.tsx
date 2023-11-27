@@ -29,7 +29,7 @@ export function createDetailSubComponent(infos: FieldInfo[]) {
                         </Box>
                         {infos.map(([propertyName, type, objectType], ix) => (
                             <TabPanel value={propertyName} key={ix}>
-                                <CollectionTableMRT propertyName={propertyName} type={type as any} objectType={objectType} parentRow={row} />
+                                <CollectionTableMRT propertyName={propertyName} type={type as any} objectType={objectType} parentRow={row as any} />
                             </TabPanel>
                         ))}
                     </TabContext>
@@ -37,5 +37,5 @@ export function createDetailSubComponent(infos: FieldInfo[]) {
             </QueryClientProvider>
         );
     };
-    return DetailSubComponent;
+    return infos.length > 0 ? DetailSubComponent : () => null;
 }

@@ -2,11 +2,13 @@ import { MRT_RowData, MRT_TableOptions } from 'material-react-table';
 import { useMemo } from 'react';
 import { ColumnResizeMode } from '@tanstack/react-table';
 
-
 export function useTableConstants<T extends MRT_RowData>() {
     return useMemo(
         () =>
             ({
+                sortingFns: {
+                    sortBarcode: (rowA, rowB, columnId) => {}
+                },
                 autoResetAll: false,
                 autoResetExpanded: false,
                 autoResetPageIndex: false,
@@ -28,7 +30,8 @@ export function useTableConstants<T extends MRT_RowData>() {
                     className: 'odd:bg-neutral-300 even:bg-cyan-300 aria-selected:bg-yellow-500 aria-selected:scale-105'
                 },
                 muiTableHeadCellProps: {
-                    className: 'aria-required:text-red-500 aria-required:after:content-["_(*)"] aria-required:after:text-red-500 aria-required:text-lg aria-required:after:font-extrabold whitespace-nowrap'
+                    className:
+                        'aria-required:text-red-500 aria-required:after:content-["_(*)"] aria-required:after:text-red-500 aria-required:text-lg aria-required:after:font-extrabold whitespace-nowrap'
                 },
                 positionToolbarAlertBanner: 'bottom' as MRT_TableOptions<T>['positionToolbarAlertBanner'],
                 columnFilterDisplayMode: 'popover' as MRT_TableOptions<T>['columnFilterDisplayMode']

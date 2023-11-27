@@ -15,12 +15,29 @@ import { toProperFromCamel } from '../../common/text/toProperCase';
 import { charRange } from '../../common/array/charRange';
 import { $families, $genuses, $kingdoms, $klasses, $orders, $phlyums } from '../../enums/kpcofgs';
 import { $cn } from '../../util/$cn';
+import { checkTransaction } from '../../util/checkTransaction';
+import { $$queryClient } from '../../components/App';
 
 @realmCollectionDecorator('kingdom')
 export class ProductTaxonomy extends Realm.Object<IProductTaxonomy> implements IProductTaxonomy {
     constructor(realm: Realm, args: any) {
         super(realm, args);
-        setTimeout(this.update, 500);
+        checkTransaction(realm)(() => {
+            if (this.lock == null) this.lock = false;
+        })
+        setImmediate(() =>
+            Promise.resolve(this.update()).then(() => {
+                $$queryClient
+                    .invalidateQueries({
+                        queryKey: [ProductTaxonomy.schema.name]
+                    })
+                    .then(() => {
+                        $$queryClient.refetchQueries({
+                            queryKey: [ProductTaxonomy.schema.name]
+                        });
+                    });
+            })
+        );    
     }
 
     static lookupEnumMap(...values: (string | undefined)[]) {
@@ -79,7 +96,7 @@ export class ProductTaxonomy extends Realm.Object<IProductTaxonomy> implements I
             genus: $db.string.opt,
             species: $db.string.opt,
             name: $db.string.opt,
-            lock: $db.bool.false
+            lock: { type: 'bool', optional: false, default: false }
         }
     };
 

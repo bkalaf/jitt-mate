@@ -1,4 +1,4 @@
-import { MRT_DensityState, MRT_Row, MRT_RowData, MRT_TableInstance } from 'material-react-table';
+import { MRT_Row, MRT_RowData, MRT_TableInstance } from 'material-react-table';
 import { useMemo } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { IRealmEntity } from '../dal/types';
@@ -8,7 +8,7 @@ import { createRenderToolbarInternalActions } from '../components/Table/creators
 import { konst } from '../common/functions/konst';
 import { createRenderRowActions } from '../components/Table/creators/createRenderRowActions';
 import { useTableConstants } from './useTableConstants';
-import { createRenderCreateRowDialogContent } from '../components/Table/creators/createRenderCreateRowDialogContent';
+import { createRenderCreateRowDialogContentRHF } from '../components/Table/creators/createRenderCreateRowDialogContent';
 import { createRenderEditRowDialogContentRHF } from '../components/Table/creators/createRenderEditRowDialogContent';
 import { useDefaultColumn } from './useDefaultColumn';
 import { TableTypeObject, tableType } from './tableType';
@@ -150,7 +150,6 @@ export function useMUIReactTable<T extends MRT_RowData>({
     };
     const constants = useTableConstants();
     const defaultColumn = useDefaultColumn<T>();
-
     return {
         dataUpdatedAt,
         options: {
@@ -162,7 +161,7 @@ export function useMUIReactTable<T extends MRT_RowData>({
             renderDetailPanel,
             renderToolbarInternalActions,
             renderRowActions,
-            renderCreateRowDialogContent: createRenderCreateRowDialogContent(),
+            renderCreateRowDialogContent: createRenderCreateRowDialogContentRHF(collection, insertAsync),
             renderEditRowDialogContent: createRenderEditRowDialogContentRHF(collection, editAsync),
             data: data ?? [],
             enableRowNumbers,
@@ -170,13 +169,6 @@ export function useMUIReactTable<T extends MRT_RowData>({
             getRowCanExpand,
             columns: $columns,
             defaultColumn,
-            initialState: {
-                density: 'compact' as MRT_DensityState,
-                pagination: {
-                    pageIndex: 0,
-                    pageSize: 100
-                }
-            },
             ...handlers,
             state: {
                 ...state,

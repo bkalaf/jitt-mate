@@ -8,16 +8,28 @@ import { ApparelTypes } from '../../dal/enums/apparelType';
 import { ItemGroups } from '../../dal/enums/itemGroups';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
-import { wrapDistinctArrayAccessorDecorator } from '../../decorators/accessor/distinctArray';
 import { prependText } from '../../dal/prependText';
 import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
-import { basicListDecorator } from './_basicTextboxDecorator';
+import { $$queryClient } from '../../components/App';
+import { HashTag } from './HashTag';
 
 @realmCollectionDecorator('name', 'parent.name', 'name')
 export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implements IMercariSubCategory {
     constructor(realm: Realm, args: any) {
         super(realm, args);
-        setTimeout(this.update, 500);
+        setImmediate(() =>
+            Promise.resolve(this.update()).then(() => {
+                $$queryClient
+                    .invalidateQueries({
+                        queryKey: [MercariSubCategory.schema.name]
+                    })
+                    .then(() => {
+                        $$queryClient.refetchQueries({
+                            queryKey: [MercariSubCategory.schema.name]
+                        });
+                    });
+            })
+        );    
     }
     
     get categoryID(): Optional<string> {
@@ -29,6 +41,12 @@ export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implem
         console.log(`preupdate`, this);
         if (!this.id.startsWith('#')) {
             this.id = prependText('#')(this.id);
+        }
+        if (this.parent) {
+            this.parent = this.parent.update();
+        }
+        if (this.hashTags) {
+            HashTag.pruneList(this.hashTags);
         }
         if (this.parent && !(this.taxon?.lock ?? false)) {
             [this.parent.taxon?.kingdom, this.parent.taxon?.phylum, this.parent.taxon?.klass, this.parent.taxon?.order, this.parent.taxon?.family, this.parent.taxon?.genus, this.parent.taxon?.species].filter(x => x != null && x.length > 0).forEach((value, ix) => {
@@ -60,8 +78,7 @@ export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implem
             })
             
         }
-        this.taxon?.update();
-        console.log('post update', this);
+        this.taxon = this.taxon?.update() ?? {} as Entity<IProductTaxonomy>;
         return this;
     }
     get effectiveShipWeightPercent(): Optional<number> {
@@ -70,8 +87,6 @@ export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implem
     get effectiveTaxon(): OptionalEntity<IProductTaxonomy> {
         return this.taxon ?? this.parent?.effectiveTaxon;
     }
-    @wrapDistinctArrayAccessorDecorator('name')
-    @basicListDecorator('hashTag')
     get allHashTags(): Entity<IHashTag>[] {
         return [...(this.parent?.allHashTags ?? []), ...Array.from(this.hashTags.values() ?? [])];
     }

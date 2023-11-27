@@ -11,12 +11,27 @@ import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { prependText } from '../../dal/prependText';
 import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
+import { $$queryClient } from '../../components/App';
+import { HashTag } from './HashTag';
 
 @realmCollectionDecorator('name', 'name')
 export class MercariCategory extends Realm.Object<IMercariCategory> implements IMercariCategory {
     constructor(realm: Realm, args: any) {
         super(realm, args);
-        setTimeout(this.update, 500);
+        setImmediate(
+            () =>
+                Promise.resolve(this.update()).then(() => {
+                    $$queryClient
+                        .invalidateQueries({
+                            queryKey: [MercariCategory.schema.name]
+                        })
+                        .then(() => {
+                            $$queryClient.refetchQueries({
+                                queryKey: [MercariCategory.schema.name]
+                            });
+                        });
+                })
+        );     
     }
 
     get effectiveShipWeightPercent(): Optional<number> {
@@ -33,9 +48,17 @@ export class MercariCategory extends Realm.Object<IMercariCategory> implements I
 
     @wrapInTransactionDecorator()
     update() {
-        this.taxon?.update();
+        if (this.taxon == null) {
+            this.taxon = {} as Entity<IProductTaxonomy>;
+        }
+        if (this.taxon != null && this.taxon.update != null) {
+            this.taxon = this.taxon.update();
+        }
         if (!this.id.startsWith('#')) {
             this.id = prependText('#')(this.id);
+        }
+        if (this.hashTags){
+            HashTag.pruneList(this.hashTags);
         }
         return this;
     }

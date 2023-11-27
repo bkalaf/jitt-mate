@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { OptObj, $db } from '../../dal/db';
 import Realm, { BSON } from 'realm';
 import { normalizeStringForFS } from '../../common/fs/normalizeStringForFS';
 import { IBrand, IHashTag, IMercariBrand } from '../../dal/types';
 import { ObjectId } from 'mongodb';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
-import { addDefaultHashTags } from './addDefaultHashTags';
+import { $$queryClient } from '../../components/App';
+import { HashTag } from './HashTag';
 
 export class Brand extends Realm.Object<IBrand> implements IBrand {
     get mercariBrandName(): Optional<string> {
@@ -13,11 +15,15 @@ export class Brand extends Realm.Object<IBrand> implements IBrand {
     @wrapInTransactionDecorator()
     update() {
         this.folder = normalizeStringForFS('-')(this.name);
-        addDefaultHashTags(this);
+        if (this.hashTags) {
+            HashTag.pruneList(this.hashTags);
+        }
         return this;
     }
     hashTags: DBSet<Entity<IHashTag>> = [] as any;
-    allHashTags: Entity<IHashTag>[] = [] as any;
+    get allHashTags(): Entity<IHashTag>[] {
+        return [...this.hashTags.values(), ...this.parent?.allHashTags ?? [], ...this.mercariBrand?.hashTags ?? []]
+    }
     name = '';
     mercariBrand: OptObj<IMercariBrand>;
     website: Optional<string>;
@@ -34,7 +40,19 @@ export class Brand extends Realm.Object<IBrand> implements IBrand {
     // }
     constructor(realm: Realm, args: any) {
         super(realm, args);
-        setTimeout(this.update, 500);
+        setImmediate(() =>
+            Promise.resolve(this.update()).then(() => {
+                $$queryClient
+                    .invalidateQueries({
+                        queryKey: [Brand.schema.name]
+                    })
+                    .then(() => {
+                        $$queryClient.refetchQueries({
+                            queryKey: [Brand.schema.name]
+                        });
+                    });
+            })
+        );  
     }
     static schema: Realm.ObjectSchema = {
         name: $db.brand(),

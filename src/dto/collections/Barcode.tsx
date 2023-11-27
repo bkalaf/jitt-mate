@@ -1,23 +1,33 @@
 // ///<reference path="./../../global.d.ts" />
 import Realm from 'realm';
 import { $db } from '../../dal/db';
-import { BarcodeTypes, BarcodeTypesKey } from '../../dal/enums/barcodeTypes';
+import { BarcodeTypesKey } from '../../dal/enums/barcodeTypes';
 import { IBarcode } from '../../dal/types';
 import { sum } from '../../common/math/sum';
 import { konst } from '../../common/functions/konst';
 import { unpad } from '../../dal/unpad';
 import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
-import { basicTextboxDecorator } from './_basicTextboxDecorator';
-import { basicCheckboxDecorator } from './_basicCheckboxDecorator';
-import { basicEnumDecorator } from './_basicEnumDecorator';
-import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
+import { $$queryClient } from '../../components/App';
 
 @realmCollectionDecorator('rawValue', 'rawValue')
 export class Barcode extends Realm.Object<IBarcode> implements IBarcode {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(realm: Realm, args: any) {
         super(realm, args);
-        setTimeout(this.update, 500);
+        setImmediate(() =>
+            Promise.resolve(this.update()).then(() => {
+                $$queryClient
+                    .invalidateQueries({
+                        queryKey: [Barcode.schema.name]
+                    })
+                    .then(() => {
+                        $$queryClient.refetchQueries({
+                            queryKey: [Barcode.schema.name]
+                        });
+                    });
+            })
+        );  
     }
     get ordinal(): number {
         return parseInt(this.barcode.split('').reverse().slice(0, 5).reverse().join(''), 10);
@@ -99,14 +109,14 @@ export class Barcode extends Realm.Object<IBarcode> implements IBarcode {
         }
         if (barcode.length === 8) {
             const expanded = Barcode.expandTruncated(barcode);
-            const [type, result] = Barcode.calculateCheckDigit(expanded);
+            const [type] = Barcode.calculateCheckDigit(expanded);
             if (type === 'upcA') return ['upcE', barcode];
         }
         throw new Error(`could not classify: ${barcode}`);
     }
     static classify(barcode: string): [true, BarcodeTypesKey] | [false] {
         try {
-            const [type, bc] = Barcode.calculateCheckDigit(barcode);
+            const [type] = Barcode.calculateCheckDigit(barcode);
             return [true, type];
         } catch (error) {
             console.log(JSON.stringify(error, null, '\t'));
@@ -168,11 +178,8 @@ export class Barcode extends Realm.Object<IBarcode> implements IBarcode {
     get isTruncated(): boolean {
         return this.type === 'upcE';
     }
-    @basicTextboxDecorator({ required: true })
     rawValue = '';
-    @basicCheckboxDecorator()
     valid = false;
-    @basicEnumDecorator({ valuesGetter: (x?: any) => BarcodeTypes })
     type: Optional<BarcodeTypesKey>;
     static ctor(value: string, callRealm = false) {
         const result = {
@@ -181,7 +188,8 @@ export class Barcode extends Realm.Object<IBarcode> implements IBarcode {
             valid: false
         } as WithoutAccessors<IBarcode>;
         if (callRealm) {
-            const db = window.$$store!;
+            const db = window.$$store;
+            if (db == null) throw new Error('no realm');
             return db.create<IBarcode>('barcode', result);
         }
         return result;
@@ -199,10 +207,6 @@ export class Barcode extends Realm.Object<IBarcode> implements IBarcode {
             type: { type: 'string', default: 'ean13' }
         }
     };
-    @staticColumnsDecorator
-    static columns(...prefixes: string[]): DefinedColumns {
-        return [];
-    }
 }
 
 console.log(Barcode.ctorWithoutCheckdigit('49500000062'));

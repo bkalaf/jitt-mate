@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { MRT_Row, MRT_RowData, MRT_TableOptions, MaterialReactTable, useMaterialReactTable } from 'material-react-table';
-import { IRealmEntity } from '../../dal/types';
+import { IBarcode, IRealmEntity } from '../../dal/types';
 import { useMUIReactTable } from '../../hooks/useMUIReactTable';
+import { Row } from '@tanstack/react-table';
 
 export function CollectionTableMRT<T extends MRT_RowData & EntityBase & IRealmEntity<T>>(props: {
     type?: 'object' | 'list' | 'dictionary' | 'set';
@@ -14,7 +15,16 @@ export function CollectionTableMRT<T extends MRT_RowData & EntityBase & IRealmEn
     // const deleteOne = useDeleteOne(collectionRoute);
     // const { state, ...options } = useStandardTableOptions(data, isLoading, isError, deleteOne, { collection: collectionRoute });
     const { dataUpdatedAt, options } = useMUIReactTable<T>(props);
-    const table = useMaterialReactTable(options as MRT_TableOptions<T>);
+    const table = useMaterialReactTable({
+        ...options,
+        sortingFns: {
+            sortBarcode: (rowA: Row<{ barcode: IBarcode }>, rowB: Row<{ barcode: IBarcode }>, columnId) => {
+                const bcA = parseInt(rowA.original.barcode.rawValue, 10);
+                const bcB = parseInt(rowB.original.barcode.rawValue, 10);
+                return bcA < bcB ? -1 : bcA > bcB ? 1 : 0;
+            }
+        }
+    } as MRT_TableOptions<T>);
 
     return (
         <>

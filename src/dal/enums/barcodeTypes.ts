@@ -16,4 +16,13 @@ export const BarcodeTypes = {
     locator: 'locator',
     sku: 'sku'
 };
+export const BarcodeTypesColors = {
+    upcA: 'bg-red-500 text-white',
+    upcE: 'bg-pink-500 text-white',
+    ean13: 'bg-cyan-500 text-black',
+    isbn10: 'bg-yellow-500 text-black',
+    isbn13: 'bg-amber-500 text-black',
+    locator: 'bg-lime-500 text-white',
+    sku: 'bg-purple-500 text-white'
+};
 export type BarcodeTypesKey = keyof BarcodeTypes;

@@ -1,30 +1,61 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { MRT_ColumnDef } from 'material-react-table';
-import { IBrand, IClassifier, IHashTag, IHashTagUsage, IMercariBrand, IMercariCategory, IMercariSubCategory, IMercariSubSubCategory, IProductTaxonomy } from '../../dal/types';
+import {
+    IBarcode,
+    IBrand,
+    IClassifier,
+    IHashTag,
+    IHashTagUsage,
+    ILocationSegment,
+    IMercariBrand,
+    IMercariCategory,
+    IMercariSubCategory,
+    IMercariSubSubCategory,
+    IProductTaxonomy
+} from '../../dal/types';
 import { MRT_OIDCell } from './Cells/MRT_OIDCell';
 import helpers from './helpers';
 import { createSubComponent } from './creators/createSubComponent';
 import { OuterTaxonomyComboBox } from './Controls/OuterTaxonomyComboBox';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckSquare, faSquareDashed } from '@fortawesome/pro-solid-svg-icons';
-import { Icon } from '@mui/material';
+import { Chip, Icon, List, ListItem, ListItemText } from '@mui/material';
 import { konst } from '../../common/functions/konst';
 import { CheckBoxCell } from './Cells/CheckBoxCell';
 import { DateCell } from './Cells/DateCell';
 import { LookupCell } from './Cells/LookupCell';
-import { PercentCell } from './Cells/PercentCell';
+import { BarcodeCell, PercentCell } from './Cells/PercentCell';
 import { fromOID } from '../../dal/fromOID';
 import { toOID } from '../../dal/toOID';
 import { BSON } from 'realm';
 import { MRTIntegerControl, MRTPercentageControl } from './MRTPercentageControl';
 import { MRTTextControl } from './MRTTextControl';
 import { MRTDbSetControl } from './MRTDbSetControl';
-import { MRTLookupControl } from './MRTLookupControl';
+import { MRTEnumControl, MRTLookupControl } from './MRTLookupControl';
+import { MRTListControl } from './MRTListControl';
 import { MRTBoolControl } from './MRTBoolControl';
 import { toProperFromCamel } from '../../common/text/toProperCase';
-const { taxonomy: productTaxonomyHelper, category: categoryHelper, subCategory, subSubCategory, classifierHelper, mercariBrandHelper, brandHelper, hashTagHelper, hashTagUsageHelper } = helpers;
+import { BarcodeTypes, BarcodeTypesColors } from '../../dal/enums/barcodeTypes';
+import { LocationTypes, LocationTypesColors } from '../../dal/enums/locationTypes';
+import { LocationKinds } from '../../dal/enums/locationKinds';
+import { LocationLabelColors, LocationLabelColorsColors } from '../../dal/enums/locationLabelColors';
+import { FieldValues, TextFieldElement, UseFormReturn } from 'react-hook-form-mui';
+import { Barcode } from '../../dto/collections/Barcode';
+const {
+    taxonomy: productTaxonomyHelper,
+    category: categoryHelper,
+    subCategory,
+    subSubCategory,
+    classifierHelper,
+    mercariBrandHelper,
+    brandHelper,
+    hashTagHelper,
+    hashTagUsageHelper,
+    locationSegmentHelper,
+    barcodeHelper
+} = helpers;
 
-const intMeta = (name: string, opts: { header?: string, min?: number, max?: number } = {}) => ({
+const intMeta = (name: string, opts: { header?: string; min?: number; max?: number } = {}) => ({
     header: opts.header ?? toProperFromCamel(name),
     enableColumnActions: false,
     enableColumnDragging: false,
@@ -37,7 +68,7 @@ const intMeta = (name: string, opts: { header?: string, min?: number, max?: numb
     Edit: MRTIntegerControl(name, opts.header ?? toProperFromCamel(name), { min: opts.min, max: opts.max }),
     Cell: IntCell
 });
-const percentageMeta = function<T extends EntityBase>(name: string, opts: { header?: string } = {}) {
+const percentageMeta = function (name: string, opts: { header?: string } = {}) {
     return {
         header: opts.header ?? toProperFromCamel(name),
         enableColumnActions: false,
@@ -49,9 +80,28 @@ const percentageMeta = function<T extends EntityBase>(name: string, opts: { head
             defaultValue: undefined
         },
         Edit: MRTPercentageControl(name, opts.header ?? toProperFromCamel(name)),
-        Cell: PercentCell<T> as any
+        Cell: PercentCell as any
     };
-}
+};
+const barcodeMeta = function (name: string, opts: { header?: string } = {}) {
+    return {
+        header: opts.header ?? toProperFromCamel(name),
+        meta: {
+            // valueIn: (x?: string | null) => x ?? '',
+            // valueOut: (x?: string) => (x != null && x.length > 0 ? x : null),
+            defaultValue: undefined
+        },
+        enableEditing: false,
+        Cell: BarcodeCell as any
+    };
+};
+// const entityDbListMeta = function (opts: { header: string }) {
+//     return {
+//         Cell: DBListCell,
+//         header: opts.header.concat(' #'),
+//         enableEditing: false
+//     };
+// };
 const entityDbSetMeta = function <TItem extends EntityBase>(objectType: string, name: string, lookupProperty: string, opts: { header?: string } = {}) {
     return {
         Cell: DBSetCell,
@@ -88,14 +138,14 @@ const dateMeta = (name: string, opts: { header?: string }) => ({
     header: opts.header ?? toProperFromCamel(name),
     Cell: DateCell,
     meta: {
-        valueIn: (x?: Date | null) => (x != null ? typeof x === 'string' ? new Date(Date.parse(x)) : x instanceof Date ? x : null : null)?.toLocaleString() ?? '',
+        valueIn: (x?: Date | null) => (x != null ? (typeof x === 'string' ? new Date(Date.parse(x)) : x instanceof Date ? x : null) : null)?.toLocaleString() ?? '',
         valueOut: (x?: string) => (x != null && x.length > 0 ? new Date(Date.parse(x)) : null),
         defaultValue: () => Promise.resolve(new Date(Date.now()))
     },
     Edit: MRTTextControl(name, opts.header ?? toProperFromCamel(name), undefined, undefined, undefined, undefined, undefined, 'datetime-local')
 });
 
-const boolMeta = (opts: { propertyName: string; header: string; defaultValue?: boolean; required?: boolean }) => ({
+const boolMeta = (opts: { propertyName: string; header: string; defaultValue?: boolean; required?: boolean; readOnly?: boolean }) => ({
     header: opts.header,
     Cell: CheckBoxCell,
     meta: {
@@ -103,7 +153,8 @@ const boolMeta = (opts: { propertyName: string; header: string; defaultValue?: b
         valueOut: (x?: string | boolean) => (x == null ? null : typeof x === 'boolean' ? x : typeof x === 'string' ? (x === 'true' ? true : x === 'false' ? false : null) : null),
         defaultValue: false
     },
-    Edit: MRTBoolControl(opts.propertyName, opts.header, opts.defaultValue, opts.required)
+    enableEditing: !(opts.readOnly ?? false),
+    Edit: opts.readOnly ?? false ? undefined : MRTBoolControl(opts.propertyName, opts.header, opts.defaultValue, opts.required)
 });
 const stringMeta = (opts: { propertyName: string; header: string; maxLength?: number; minLength?: number; pattern?: RegExp; required?: boolean; type?: React.HTMLInputTypeAttribute }) => ({
     header: opts.header,
@@ -115,6 +166,16 @@ const stringMeta = (opts: { propertyName: string; header: string; maxLength?: nu
     Edit: MRTTextControl(opts.propertyName, opts.header, opts.maxLength, opts.minLength, opts.pattern, opts.required, false, opts.type),
     muiTableHeadCellProps: {
         'aria-required': opts.required ?? false
+    }
+});
+const enumMeta = (name: string, enumMap: EnumMap, opts: { colorMap?: EnumMap; header?: string } = {}) => ({
+    header: opts.header ?? toProperFromCamel(name),
+    Cell: OuterEnumCell(enumMap, opts.colorMap),
+    Edit: MRTEnumControl(name, opts.header ?? toProperFromCamel(name), enumMap),
+    meta: {
+        valueIn: (x?: string | null) => (x == null || x.length === 0 ? '' : x),
+        valueOut: (x?: string) => (x == null || x.length === 0 ? null : (x as any)),
+        defaultValue: undefined
     }
 });
 const objectIdMeta = {
@@ -133,13 +194,29 @@ const objectIdMeta = {
     },
     Edit: MRTTextControl('_id', 'OID', undefined, undefined, undefined, true, true)
 };
-
+const dbListMeta = function <T extends FieldValues>(
+    name: string,
+    objectType: string,
+    opts: {
+        header?: string;
+        ItemComponent: ({ payload }: { payload: T }) => string;
+        convertPayload: (x: any) => T;
+        editControls: React.FunctionComponent<{ context: UseFormReturn<T, any, undefined> }>;
+        init: () => Promise<T>;
+    }
+) {
+    return {
+        header: opts.header ?? toProperFromCamel(name),
+        Cell: DBListDetailCell(opts.ItemComponent) as any,
+        Edit: MRTListControl(name, objectType, opts.ItemComponent, opts.convertPayload, opts.editControls, opts.init) as any
+    };
+};
 export const collections: Record<string, StaticTableDefinitions<any>> = {
     string: {
         getColumns: (): DefinedMRTColumns => [
             {
                 accessorKey: '1',
-                ...stringMeta({ propertyName: '1', header: 'Value', required: true,  maxLength: 150 })
+                ...stringMeta({ propertyName: '1', header: 'Value', required: true, maxLength: 150 })
             }
         ],
         createRenderDetailPanel: () => () => null
@@ -151,7 +228,7 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
                     ...intMeta('count', { min: 0 })
                 }),
                 hashTagUsageHelper.accessor('from', {
-                    ...dateMeta('from', { header: 'Timestamp'})
+                    ...dateMeta('from', { header: 'Timestamp' })
                 })
             ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns,
         createRenderDetailPanel: () => () => null
@@ -190,7 +267,7 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
                     ...stringMeta({ propertyName: 'folder', header: 'Folder' })
                 }),
                 brandHelper.accessor('mercariBrand', {
-                    ...lookupMeta<IMercariBrand, IBrand>('mercariBrand', 'mercariBrand', 'name', { header: 'Mercari Brand' }),
+                    ...lookupMeta<IMercariBrand, IBrand>('mercariBrand', 'mercariBrand', 'name', { header: 'Mercari Brand' })
                 }),
                 brandHelper.accessor('website', {
                     ...stringMeta({ propertyName: 'website', header: 'URL', type: 'url' })
@@ -207,6 +284,83 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
             ({ row, table }: MRT_TableOptionFunctionParams<IBrand, 'renderDetailPanel'>) =>
                 createSubComponent(subComponentTabPanels)<IBrand>({ row, table, collectionName: 'brand' })
     } as StaticTableDefinitions<IBrand>,
+    barcode: {
+        getColumns: (...pre: string[]): DefinedMRTColumns =>
+            [
+                barcodeHelper.accessor('rawValue', {
+                    ...stringMeta({ propertyName: 'rawValue', header: 'Raw Value', maxLength: 13 })
+                }),
+                barcodeHelper.accessor('type', {
+                    ...enumMeta('type', BarcodeTypes, { colorMap: BarcodeTypesColors, header: 'Barcode Type' }),
+                    enableEditing: false
+                }),
+                barcodeHelper.accessor('valid', {
+                    ...boolMeta({ propertyName: 'valid', readOnly: true, header: 'Is Valid' }),
+                    enableEditing: false
+                })
+            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns,
+        createRenderDetailPanel: () => () => null
+    } as StaticTableDefinitions<IBarcode>,
+    locationSegment: {
+        getColumns: (...pre: string[]): DefinedMRTColumns =>
+            [
+                locationSegmentHelper.accessor('_id', objectIdMeta),
+                locationSegmentHelper.accessor('name', {
+                    ...stringMeta({ propertyName: 'name', header: 'Name', required: true, maxLength: 50 })
+                }),
+                locationSegmentHelper.group({
+                    header: 'Barcode',
+                    enableEditing: false,
+                    columns: [
+                        locationSegmentHelper.accessor('barcode', {
+                            ...barcodeMeta('barcode', { header: '' }),
+                            enableEditing: false,
+                            enableClickToCopy: true,
+                            sortingFn: 'sortBarcode'
+                        }) as any,
+                        locationSegmentHelper.accessor('barcode.valid', {
+                            ...boolMeta({ propertyName: 'valid', header: 'Valid', readOnly: true }),
+                            enableEditing: false,
+                            Edit: undefined
+                        })
+                    ]
+                }),
+                locationSegmentHelper.accessor('upcs', {
+                    ...dbListMeta<Entity<IBarcode>>('upcs', 'barcode', {
+                        header: 'UPCS',
+                        convertPayload: (values: { rawValue: string }) => Barcode.ctor(values.rawValue) as Entity<IBarcode>,
+                        init: () => Promise.resolve({ rawValue: '' } as any),
+                        ItemComponent: ({ payload }: { payload: IBarcode }) => [payload.rawValue, payload.type].join('/'),
+                        editControls: ({ context }) => (
+                            <TextFieldElement
+                                name='rawValue'
+                                control={context.control}
+                                label='Raw Value'
+                                inputProps={{
+                                    maxLength: 13,
+                                    required: true
+                                }}
+                            />
+                        )
+                    })
+                }),
+                locationSegmentHelper.accessor('notes', {
+                    ...stringMeta({ propertyName: 'notes', header: 'Notes', maxLength: 200 })
+                }),
+                locationSegmentHelper.accessor('type', {
+                    ...enumMeta('type', LocationTypes, { colorMap: LocationTypesColors, header: 'Location Type' })
+                }),
+                locationSegmentHelper.accessor('kind', {
+                    ...enumMeta('kind', LocationKinds, { header: 'Location Kind' })
+                }),
+                locationSegmentHelper.accessor('color', {
+                    ...enumMeta('color', LocationLabelColors, { colorMap: LocationLabelColorsColors, header: 'Label Color' })
+                })
+
+                // upcs, barcode (get), name, type keyof type LocationTypesObj, color LocationLabelColorsKey, notes Opt<String>, kind LocationKindsKey
+            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns,
+        createRenderDetailPanel: () => () => null
+    } as StaticTableDefinitions<ILocationSegment>,
     mercariBrand: {
         getColumns: (...pre: string[]): DefinedMRTColumns =>
             [
@@ -243,7 +397,7 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
                     ...entityDbSetMeta<IHashTag>('hashTag', 'hashTags', 'name')
                 }),
                 classifierHelper.accessor('shipWeightPercent', {
-                    ...percentageMeta<IClassifier>('shipWeightPercent', { header: 'Ship Weight %' })
+                    ...percentageMeta('shipWeightPercent', { header: 'Ship Weight %' })
                 })
             ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns,
         createRenderDetailPanel:
@@ -354,7 +508,7 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
                     ...entityDbSetMeta<IHashTag>('hashTag', 'hashTags', 'name')
                 }),
                 categoryHelper.accessor('shipWeightPercent', {
-                    ...percentageMeta<IMercariCategory>('shipWeightPercent', { header: 'Ship Weight %' })
+                    ...percentageMeta('shipWeightPercent', { header: 'Ship Weight %' })
                 })
             ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as MRT_ColumnDef<IMercariCategory>[],
         getRowCanExpand: () => true,
@@ -385,7 +539,7 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
                     ...entityDbSetMeta<IHashTag>('hashTag', 'hashTags', 'name')
                 }),
                 subCategory.accessor('shipWeightPercent', {
-                    ...percentageMeta<IMercariSubCategory>('shipWeightPercent', { header: 'Ship Weight %' })
+                    ...percentageMeta('shipWeightPercent', { header: 'Ship Weight %' })
                 })
             ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })),
         getRowCanExpand: () => true,
@@ -414,7 +568,7 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
                     ...entityDbSetMeta<IHashTag>('hashTag', 'hashTags', 'name')
                 }),
                 subSubCategory.accessor('shipWeightPercent', {
-                    ...percentageMeta<IMercariSubSubCategory>('shipWeightPercent', { header: 'Ship Weight %' })
+                    ...percentageMeta('shipWeightPercent', { header: 'Ship Weight %' })
                 })
             ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as MRT_ColumnDef<IMercariSubSubCategory, any>[],
         getRowCanExpand: () => true,
@@ -441,4 +595,30 @@ function BoolCell<T extends EntityBase>(props: MRT_ColumnDefFunctionParams<'Cell
 function DBSetCell<T extends EntityBase>(props: MRT_ColumnDefFunctionParams<'Cell', Optional<DBSet<any>>, T>) {
     const value = props.cell.getValue() as Optional<DBSet<any>>;
     return (value?.size ?? 0).toFixed(0);
+}
+// function DBListCell<T extends EntityBase>(props: MRT_ColumnDefFunctionParams<'Cell', Optional<DBList<any>>, T>) {
+//     const value = props.cell.getValue() as Optional<DBList<any>>;
+//     return (value?.length ?? 0).toFixed(0);
+// }
+function OuterEnumCell(enumMap: EnumMap, colorMap?: EnumMap) {
+    return function EnumCell<T extends EntityBase>(props: MRT_ColumnDefFunctionParams<'Cell', Optional<string>, T>) {
+        const value = props.cell.getValue() as Optional<string>;
+        const output = value != null ? enumMap[value] : value;
+        const colors = value != null && colorMap != null ? colorMap[value] : '';
+        return value != null && <Chip className={colors} label={output}></Chip>;
+    };
+}
+function DBListDetailCell<T>(ItemComponent: ({ payload }: { payload: T }) => string) {
+    return function DBListDetailCellInner(props: Parameters<Exclude<MRT_ColumnDef<any, DBList<T>>['Cell'], undefined>>[0]) {
+        const value = props.cell.getValue();
+        return value == null || value.length === 0 ? null : (
+            <List dense>
+                {(value ?? []).map((item, ix) => (
+                    <ListItem key={ix}>
+                        <ListItemText primary={ItemComponent({ payload: item })} />
+                    </ListItem>
+                ))}
+            </List>
+        );
+    };
 }

@@ -1,11 +1,12 @@
 import { MRT_Row, MRT_RowData, MRT_TableOptions, MaterialReactTable, useMaterialReactTable } from 'material-react-table';
-import { IRealmEntity } from '../../dal/types';
+import { IBarcode, IRealmEntity } from '../../dal/types';
 import { useMUIReactTable } from '../../hooks/useMUIReactTable';
 import { useMutation } from '@tanstack/react-query';
 import { is } from '../../dal/is';
 import { checkTransaction } from '../../util/checkTransaction';
 import { FullScreenDialog } from '../Contexts/LinkItemDialog';
 import { toProperFromCamel } from '../../common/text/toProperCase';
+import { Row } from '@tanstack/react-table';
 
 export function RelationshipTableMRT<T extends MRT_RowData & EntityBase & IRealmEntity<T>>(props: {
     type?: 'object' | 'list' | 'dictionary' | 'set';
@@ -20,7 +21,15 @@ export function RelationshipTableMRT<T extends MRT_RowData & EntityBase & IRealm
     // const deleteOne = useDeleteOne(collectionRoute);
     // const { state, ...options } = useStandardTableOptions(data, isLoading, isError, deleteOne, { collection: collectionRoute });
     const { dataUpdatedAt, options, invalidator } = useMUIReactTable<T>({ ...props, isLink: true });
-    const table = useMaterialReactTable({ ...options, enableEditing: false } as MRT_TableOptions<T>);
+    const table = useMaterialReactTable({
+        ...options,
+        enableEditing: false,
+        sortingFns: {
+            sortBarcode: (rowA: Row<{ barcode: IBarcode }>, rowB: Row<{ barcode: IBarcode }>, columnId) => {
+                return rowA.original.barcode.rawValue.localeCompare(rowB.original.barcode.rawValue)
+            }
+        }
+    } as MRT_TableOptions<T>);
     const link = useMutation({
         mutationFn: (args: { values: MRT_Row<AnyObject> | MRT_Row<AnyObject>[] }) => {
             return new Promise((resolve, reject) => {
