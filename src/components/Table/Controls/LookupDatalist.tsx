@@ -1,12 +1,10 @@
 import { Column, Table } from '@tanstack/react-table';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useFormContext } from '../../Contexts/useFormContext';
-import { usePropertyInfo } from '../../../hooks/_usePropertyInfo';
 import { composeR } from '../../../common/functions/composeR';
 import { useDropDownQuery } from '../../../hooks/useDropDownQuery';
 import { Button } from '../../Buttons/Button';
 import { faPlusCircle } from '@fortawesome/pro-solid-svg-icons';
-import { useLoadInsertForm } from '../../../hooks/_useLoadInsertForm';
 import { ControlLabel } from './ControlLabel';
 
 export function LookupDatalist<T>({ noLabel, table, column, initialValue, getId }: { table: Table<T>; column: Column<T, any>; initialValue?: string; noLabel?: boolean; getId: (x: T) => string }) {

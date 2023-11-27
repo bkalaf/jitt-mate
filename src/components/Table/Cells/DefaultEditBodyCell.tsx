@@ -28,7 +28,7 @@ export function DefaultEditBodyCell(noLabel = false) {
             case 'object':
                 return (
                     <Wrapper>
-                        <LookupDatalist noLabel={noLabel} initialValue={initialValue()} table={props.table} column={props.column} getId={props.getId} />
+                        <div>No Control</div>
                     </Wrapper>
                 );
             case 'objectId':

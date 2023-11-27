@@ -60,6 +60,7 @@ export const tableType: Record<string, (args: { parentRow: MRT_Row<EntityBase & 
                 console.error('INVALIDATING', [collection]);
 
                 await $$queryClient.invalidateQueries({ queryKey: [collection] });
+                await $$queryClient.refetchQueries({ queryKey: [collection] });
             }
         },
         insert: (args: { values: [string, T] }) => {
@@ -154,6 +155,7 @@ export const tableType: Record<string, (args: { parentRow: MRT_Row<EntityBase & 
                 console.error('INVALIDATING', [collection]);
 
                 await $$queryClient.invalidateQueries({ queryKey: [collection] });
+                await $$queryClient.refetchQueries({ queryKey: [collection] });
             }
         },
         insert: (args: { values: [number, T] }) => {
@@ -257,6 +259,7 @@ export const tableType: Record<string, (args: { parentRow: MRT_Row<EntityBase & 
                 console.error('INVALIDATING', [collection]);
 
                 await $$queryClient.invalidateQueries({ queryKey: [collection] });
+                await $$queryClient.refetchQueries({ queryKey: [collection] });
             }
         },
         insert: (args: { values: [number, T] }) => {
@@ -351,6 +354,7 @@ export const tableType: Record<string, (args: { parentRow: MRT_Row<EntityBase & 
         invalidator: {
             onSuccess: async () => {
                 await $$queryClient.invalidateQueries({ queryKey: [collection] });
+                await $$queryClient.refetchQueries({ queryKey: [collection] });
             }
         },
         edit: (args: { values: T }) => {
@@ -409,15 +413,16 @@ export const tableType: Record<string, (args: { parentRow: MRT_Row<EntityBase & 
             onSuccess: async () => {
                 console.error('INVALIDATING', [collection]);
                 await $$queryClient.invalidateQueries({ queryKey: [collection] });
+                await $$queryClient.refetchQueries({ queryKey: [collection] });
             }
         },
         edit: (args: { values: AnyObject }) => {
             return new Promise<T>((resolve, reject) => {
                 try {
                     const func = () => {
-                        const payload = flattenPayload(args.values) as T;
-                        console.log(`payload`, args.values, payload);
-                        const result = window.$$store?.create<Entity<T> & IRealmEntity<T>>(collection, payload as any, Realm.UpdateMode.Modified);
+                        // const payload = flattenPayload(args.values) as T;
+                        console.log(`payload`, args.values);
+                        const result = window.$$store?.create<Entity<T> & IRealmEntity<T>>(collection, args.values as any, Realm.UpdateMode.Modified);
                         if (result == null) throw new Error('unsucessful create');
                         if (result.update && typeof result.update === 'function') {
                             result.update();

@@ -4,7 +4,6 @@ import { IBrand, IClassifier, IHashTag, IHashTagUsage, IMercariBrand, IMercariCa
 import { MRT_OIDCell } from './Cells/MRT_OIDCell';
 import helpers from './helpers';
 import { createSubComponent } from './creators/createSubComponent';
-import { OuterLookupComboBox } from './Controls/OuterLookupComboBox';
 import { OuterTaxonomyComboBox } from './Controls/OuterTaxonomyComboBox';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckSquare, faSquareDashed } from '@fortawesome/pro-solid-svg-icons';
@@ -14,18 +13,133 @@ import { CheckBoxCell } from './Cells/CheckBoxCell';
 import { DateCell } from './Cells/DateCell';
 import { LookupCell } from './Cells/LookupCell';
 import { PercentCell } from './Cells/PercentCell';
+import { fromOID } from '../../dal/fromOID';
+import { toOID } from '../../dal/toOID';
+import { BSON } from 'realm';
+import { MRTIntegerControl, MRTPercentageControl } from './MRTPercentageControl';
+import { MRTTextControl } from './MRTTextControl';
+import { MRTDbSetControl } from './MRTDbSetControl';
+import { MRTLookupControl } from './MRTLookupControl';
+import { MRTBoolControl } from './MRTBoolControl';
+import { toProperFromCamel } from '../../common/text/toProperCase';
 const { taxonomy: productTaxonomyHelper, category: categoryHelper, subCategory, subSubCategory, classifierHelper, mercariBrandHelper, brandHelper, hashTagHelper, hashTagUsageHelper } = helpers;
+
+const intMeta = (name: string, opts: { header?: string, min?: number, max?: number } = {}) => ({
+    header: opts.header ?? toProperFromCamel(name),
+    enableColumnActions: false,
+    enableColumnDragging: false,
+    maxSize: 200,
+    meta: {
+        valueIn: (x?: number | null) => x?.toFixed(4) ?? '',
+        valueOut: (x?: string) => (x != null && typeof x === 'string' && x.length > 0 ? parseFloat(x) : x != null && typeof x === 'number' ? x : null),
+        defaultValue: undefined
+    },
+    Edit: MRTIntegerControl(name, opts.header ?? toProperFromCamel(name), { min: opts.min, max: opts.max }),
+    Cell: IntCell
+});
+const percentageMeta = function<T extends EntityBase>(name: string, opts: { header?: string } = {}) {
+    return {
+        header: opts.header ?? toProperFromCamel(name),
+        enableColumnActions: false,
+        enableColumnDragging: false,
+        maxSize: 200,
+        meta: {
+            valueIn: (x?: number | null) => x?.toFixed(4) ?? '',
+            valueOut: (x?: string) => (x != null && typeof x === 'string' && x.length > 0 ? parseFloat(x) : x != null && typeof x === 'number' ? x : null),
+            defaultValue: undefined
+        },
+        Edit: MRTPercentageControl(name, opts.header ?? toProperFromCamel(name)),
+        Cell: PercentCell<T> as any
+    };
+}
+const entityDbSetMeta = function <TItem extends EntityBase>(objectType: string, name: string, lookupProperty: string, opts: { header?: string } = {}) {
+    return {
+        Cell: DBSetCell,
+        header: 'HashTag #',
+        enableEditing: true,
+        enableColumnFilter: false,
+        maxSize: 200,
+        meta: {
+            valueIn: (x?: DBSet<Entity<TItem>> | null) => (x?.map((y) => fromOID(y?._id)).filter((y) => y != null) ?? []) as string[],
+            valueOut: (x?: string[]) => (x?.map((y) => window.$$store?.objectForPrimaryKey<TItem>(objectType, toOID(y) as any)) ?? []) as Entity<TItem>[],
+            defaultValue: () => Promise.resolve([]) as any
+        },
+        muiEditTextFieldProps: {
+            type: 'hidden',
+            className: 'hidden'
+        },
+        Edit: MRTDbSetControl<IHashTag>(objectType, name, opts.header ?? [toProperFromCamel(name), '#'].join(' '), lookupProperty, '_ID')
+    };
+};
+const lookupMeta = <TLookup extends AnyObject, TParent extends EntityBase>(name: string, objectType: string, lookupProperty: string, opts: { maxSize?: number; header?: string } = {}) => ({
+    header: opts.header ?? toProperFromCamel(name),
+    maxSize: opts.maxSize ?? 200,
+    Cell: LookupCell<TLookup, TParent>(lookupProperty),
+    enableColumnFilter: false,
+    editVariant: 'select' as const,
+    meta: {
+        valueIn: (x?: OptionalEntity<TLookup> | null) => fromOID(x?._id) ?? '',
+        valueOut: (x?: string) => (x != null && x.length > 0 ? window.$$store?.objectForPrimaryKey<TLookup>(objectType, toOID(x) as any) ?? null : null),
+        defaultValue: undefined
+    },
+    Edit: MRTLookupControl(objectType, name, opts.header ?? toProperFromCamel(name), lookupProperty, '_ID')
+});
+const dateMeta = (name: string, opts: { header?: string }) => ({
+    header: opts.header ?? toProperFromCamel(name),
+    Cell: DateCell,
+    meta: {
+        valueIn: (x?: Date | null) => (x != null ? typeof x === 'string' ? new Date(Date.parse(x)) : x instanceof Date ? x : null : null)?.toLocaleString() ?? '',
+        valueOut: (x?: string) => (x != null && x.length > 0 ? new Date(Date.parse(x)) : null),
+        defaultValue: () => Promise.resolve(new Date(Date.now()))
+    },
+    Edit: MRTTextControl(name, opts.header ?? toProperFromCamel(name), undefined, undefined, undefined, undefined, undefined, 'datetime-local')
+});
+
+const boolMeta = (opts: { propertyName: string; header: string; defaultValue?: boolean; required?: boolean }) => ({
+    header: opts.header,
+    Cell: CheckBoxCell,
+    meta: {
+        valueIn: (x?: string | boolean | null) => x?.toString() ?? '',
+        valueOut: (x?: string | boolean) => (x == null ? null : typeof x === 'boolean' ? x : typeof x === 'string' ? (x === 'true' ? true : x === 'false' ? false : null) : null),
+        defaultValue: false
+    },
+    Edit: MRTBoolControl(opts.propertyName, opts.header, opts.defaultValue, opts.required)
+});
+const stringMeta = (opts: { propertyName: string; header: string; maxLength?: number; minLength?: number; pattern?: RegExp; required?: boolean; type?: React.HTMLInputTypeAttribute }) => ({
+    header: opts.header,
+    meta: {
+        valueIn: (x?: string | null) => x ?? '',
+        valueOut: (x?: string) => (x == null || x.length === 0 ? null : x),
+        defaultValue: ''
+    },
+    Edit: MRTTextControl(opts.propertyName, opts.header, opts.maxLength, opts.minLength, opts.pattern, opts.required, false, opts.type),
+    muiTableHeadCellProps: {
+        'aria-required': opts.required ?? false
+    }
+});
+const objectIdMeta = {
+    id: '_id',
+    header: 'OID',
+    Cell: MRT_OIDCell,
+    enableEditing: false,
+    enableColumnActions: false,
+    enableColumnDragging: false,
+    maxSize: 100,
+    muiTableBodyCellProps: { style: { justifyContent: 'center' } },
+    meta: {
+        valueIn: (x?: OID | null) => (x == null || (typeof x === 'string' && x.length === 0) ? null : fromOID(x)) ?? '',
+        valueOut: (x?: string) => (x == null || x.length === 0 ? null : toOID(x) ?? null),
+        defaultValue: () => Promise.resolve(new BSON.ObjectId())
+    },
+    Edit: MRTTextControl('_id', 'OID', undefined, undefined, undefined, true, true)
+};
 
 export const collections: Record<string, StaticTableDefinitions<any>> = {
     string: {
         getColumns: (): DefinedMRTColumns => [
             {
                 accessorKey: '1',
-                header: 'Value',
-                enableEditing: true,
-                muiEditTextFieldProps: {
-                    type: 'text'
-                }
+                ...stringMeta({ propertyName: '1', header: 'Value', required: true,  maxLength: 150 })
             }
         ],
         createRenderDetailPanel: () => () => null
@@ -34,66 +148,27 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
         getColumns: (...pre: string[]): DefinedMRTColumns =>
             [
                 hashTagUsageHelper.accessor('count', {
-                    header: 'Count',
-                    muiEditTextFieldProps: {
-                        type: 'number',
-                        inputProps: {
-                            min: 0,
-                            step: 1
-                        }
-                    }
+                    ...intMeta('count', { min: 0 })
                 }),
                 hashTagUsageHelper.accessor('from', {
-                    header: 'From',
-                    muiEditTextFieldProps: {
-                        type: 'datetime-local'
-                    }
+                    ...dateMeta('from', { header: 'Timestamp'})
                 })
             ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns,
-        createRenderDetailPanel:
-            () =>
-            () =>
-                null
+        createRenderDetailPanel: () => () => null
     } as StaticTableDefinitions<IHashTagUsage>,
     hashTag: {
         getColumns: (...pre: string[]): DefinedMRTColumns =>
             [
-                hashTagHelper.accessor('_id', {
-                    id: '_id',
-                    header: 'OID',
-                    Cell: MRT_OIDCell,
-                    enableEditing: false,
-                    enableColumnActions: false,
-                    enableColumnDragging: false,
-                    maxSize: 100,
-                    muiTableBodyCellProps: { style: { justifyContent: 'center' } }
-                }),
+                hashTagHelper.accessor('_id', objectIdMeta),
                 hashTagHelper.accessor('name', {
-                    header: 'Name',
-                    muiEditTextFieldProps: {
-                        required: true
-                    }
+                    ...stringMeta({ propertyName: 'name', header: 'Name', required: true, maxLength: 100 })
                 }),
-                // hashTagHelper.accessor('usage', {
-                //     Cell: (props) => {
-                //         const value = props.cell.getValue<DBList<IHashTagUsage> | undefined>();
-                //         return value?.length ?? 0;
-                //     },
-                //     header: 'Usage',
-                //     enableEditing: true,
-                //     enableColumnFilter: false,
-                //     maxSize: 200,
-                //     muiEditTextFieldProps: {
-                //         type: 'hidden',
-                //         className: 'hidden'
-                //     }
-                // }),
-                hashTagHelper.accessor('$highestUsage.count', {
+                hashTagHelper.accessor('$maxCount', {
                     header: 'Highest Usage',
                     enableEditing: false,
                     Cell: IntCell
                 }),
-                hashTagHelper.accessor('$mostRecentUsage.from', {
+                hashTagHelper.accessor('$mostRecentDate', {
                     header: 'Most Recent',
                     enableEditing: false,
                     Cell: DateCell
@@ -107,59 +182,24 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
     brand: {
         getColumns: (...pre: string[]): DefinedMRTColumns =>
             [
-                brandHelper.accessor('_id', {
-                    id: '_id',
-                    header: 'OID',
-                    Cell: MRT_OIDCell,
-                    enableEditing: false,
-                    enableColumnActions: false,
-                    enableColumnDragging: false,
-                    maxSize: 100,
-                    muiTableBodyCellProps: { style: { justifyContent: 'center' } }
-                }),
+                brandHelper.accessor('_id', objectIdMeta),
                 brandHelper.accessor('name', {
-                    header: 'Name'
+                    ...stringMeta({ propertyName: 'name', header: 'Name', required: true, maxLength: 100 })
                 }),
                 brandHelper.accessor('folder', {
-                    header: 'Folder'
+                    ...stringMeta({ propertyName: 'folder', header: 'Folder' })
                 }),
                 brandHelper.accessor('mercariBrand', {
-                    header: 'Mercari Brand',
-                    maxSize: 200,
-                    Cell: (props) => {
-                        const value = props.cell.getValue<Optional<IMercariBrand>>();
-                        return value?.name;
-                    },
-                    enableColumnFilter: false,
-                    editVariant: 'select',
-                    Edit: OuterLookupComboBox({ objectType: 'mercariBrand', name: 'mercariBrand', label: 'name' }) as MRT_ColumnDef<IBrand, OptionalEntity<IMercariBrand>>['Edit']
+                    ...lookupMeta<IMercariBrand, IBrand>('mercariBrand', 'mercariBrand', 'name', { header: 'Mercari Brand' }),
                 }),
-
-                brandHelper.accessor('hashTags', {
-                    Cell: (props) => {
-                        const value = props.cell.getValue<DBList<any> | undefined>();
-                        console.log(`brandHelper.hashTags`, value);
-                        return value?.length ?? 0;
-                    },
-                    header: 'HashTag #',
-                    enableEditing: true,
-                    enableColumnFilter: false,
-                    maxSize: 200,
-                    muiEditTextFieldProps: {
-                        type: 'hidden',
-                        className: 'hidden'
-                    }
+                brandHelper.accessor('website', {
+                    ...stringMeta({ propertyName: 'website', header: 'URL', type: 'url' })
                 }),
                 brandHelper.accessor('parent', {
-                    header: 'Parent',
-                    maxSize: 200,
-                    Cell: (props) => {
-                        const value = props.cell.getValue<Optional<IBrand>>();
-                        return value?.name;
-                    },
-                    enableColumnFilter: false,
-                    editVariant: 'select',
-                    Edit: OuterLookupComboBox({ objectType: 'brand', name: 'brand', label: 'name' }) as MRT_ColumnDef<IBrand, OptionalEntity<IBrand>>['Edit']
+                    ...lookupMeta<IBrand, IBrand>('parent', 'brand', 'name', { header: 'Parent' })
+                }),
+                brandHelper.accessor('hashTags', {
+                    ...entityDbSetMeta<IHashTag>('hashTag', 'hashTags', 'name')
                 })
             ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns,
         createRenderDetailPanel:
@@ -170,119 +210,40 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
     mercariBrand: {
         getColumns: (...pre: string[]): DefinedMRTColumns =>
             [
-                mercariBrandHelper.accessor('_id', {
-                    id: '_id',
-                    header: 'OID',
-                    Cell: MRT_OIDCell,
-                    enableEditing: false,
-                    enableColumnActions: false,
-                    enableColumnDragging: false,
-                    maxSize: 100,
-                    muiTableBodyCellProps: { style: { justifyContent: 'center' } }
-                }),
+                mercariBrandHelper.accessor('_id', objectIdMeta),
                 mercariBrandHelper.accessor('name', {
-                    header: 'Name',
-                    muiEditTextFieldProps: {
-                        required: true,
-                        inputProps: {
-                            maxLength: 100
-                        }
-                    }
+                    ...stringMeta({ propertyName: 'name', header: 'Name', required: true, maxLength: 100 })
                 }),
                 mercariBrandHelper.accessor('hashTags', {
-                    Cell: (props) => {
-                        const value = props.cell.getValue<DBSet<any> | undefined>();
-                        console.log(`hashTag value`, value);
-                        return value?.size ?? 0;
-                    },
-                    header: 'HashTag #',
-                    enableEditing: true,
-                    enableColumnFilter: false,
-                    maxSize: 200,
-                    muiEditTextFieldProps: {
-                        type: 'hidden',
-                        className: 'hidden'
-                    }
+                    ...entityDbSetMeta<IHashTag>('hashTag', 'hashTags', 'name')
                 })
             ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns,
         createRenderDetailPanel:
             (subComponentTabPanels: FieldInfo[]) =>
-            ({ row, table }: MRT_TableOptionFunctionParams<IClassifier, 'renderDetailPanel'>) =>
-                createSubComponent(subComponentTabPanels)<IClassifier>({ row, table, collectionName: 'classifier' })
-    } as StaticTableDefinitions<IClassifier>,
+            ({ row, table }: MRT_TableOptionFunctionParams<IMercariBrand, 'renderDetailPanel'>) =>
+                createSubComponent(subComponentTabPanels)<IMercariBrand>({ row, table, collectionName: 'mercariBrand' })
+    } as StaticTableDefinitions<IMercariBrand>,
     classifier: {
         getColumns: (...pre: string[]): DefinedMRTColumns =>
             [
-                classifierHelper.accessor('_id', {
-                    id: '_id',
-                    header: 'OID',
-                    Cell: MRT_OIDCell,
-                    enableEditing: false,
-                    enableColumnActions: false,
-                    enableColumnDragging: false,
-                    maxSize: 100,
-                    muiTableBodyCellProps: { style: { justifyContent: 'center' } }
-                }),
+                classifierHelper.accessor('_id', objectIdMeta),
                 classifierHelper.accessor('name', {
-                    header: 'Name',
-                    muiEditTextFieldProps: {
-                        required: true,
-                        inputProps: {
-                            maxLength: 150
-                        }
-                    }
+                    ...stringMeta({ propertyName: 'name', header: 'Name', required: true, maxLength: 50 })
                 }),
                 classifierHelper.accessor('isAthletic', {
-                    header: 'Athletic',
-                    Cell: CheckBoxCell,
-                    muiEditTextFieldProps: {
-                        type: 'checkbox'
-                    }
+                    ...boolMeta({ propertyName: 'isAthletic', header: 'Is Athletic', defaultValue: false })
                 }),
                 classifierHelper.accessor('mercariSubSubCategory', {
-                    header: 'SubSubCategory',
-                    maxSize: 200,
-                    Cell: LookupCell<IMercariSubSubCategory, IClassifier>('fullname'),
-                    enableColumnFilter: false,
-                    editVariant: 'select',
-                    Edit: OuterLookupComboBox({ objectType: 'mercariSubSubCategory', name: 'mercariSubSubCategory', label: 'name' }) as MRT_ColumnDef<
-                        IClassifier,
-                        OptionalEntity<IMercariSubSubCategory>
-                    >['Edit']
+                    ...lookupMeta<IMercariSubSubCategory, IClassifier>('mercariSubSubCategory', 'mercariSubSubCategory', 'fullname', { header: 'Full Name' })
                 }),
                 classifierHelper.accessor('shortname', {
-                    header: 'Short Name',
-                    muiEditTextFieldProps: {
-                        inputProps: {
-                            maxLength: 30
-                        }
-                    }
+                    ...stringMeta({ propertyName: 'shortname', header: 'Short Name', maxLength: 30 })
                 }),
                 classifierHelper.accessor('hashTags', {
-                    Cell: DBSetCell,
-                    header: 'HashTag #',
-                    enableEditing: true,
-                    enableColumnFilter: false,
-                    maxSize: 200,
-                    muiEditTextFieldProps: {
-                        type: 'hidden',
-                        className: 'hidden'
-                    }
+                    ...entityDbSetMeta<IHashTag>('hashTag', 'hashTags', 'name')
                 }),
                 classifierHelper.accessor('shipWeightPercent', {
-                    header: 'Ship Wght %',
-                    enableColumnActions: false,
-                    enableColumnDragging: false,
-                    maxSize: 200,
-                    Cell: PercentCell,
-                    muiEditTextFieldProps: {
-                        type: 'number',
-                        inputProps: {
-                            min: 1,
-                            max: 2,
-                            step: 0.01
-                        }
-                    }
+                    ...percentageMeta<IClassifier>('shipWeightPercent', { header: 'Ship Weight %' })
                 })
             ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns,
         createRenderDetailPanel:
@@ -294,7 +255,7 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
         getColumns: (...pre: string[]) =>
             [
                 productTaxonomyHelper.accessor('name', {
-                    header: 'Name'
+                    ...stringMeta({ propertyName: 'name', header: 'Name' })
                 }),
                 productTaxonomyHelper.accessor((row) => row.kingdom ?? '', {
                     header: 'Kingdom',
@@ -382,60 +343,18 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
     mercariCategory: {
         getColumns: (...pre: string[]) =>
             [
-                categoryHelper.accessor('_id', {
-                    id: '_id',
-                    header: 'OID',
-                    Cell: MRT_OIDCell,
-                    enableEditing: false,
-                    enableColumnActions: false,
-                    enableColumnDragging: false,
-                    maxSize: 100,
-                    muiTableBodyCellProps: { style: { justifyContent: 'center' } }
-                }),
+                categoryHelper.accessor('_id', objectIdMeta),
                 categoryHelper.accessor('name', {
-                    header: 'Name',
-                    muiEditTextFieldProps: {
-                        required: true,
-                        inputProps: {
-                            maxLength: 50
-                        }
-                    }
+                    ...stringMeta({ propertyName: 'name', maxLength: 50, required: true, header: 'Name' })
                 }),
                 categoryHelper.accessor('id', {
-                    header: 'Selector',
-                    muiEditTextFieldProps: {
-                        required: true,
-                        inputProps: {
-                            maxLength: 30
-                        }
-                    },
-                    maxSize: 200
+                    ...stringMeta({ propertyName: 'id', header: 'ID', required: true, maxLength: 30 })
                 }),
                 categoryHelper.accessor('hashTags', {
-                    Cell: DBSetCell,
-                    header: 'HashTag #',
-                    enableEditing: true,
-                    enableColumnFilter: false,
-                    maxSize: 200,
-                    muiEditTextFieldProps: {
-                        type: 'hidden',
-                        className: 'hidden'
-                    }
+                    ...entityDbSetMeta<IHashTag>('hashTag', 'hashTags', 'name')
                 }),
                 categoryHelper.accessor('shipWeightPercent', {
-                    header: 'Ship Wght %',
-                    enableColumnActions: false,
-                    enableColumnDragging: false,
-                    maxSize: 200,
-                    Cell: PercentCell,
-                    muiEditTextFieldProps: {
-                        type: 'number',
-                        inputProps: {
-                            min: 1,
-                            max: 2,
-                            step: 0.01
-                        }
-                    }
+                    ...percentageMeta<IMercariCategory>('shipWeightPercent', { header: 'Ship Weight %' })
                 })
             ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as MRT_ColumnDef<IMercariCategory>[],
         getRowCanExpand: () => true,
@@ -447,86 +366,26 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
     mercariSubCategory: {
         getColumns: (...pre: string[]) =>
             [
-                subCategory.accessor('_id', {
-                    id: '_id',
-                    header: 'OID',
-                    Cell: MRT_OIDCell,
-                    enableEditing: false,
-                    enableColumnActions: false,
-                    enableColumnDragging: false,
-                    maxSize: 100,
-                    muiTableBodyCellProps: { style: { justifyContent: 'center' } }
-                }),
-                subCategory.accessor('taxon.name', {
-                    enableEditing: false,
-                    id: 'taxon.name',
-                    header: 'Taxonomy'
-                }),
+                subCategory.accessor('_id', objectIdMeta),
+                // subCategory.accessor('taxon.name', {
+                //     enableEditing: false,
+                //     id: 'taxon.name',
+                //     header: 'Taxonomy'
+                // }),
                 subCategory.accessor('name', {
-                    header: 'Name',
-                    muiEditTextFieldProps: {
-                        required: true,
-                        inputProps: {
-                            maxLength: 50
-                        }
-                    }
+                    ...stringMeta({ propertyName: 'name', header: 'Name', maxLength: 50, required: true })
                 }),
                 subCategory.accessor('id', {
-                    header: 'Selector',
-                    muiEditTextFieldProps: {
-                        required: true,
-                        inputProps: {
-                            maxLength: 30
-                        }
-                    },
-                    maxSize: 200
-                }),
-                subCategory.accessor('hashTags', {
-                    Cell: DBSetCell,
-                    header: 'HashTag #',
-                    enableEditing: true,
-                    enableColumnFilter: false,
-                    maxSize: 200,
-                    muiEditTextFieldProps: {
-                        type: 'hidden',
-                        className: 'hidden'
-                    }
-                }),
-                subCategory.accessor('shipWeightPercent', {
-                    header: 'Ship Wght %',
-                    enableColumnActions: false,
-                    enableColumnDragging: false,
-                    maxSize: 200,
-                    Cell: PercentCell,
-                    muiEditTextFieldProps: {
-                        type: 'number',
-                        inputProps: {
-                            min: 1,
-                            max: 2,
-                            step: 0.01
-                        }
-                    }
+                    ...stringMeta({ propertyName: 'id', header: 'ID', required: true, maxLength: 30 })
                 }),
                 subCategory.accessor('parent', {
-                    header: 'Category',
-                    maxSize: 200,
-                    Cell: LookupCell<IMercariCategory, IMercariSubCategory>('name'),
-                    enableColumnFilter: false,
-                    editVariant: 'select',
-                    Edit: OuterLookupComboBox({ objectType: 'mercariCategory', name: 'parent', label: 'name' }) as any
+                    ...lookupMeta<IMercariCategory, IMercariSubCategory>('parent', 'mercariCategory', 'name', { header: 'Parent' })
                 }),
-                subCategory.accessor('parent.name', {
-                    header: 'Category Name',
-                    enableEditing: false
+                subCategory.accessor('hashTags', {
+                    ...entityDbSetMeta<IHashTag>('hashTag', 'hashTags', 'name')
                 }),
-                subCategory.accessor('categoryID', {
-                    header: 'Category ID',
-                    editVariant: 'text',
-                    muiEditTextFieldProps: {
-                        InputProps: {
-                            readOnly: true
-                        }
-                    }
+                subCategory.accessor('shipWeightPercent', {
+                    ...percentageMeta<IMercariSubCategory>('shipWeightPercent', { header: 'Ship Weight %' })
                 })
             ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })),
         getRowCanExpand: () => true,
@@ -538,84 +397,24 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
     mercariSubSubCategory: {
         getColumns: (...pre: string[]): MRT_ColumnDef<IMercariSubSubCategory, any>[] =>
             [
-                subSubCategory.accessor('_id', {
-                    id: '_id',
-                    header: 'OID',
-                    Cell: MRT_OIDCell,
-                    enableEditing: false,
-                    enableColumnActions: false,
-                    enableColumnDragging: false,
-                    maxSize: 100,
-                    muiTableBodyCellProps: { style: { justifyContent: 'center' } }
-                }),
-                subSubCategory.accessor('taxon.name', {
-                    enableEditing: false,
-                    id: 'taxon.name',
-                    header: 'Taxonomy'
+                subSubCategory.accessor('_id', objectIdMeta),
+                subSubCategory.accessor('name', {
+                    ...stringMeta({ propertyName: 'name', maxLength: 50, required: true, header: 'Name' })
                 }),
                 subSubCategory.accessor('fullname', {
-                    header: 'Full Name'
-                }),
-                subSubCategory.accessor('name', {
-                    header: 'Name',
-                    muiEditTextFieldProps: {
-                        required: true,
-                        inputProps: {
-                            maxLength: 50
-                        }
-                    }
+                    ...stringMeta({ propertyName: 'fullname', header: 'Full Name' })
                 }),
                 subSubCategory.accessor('id', {
-                    header: 'Selector',
-                    muiEditTextFieldProps: {
-                        required: true,
-                        inputProps: {
-                            maxLength: 30
-                        }
-                    },
-                    maxSize: 200
-                }),
-                subSubCategory.accessor('hashTags', {
-                    Cell: DBSetCell,
-                    header: 'HashTag #',
-                    enableEditing: true,
-                    enableColumnFilter: false,
-                    maxSize: 200,
-                    muiEditTextFieldProps: {
-                        type: 'hidden',
-                        className: 'hidden'
-                    }
-                }),
-                subSubCategory.accessor('shipWeightPercent', {
-                    header: 'Ship Wght %',
-                    enableColumnActions: false,
-                    enableColumnDragging: false,
-                    maxSize: 200,
-                    Cell: PercentCell,
-                    muiEditTextFieldProps: {
-                        type: 'number',
-                        inputProps: {
-                            min: 1,
-                            max: 2,
-                            step: 0.01
-                        }
-                    }
+                    ...stringMeta({ propertyName: 'id', header: 'ID', required: true, maxLength: 30 })
                 }),
                 subSubCategory.accessor('parent', {
-                    header: 'Parent',
-                    maxSize: 200,
-                    Cell: LookupCell<IMercariSubCategory, IMercariSubSubCategory>('name'),
-                    editVariant: 'select',
-                    Edit: OuterLookupComboBox({ objectType: 'mercariSubCategory', name: 'parent', label: 'name' })<IMercariSubSubCategory> as any
+                    ...lookupMeta<IMercariSubCategory, IMercariSubSubCategory>('parent', 'mercariSubCategory', 'name', { header: 'Parent' })
                 }),
-                subSubCategory.accessor('categoryID', {
-                    header: 'Category ID',
-                    editVariant: 'text',
-                    muiEditTextFieldProps: {
-                        InputProps: {
-                            readOnly: true
-                        }
-                    }
+                subSubCategory.accessor('hashTags', {
+                    ...entityDbSetMeta<IHashTag>('hashTag', 'hashTags', 'name')
+                }),
+                subSubCategory.accessor('shipWeightPercent', {
+                    ...percentageMeta<IMercariSubSubCategory>('shipWeightPercent', { header: 'Ship Weight %' })
                 })
             ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as MRT_ColumnDef<IMercariSubSubCategory, any>[],
         getRowCanExpand: () => true,
@@ -626,27 +425,20 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
     } as StaticTableDefinitions<IMercariSubSubCategory>
 };
 
-
 function IntCell<T extends EntityBase>(props: MRT_ColumnDefFunctionParams<'Cell', Optional<number>, T>) {
-        return (props.cell.getValue() as Optional<number>)?.toFixed(0);
-    };
+    return (props.cell.getValue() as Optional<number>)?.toFixed(0);
+}
 
 function BoolCell<T extends EntityBase>(props: MRT_ColumnDefFunctionParams<'Cell', Optional<boolean>, T>) {
-        const value = (props.cell?.getValue ?? konst(false))() ?? false;
-        return (
-            <Icon className='bg-yellow-500 h-7 w-7'>
-                {value ? (
-                    <FontAwesomeIcon icon={faCheckSquare} className='inline-block object-cover' />
-                ) : (
-                    <FontAwesomeIcon icon={faSquareDashed} className='inline-block object-cover' />
-                )}
-            </Icon>
-        );
-    };
-
+    const value = (props.cell?.getValue ?? konst(false))() ?? false;
+    return (
+        <Icon className='bg-yellow-500 h-7 w-7'>
+            {value ? <FontAwesomeIcon icon={faCheckSquare} className='inline-block object-cover' /> : <FontAwesomeIcon icon={faSquareDashed} className='inline-block object-cover' />}
+        </Icon>
+    );
+}
 
 function DBSetCell<T extends EntityBase>(props: MRT_ColumnDefFunctionParams<'Cell', Optional<DBSet<any>>, T>) {
-        const value = props.cell.getValue() as Optional<DBSet<any>>;
-        return (value?.size ?? 0).toFixed(0);
-    };
-
+    const value = props.cell.getValue() as Optional<DBSet<any>>;
+    return (value?.size ?? 0).toFixed(0);
+}

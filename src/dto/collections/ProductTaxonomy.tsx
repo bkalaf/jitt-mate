@@ -56,6 +56,7 @@ export class ProductTaxonomy extends Realm.Object<IProductTaxonomy> implements I
     name: Optional<string>;
     lock: Optional<boolean> = false;
     update() {
+        if (this.lock == null) this.lock = false;
         this.kingdom = this.kingdom?.length === 0 ? undefined : this.kingdom;
         this.phylum = this.phylum?.length === 0 ? undefined : this.phylum;
         this.klass = this.klass?.length === 0 ? undefined : this.klass;

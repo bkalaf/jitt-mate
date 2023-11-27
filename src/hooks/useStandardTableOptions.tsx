@@ -103,30 +103,4 @@ export function useStandardTableOptions<T extends MRT_RowData>(
     };
 }
 
-export function useTableConstants<T extends MRT_RowData>() {
-    return useMemo(
-        () => ({
-            autoResetAll: false,
-            autoResetExpanded: false,
-            autoResetPageIndex: false,
-            columnResizeMode: 'onEnd' as ColumnResizeMode,
-            createDisplayMode: 'modal' as MRT_TableOptions<T>['createDisplayMode'],
-            editDisplayMode: 'modal' as MRT_TableOptions<T>['editDisplayMode'],
-            enableColumnFilters: true,
-            enableColumnOrdering: true,
-            enableColumnResizing: true,
-            enableRowSelection: true,
-            enableStickyFooter: true,
-            enableStickyHeader: true,
-            enableRowActions: true,
-            layoutMode: 'grid' as MRT_TableOptions<T>['layoutMode'],
-            muiPaginationProps: {
-                rowsPerPageOptions: [15, 25, 50, 100, 250, 500, 1000, 2500],
-            },
-            
-            positionToolbarAlertBanner: 'bottom' as MRT_TableOptions<T>['positionToolbarAlertBanner'],
-            columnFilterDisplayMode: 'popover' as MRT_TableOptions<T>['columnFilterDisplayMode']
-        }),
-        []
-    );
-}
+

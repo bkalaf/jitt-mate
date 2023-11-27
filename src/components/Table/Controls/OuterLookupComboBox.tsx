@@ -1,6 +1,6 @@
 import { IRealmEntity } from '../../../dal/types';
 import { Autocomplete, AutocompleteProps, CircularProgress, TextField, createFilterOptions } from '@mui/material';
-import { useCallback, useMemo, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toProperFromCamel } from '../../../common/text/toProperCase';
 import { IComboBoxProps, renderGroup } from '../../../dto/collections/ProductTaxonomy';
 import { useQuery } from '@tanstack/react-query';
@@ -8,8 +8,8 @@ import { useLocalRealm } from '../../../routes/loaders/useLocalRealm';
 import { fromOID } from '../../../dal/fromOID';
 import { useEditingOrCreatingRow } from '../../../hooks/useEditingOrCreatingRow';
 import { getProperty } from '../../Contexts/getProperty';
-import { MRT_ColumnDef } from 'material-react-table';
-
+import { MRT_ColumnDef, MRT_EditCellTextField } from 'material-react-table';
+MRT_EditCellTextField
 export type ComboBoxEntity<T extends IRealmEntity<T>> = {
     label: string;
     value: string;
@@ -43,6 +43,7 @@ export const lookupFilter = createFilterOptions<ComboBoxEntity<any>>({
     limit: 10,
     stringify: (option) => (typeof option === 'string' ? option : option.label)
 });
+
 export function OuterLookupComboBox(outerProps: { objectType: RealmObjects; name: string; label?: string }) {
     function LookupComboBox<T extends IRealmEntity<T>>(props: Parameters<Exclude<MRT_ColumnDef<T>['Edit'], undefined>>[0]) {
         const { objectType, name, label } = outerProps;
@@ -81,7 +82,19 @@ export function OuterLookupComboBox(outerProps: { objectType: RealmObjects; name
         );
         const $filterOptions = useMemo(() => lookupFilterOptions(lookupFilter), []);
         const header = props.column.columnDef.header;
-
+        useEffect(() => {
+            const r = props.table.getState().editingRow ?? props.table.getState().creatingRow;
+            console.log('useEffect', r, outerProps, props);
+            const current = r?._valuesCache[outerProps.name];
+            setInputValue((prev) => {
+                const next = { entity: current, label: current[outerProps.label ?? ''], value: r?.id ?? '' };
+                return prev?.label === next.label ? prev : next;
+            });
+            const thisRef = props.table.refs.editInputRefs.current[outerProps.name];
+            console.error(`thisRef`, thisRef);
+        }, [props]);
+        console.error(`refs`, props.table.refs);
+        
         return (
             <Autocomplete<ComboBoxEntity<any>, false, false, false>
                 selectOnFocus
@@ -92,7 +105,6 @@ export function OuterLookupComboBox(outerProps: { objectType: RealmObjects; name
                 filterSelectedOptions
                 className='font-rubik'
                 options={data ?? []}
-                
                 loading={isLoading}
                 filterOptions={$filterOptions}
                 getOptionLabel={(option) => option.label}
@@ -103,6 +115,12 @@ export function OuterLookupComboBox(outerProps: { objectType: RealmObjects; name
                     <TextField
                         {...params}
                         label={header}
+                        inputRef={(inputRef) => {
+                            if (inputRef) {
+                                props.table.refs.editInputRefs.current[props.column.id] = inputRef;
+                                console.error('ref set', inputRef);
+                            }
+                        }}
                         InputProps={{
                             ...params.InputProps,
                             name,
@@ -118,5 +136,5 @@ export function OuterLookupComboBox(outerProps: { objectType: RealmObjects; name
             />
         );
     }
-    return LookupComboBox;
+    return forwardRef(LookupComboBox);
 }

@@ -8,7 +8,6 @@ import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import React, { useCallback, useState } from 'react';
 import { toProperFromCamel } from '../../../common/text/toProperCase';
-import { TaxonomyPanel } from '../DetailsPanel/TabPanels/TaxonomyPanel';
 import { CollectionTableMRT } from '../CollectionTableMRT';
 
 export function createDetailSubComponent(infos: FieldInfo[]) {
@@ -39,16 +38,4 @@ export function createDetailSubComponent(infos: FieldInfo[]) {
         );
     };
     return DetailSubComponent;
-}
-
-export function CreateTabPanel<TParent extends MRT_RowData>({ from, parentRow }: { from: string, parentRow: MRT_Row<TParent> }) {
-    return function DetailsTabPanal([propertyName, type, objectType]: [string, 'list' | 'dictionary' | 'set' | 'object', RealmObjects], key: number) {
-    switch (type) {
-        case 'object':
-            return objectType === 'productTaxonomy' ? <TaxonomyPanel from={from} parentRow={parentRow as any} /> : <></>
-
-        default:
-            break;
-    }
-};
 }

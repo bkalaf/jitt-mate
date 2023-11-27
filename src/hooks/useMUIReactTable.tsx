@@ -1,5 +1,4 @@
 import { MRT_DensityState, MRT_Row, MRT_RowData, MRT_TableInstance } from 'material-react-table';
-import { useCollectionRoute } from './useCollectionRoute';
 import { useMemo } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { IRealmEntity } from '../dal/types';
@@ -8,14 +7,18 @@ import { useReflectionContext } from '../components/Contexts/useReflectionContex
 import { createRenderToolbarInternalActions } from '../components/Table/creators/createRenderToolbarInternalActions';
 import { konst } from '../common/functions/konst';
 import { createRenderRowActions } from '../components/Table/creators/createRenderRowActions';
-import { useTableConstants } from './useStandardTableOptions';
+import { useTableConstants } from './useTableConstants';
 import { createRenderCreateRowDialogContent } from '../components/Table/creators/createRenderCreateRowDialogContent';
-import { createRenderEditRowDialogContent } from '../components/Table/creators/createRenderEditRowDialogContent';
+import { createRenderEditRowDialogContentRHF } from '../components/Table/creators/createRenderEditRowDialogContent';
 import { useDefaultColumn } from './useDefaultColumn';
 import { TableTypeObject, tableType } from './tableType';
 import { AlertColor } from '@mui/material';
 import { useParams } from 'react-router-dom';
+import { is } from '../dal/is';
 
+export function tapOr<T, TArgs extends AnyArray>(funcOr?: T | ((...x: TArgs) => T)) {
+    return (...args: TArgs) => (funcOr == null ? undefined : is.func<(...args: TArgs) => T>(funcOr) ? funcOr(...args) : (funcOr as T));
+}
 export function useMUIReactTable<T extends MRT_RowData>({
     type,
     objectType,
@@ -26,8 +29,9 @@ export function useMUIReactTable<T extends MRT_RowData>({
     type?: 'list' | 'dictionary' | 'set' | 'object';
     propertyName?: string;
     objectType?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parentRow?: MRT_Row<any>;
-    isLink?: boolean
+    isLink?: boolean;
 }) {
     const collectionRoute = useParams<{ collection: string }>().collection;
     const collection = objectType ?? collectionRoute ?? 'n/a';
@@ -45,10 +49,21 @@ export function useMUIReactTable<T extends MRT_RowData>({
         queryKey,
         renderDetailPanel: toRenderDetailPanel
     } = useMemo(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         () => tableType[type ?? 'collection']({ collection: collectionRoute ?? '', objectType: objectType ?? '', propertyName: propertyName ?? '', parentRow: parentRow as any }) as TableTypeObject<T>,
         [collectionRoute, objectType, parentRow, propertyName, type]
     );
-    const { queryFn: $queryFn, queryKey: $queryKey, getRowId: $getRowId, columns: $columns } = useMemo(() => (isLink ?? false) ? tableType.collection({ collection: objectType ?? ('' as any), objectType: '', parentRow: undefined as any, propertyName: '' }) : { columns, queryFn, queryKey, getRowId }, [columns, getRowId, isLink, objectType, queryFn, queryKey]);
+    const {
+        queryFn: $queryFn,
+        queryKey: $queryKey,
+        getRowId: $getRowId,
+        columns: $columns
+    } = useMemo(
+        () =>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            isLink ?? false ? tableType.collection({ collection: objectType ?? ('' as any), objectType: '', parentRow: undefined as any, propertyName: '' }) : { columns, queryFn, queryKey, getRowId },
+        [columns, getRowId, isLink, objectType, queryFn, queryKey]
+    );
     const {
         data,
         dataUpdatedAt,
@@ -88,6 +103,7 @@ export function useMUIReactTable<T extends MRT_RowData>({
         deleteAsync({ row: rows });
     };
     const onClickLightning = (t: MRT_TableInstance<T>) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const rows = t.getSelectedRowModel().rows as any as MRT_Row<Entity<T> & IRealmEntity<T>>[];
         for (const item of rows) {
             item.original.update();
@@ -147,7 +163,7 @@ export function useMUIReactTable<T extends MRT_RowData>({
             renderToolbarInternalActions,
             renderRowActions,
             renderCreateRowDialogContent: createRenderCreateRowDialogContent(),
-            renderEditRowDialogContent: createRenderEditRowDialogContent(),
+            renderEditRowDialogContent: createRenderEditRowDialogContentRHF(collection, editAsync),
             data: data ?? [],
             enableRowNumbers,
             getRowId: $getRowId,

@@ -8,7 +8,6 @@ import { is } from '../../../dal/is';
 import { useReflectionContext } from '../../Contexts/useReflectionContext';
 import { useOverlayContext } from '../../Contexts/useOverlayContext';
 import { RelationshipTableMRT } from '../../Views/RelationshipTableMRT';
-import { RelationshipView } from '../../Views/RelationshipView';
 import { useToggler } from '../../../hooks/useToggler';
 
 export function createRenderToolbarInternalActions<T extends AnyObject>(outerProps: {
@@ -31,7 +30,6 @@ export function createRenderToolbarInternalActions<T extends AnyObject>(outerPro
         const disableInsertDelete = !outerProps.getCanInsertDelete();
         const { getIsEmbedded } = useReflectionContext();
         const enableLink = outerProps.objectType != null && !(getIsEmbedded(outerProps.objectType) || is.realmType.primitive(outerProps.objectType));
-        const { pushFrame } = useOverlayContext();
         const [open, toggleOpen, setOpen, setClosed] = useToggler(false);
 
         return (

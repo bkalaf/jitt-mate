@@ -3,7 +3,7 @@
 // ///< reference path="./../../global.d.ts" />
 import Realm, { BSON } from 'realm';
 import { $db } from '../../dal/db';
-import { IClassifier, IMercariSubSubCategory, IHashTag, IProductTaxonomy } from '../../dal/types';
+import { IClassifier, IMercariSubSubCategory, IHashTag, IProductTaxonomy, IProduct } from '../../dal/types';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { wrapDistinctArrayAccessorDecorator } from '../../decorators/accessor/distinctArray';
 import {
@@ -74,6 +74,9 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
         //     // HashTag.update(realm, ...$this.hashTags.values());
         // };
         // checkTransaction(realm)(func);
+        if (this.taxon == null) {
+            this.taxon = {} as Entity<IProductTaxonomy>;
+        }
         if (this.mercariSubSubCategory) {
             [
                 this.mercariSubSubCategory.taxon?.kingdom,
@@ -114,8 +117,13 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
                     }
                 });
         }
-        this.taxon?.update();
+        console.log(`update.this.1`, this);
+        if (this.taxon.update != null && typeof this.taxon.update === 'function') {
+            this.taxon.update();
+        }
+        console.log(`update.this.2`, this);
         this.name = this.taxon?.name ?? '';
+        console.log(`update.this.3`, this);
         return this;
     }
     _id: BSON.ObjectId = new BSON.ObjectId();

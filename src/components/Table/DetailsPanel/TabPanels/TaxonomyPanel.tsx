@@ -1,17 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IProductTaxonomy } from '../../../../dal/types';
-import { useCallback, useMemo } from 'react';
-import { useTabPanelContext } from '../../../../hooks/useTabPanelContext';
-import { MRT_TableOptions, MaterialReactTable, useMaterialReactTable } from 'material-react-table';
+import { useCallback } from 'react';
+import { MRT_TableOptions, MaterialReactTable } from 'material-react-table';
 import { fromOID } from '../../../../dal/fromOID';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useUpdateRecord } from '../../../../hooks/useUpdateRecord';
 import { toOID } from '../../../../dal/toOID';
 import { catchError } from '../../../catchError';
-import { ignore } from '../../../../common/functions/ignore';
 import { flattenPayload } from '../../../../util/flattenPayload';
 import { TabPanel } from '@mui/lab';
-import { useStandardTableOptions } from '../../../../hooks/useStandardTableOptions';
 
 export function TaxonomyPanel(props: { from: string; parentRow: { taxon: IProductTaxonomy } }) {
     const { data, isLoading, isError } = useQuery({

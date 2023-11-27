@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Realm, { BSON, SortDescriptor, ObjectSchema, PropertyTypeName, PropertySchema } from 'realm';
 import { ColumnDef, ColumnMeta, FilterFn, IdentifiedColumnDef, Row, RowData, Table } from '@tanstack/react-table';
 import { UseMutateFunction } from '@tanstack/react-query';
 import { RankingInfo } from '@tanstack/match-sorter-utils';
-import { MRT_ColumnDef, MRT_Row, MRT_RowData, MRT_TableOptions } from 'material-react-table';
+import { MRT_ColumnDef, MRT_RowData, MRT_TableOptions } from 'material-react-table';
 
 declare global {
     export type Equals<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? true : false;
@@ -270,38 +271,20 @@ declare global {
         readonly setValues: unique symbol;
         readonly setDefaultValues: unique symbol;
     }
+    export type ListOf<T> = T extends DBList<infer R> ? R : T extends DBDictionary<infer R> ? R : T extends DBSet<infer R> ? R : T extends Array<infer R> ? R : never;
+    export type ValueOutFunc<T> = (x?: string | string[]) => (T | null | ListOf<T>[])
 }
 
 declare module '@tanstack/table-core' {
     interface ColumnMeta<TData extends RowData, TValue> {
-        accessorFn?: (x: TData) => TValue;
-        valuesGetter: (ctor: any) => EnumMap<string>;
-        datatype: RealmTypes;
-        objectType?: RealmObjects | RealmTypes;
-        labelProperty?: string;
-        lookupProperty?: string;
-        defaultValue?: ReturnType<RealmInitializer> | RealmInitializer;
-        enumMap?: EnumMap;
-        readonly?: boolean;
+        datatype?: RealmTypes;
         required?: boolean;
-        validators?: Validator<TValue | undefined>[];
-        inputType?: React.HTMLInputTypeAttribute;
-        max?: number;
-        min?: number;
-        maxLength?: number;
-        minLength?: number;
-        pattern?: RegExp;
-        enableEditing?: boolean;
-        step?: number;
-        multiple?: boolean;
-        multiplier?: number;
-        precision?: number;
-        embedded?: boolean;
-        colorMap?: Record<string, string>;
         justify?: 'justify-center' | 'justify-start' | 'justify-end' | 'justify-between' | 'justify-evenly' | 'justify-around';
-        preprocess?: PreProcessFunction<any, any>[];
-        formatString?: (x?: StringOr<TValue>) => StringOr;
+        valueIn?: ((x?: TValue | null) => string) | ((x?: DBSet<ListOf<TValue>> | null) => string[]);
+        valueOut?: ((x?: string) => (TValue | null)) | ((x?: string[]) => ListOf<TValue>[]);
+        defaultValue?: TValue | (() => Promise<TValue>)
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     interface TableMeta<TData extends RowData> {
         collectionName: string;
         schema: Realm.ObjectSchema;

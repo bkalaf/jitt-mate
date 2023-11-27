@@ -5,34 +5,11 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { $$queryClient } from '../../App';
 import { TaxonomyPanel } from '../DetailsPanel/TabPanels/TaxonomyPanel';
 import { $cn } from '../../../util/$cn';
-
-
-export function toGridCols(qty: number) {
-    switch (qty) {
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-            return 'grid-cols-4';
-        case 5:
-            return 'grid-cols-5';
-        case 6:
-            return 'grid-cols-6';
-        case 7:
-            return 'grid-cols-7';
-        case 8:
-            return 'grid-cols-8';
-        case 9:
-            return 'grid-cols-9';
-        default:
-            return 'grid-cols-10';
-    }
-}
+import { toGridCols } from './toGridCols';
 
 export function createSubComponent(infos: FieldInfo[]) {
     function SubComponent<T extends EntityBase>({ row, collectionName, table }: { table: MRT_TableInstance<T>; row: MRT_Row<T>; collectionName: string }) {
-        const spread = $cn({}, { [toGridCols(infos?.length)]: true }, 'grid justify-start w-full p-2')
+        const spread = $cn({}, { [toGridCols(infos?.length)]: true }, 'grid justify-start w-full p-2');
         return (
             <QueryClientProvider client={$$queryClient}>
                 <TabPanelProvider>
