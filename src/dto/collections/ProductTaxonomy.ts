@@ -2,19 +2,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // ///<reference path="./../../global.d.ts" />
 import Realm from 'realm';
-import React from 'react';
 import { IProductTaxonomy } from '../../dal/types';
 import { $db } from '../../dal/db';
 import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { taxonomy } from '../../dal/enums/taxa';
 import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
-import { AutocompleteRenderGroupParams, darken, lighten, styled } from '@mui/material';
+import { darken, lighten, styled } from '@mui/material';
 import { is } from '../../dal/is';
 import { MRT_Row, MRT_TableInstance } from 'material-react-table';
-import { toProperFromCamel } from '../../common/text/toProperCase';
 import { charRange } from '../../common/array/charRange';
 import { $families, $genuses, $kingdoms, $klasses, $orders, $phlyums } from '../../enums/kpcofgs';
-import { $cn } from '../../util/$cn';
 import { checkTransaction } from '../../util/checkTransaction';
 import { $$queryClient } from '../../components/App';
 
@@ -124,7 +121,7 @@ export type ITaxonomyComboBoxProps<T extends AnyObject> = IComboBoxProps<T> & {
     name: keyof IProductTaxonomy;
 };
 
-const GroupHeader = styled('div')(({ theme }) => ({
+export const GroupHeader = styled('div')(({ theme }) => ({
     position: 'sticky',
     top: '-8px',
     padding: '4px 10px',
@@ -132,24 +129,9 @@ const GroupHeader = styled('div')(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'light' ? lighten(theme.palette.primary.light, 0.85) : darken(theme.palette.primary.main, 0.8)
 }));
 
-const GroupItems = styled('ul')({
+export const GroupItems = styled('ul')({
     padding: 0
 });
-export function renderGroup(props: AutocompleteRenderGroupParams) {
-    const { key, group, children } = props;
-    console.log('renderGroup', React.Children.toArray(children));
-    console.log(React.Children.toArray(children)[0]);
-    const disabled = (React.Children.toArray(children)[0] as JSX.Element).props['aria-disabled'];
-    console.log(disabled);
-    const cn = $cn({}, { hidden: disabled ?? false }, 'flex flex-col-reverse empty:hidden');
-    return (
-        <li key={key} {...cn}>
-            <GroupItems className='empty:hidden'>{children}</GroupItems>
-            <GroupHeader className='only:hidden'>{toProperFromCamel(group)}</GroupHeader>
-        </li>
-    );
-}
-
 function sorter(a: [string, string], b: [string, string]) {
     const pSort = -b[0].localeCompare(a[0]);
     return pSort === 0 ? -b[1].localeCompare(a[1]) : pSort;

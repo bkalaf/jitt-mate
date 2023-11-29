@@ -8,11 +8,12 @@ import { BoundingClientElement } from './BoundingClientElement';
 import { TopAppBar } from './TopAppBar';
 import { useRealmContext } from '../hooks/useRealmContext';
 import { not } from '../common/not';
+import { LogInDialog } from './Dialogs/LogInDialog';
 
 export function AppRoot() {
-    const location = useLocation();
     const { isAuthenticated, logIn, logOut } = useRealmContext();
-    const [open, toggleOpen, _, setClosed] = useToggler(false);
+    const [leftDrawerOpen, toggleLeftDrawerOpen, _, setLeftDrawerClosed] = useToggler(false);
+    const [loginDialogOpen, toggleLoginDialogOpen] = useToggler(false);
     useEffect(() => {
         document.addEventListener('realm-change', () => console.log('REALM-CHANGE'));
     }, []);
@@ -26,14 +27,16 @@ export function AppRoot() {
             </nav> */}
             <TopAppBar
                 pages={['Data', 'Scanning']}
-                toggleLeftDrawer={toggleOpen}
+                toggleLeftDrawer={toggleLeftDrawerOpen}
                 settings={[
                     ['LogIn', not(isAuthenticated), () => logIn({ email: 'admin@junk-in-the-trunk.com', password: 'diane1221' })],
-                    ['LogOut', isAuthenticated, () => logOut()]
+                    ['LogOut', isAuthenticated, () => logOut()],
+                    ['Show LogIn', not(isAuthenticated), toggleLoginDialogOpen]
                 ]}
             />
+            <LogInDialog open={loginDialogOpen} toggler={toggleLoginDialogOpen} />
             {isAuthenticated() && <SchemaLoader />}
-            <LeftDrawer open={open} toggleOpen={toggleOpen} setClosed={setClosed} />
+            <LeftDrawer open={leftDrawerOpen} toggleOpen={toggleLeftDrawerOpen} setClosed={setLeftDrawerClosed} />
             <BoundingClientElement>
                 <Outlet />
             </BoundingClientElement>

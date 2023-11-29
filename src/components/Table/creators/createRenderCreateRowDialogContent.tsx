@@ -162,7 +162,7 @@ type St1 = Serialized<IMercariBrand>;
 type sT2 = Serialized<IBrand>;
 type st3 = Serialized<IHashTagUsage>;
 
-type ConvertToRealmFunction<T extends AnyObject> = (payload: _Serialized<T, true>) => Unserialized<T>;
+export type ConvertToRealmFunction<T extends AnyObject> = (payload: _Serialized<T, true>) => Unserialized<T>;
 
 type us1 = Unserialized<IMercariBrand>;
 type us2 = Unserialized<IBrand>;

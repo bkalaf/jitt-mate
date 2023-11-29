@@ -1,6 +1,6 @@
 import { Route, createHashRouter, createRoutesFromElements } from 'react-router-dom';
 import { ErrorBoundary } from './ErrorBoundary';
-import { LogInPage } from './LogInPage';
+import { LogInDialog } from './Dialogs/LogInDialog';
 import { AppRoot } from './AppRoot';
 import { collectionLoader } from '../routes/loaders/collectionLoader';
 import { Index } from './Index';
@@ -12,7 +12,7 @@ export const router = createHashRouter(
             <Route path='data'>
                 <Route id='collectionRoute' path=':collection' loader={collectionLoader} element={<CollectionTableMRT />}></Route>
             </Route>
-            <Route path='login' element={<LogInPage />}></Route>
+            <Route path='login' element={<LogInDialog />}></Route>
             <Route
                 index
                 element={

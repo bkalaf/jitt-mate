@@ -26,11 +26,11 @@ import { DateCell } from './Cells/DateCell';
 import { LookupCell } from './Cells/LookupCell';
 import { BarcodeCell, PercentCell } from './Cells/PercentCell';
 import { fromOID } from '../../dal/fromOID';
-import { toOID } from '../../dal/toOID';
+import { toNotNullOID, toOID } from '../../dal/toOID';
 import { BSON } from 'realm';
 import { MRTIntegerControl, MRTPercentageControl } from './MRTPercentageControl';
 import { MRTTextControl } from './MRTTextControl';
-import { MRTDbSetAutoCompleteControl } from './MRTDbSetControl';
+import { MRTDbSetAutoCompleteControl } from './MRTDbSetAutoCompleteControl';
 import { MRTEnumControl, MRTLookupControl } from './MRTLookupControl';
 import { MRTListControl } from './MRTListControl';
 import { MRTBoolControl } from './MRTBoolControl';
@@ -41,6 +41,8 @@ import { LocationKinds } from '../../dal/enums/locationKinds';
 import { LocationLabelColors, LocationLabelColorsColors } from '../../dal/enums/locationLabelColors';
 import { FieldValues, TextFieldElement, UseFormReturn } from 'react-hook-form-mui';
 import { Barcode } from '../../dto/collections/Barcode';
+import { MUIDBSetControl } from './MUIDBSetControl';
+import { MRTMultipleControl } from './MRTMultipleControl';
 const {
     taxonomy: productTaxonomyHelper,
     category: categoryHelper,
@@ -132,7 +134,7 @@ const lookupMeta = <TLookup extends AnyObject, TParent extends EntityBase>(name:
         valueOut: (x?: string) => (x != null && x.length > 0 ? window.$$store?.objectForPrimaryKey<TLookup>(objectType, toOID(x) as any) ?? null : null),
         defaultValue: undefined
     },
-    Edit: MRTLookupControl(objectType, name, opts.header ?? toProperFromCamel(name), lookupProperty, '_ID')
+    Edit: MRTLookupControl(objectType, name, opts.header ?? toProperFromCamel(name), lookupProperty)
 });
 const dateMeta = (name: string, opts: { header?: string }) => ({
     header: opts.header ?? toProperFromCamel(name),
@@ -278,7 +280,18 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
                 brandHelper.accessor('hashTags', {
                     header: 'Hash Tags',
                     Cell: DBSetDetailCell<Entity<IHashTag>, IBrand>(({ payload }) => payload.name),
-                    Edit: MRTDbSetAutoCompleteControl<Entity<IHashTag>, IBrand>('hashTag', 'brand', 'hashTags', 'Hash Tags', 'name', '_id') as any
+                    Edit: MRTMultipleControl(
+                        'hashTags',
+                        'Hash Tags',
+                        'hashTag',
+                        'name',
+                        (props: {data: IHashTag} ) => props.data.name,
+                        (prev: IHashTag[]) => (x: IHashTag) => {
+                            console.log(`appender`, `prev`, prev, 'item', x);
+                            return [...prev, x];
+                        },
+                        true
+                    ) as any
                 })
             ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns,
         createRenderDetailPanel:
@@ -373,7 +386,15 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
                 mercariBrandHelper.accessor('hashTags', {
                     header: 'Hash Tags',
                     Cell: DBSetDetailCell<Entity<IHashTag>, IMercariBrand>(({ payload }) => payload.name),
-                    Edit: MRTDbSetAutoCompleteControl<Entity<IHashTag>, IMercariBrand>('hashTag', 'mercariBrand', 'hashTags', 'Hash Tags', 'name', '_id') as any
+                    Edit: MRTMultipleControl(
+                        'hashTags',
+                        'Hash Tags',
+                        'hashTag',
+                        'name',
+                        (props: {data: IHashTag} ) => props.data.name,
+                        (prev: IHashTag[]) => (x: IHashTag) => [...prev, x],
+                        true
+                    ) as any
                 })
             ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns,
         createRenderDetailPanel:
@@ -616,9 +637,9 @@ function DBListDetailCell<T>(ItemComponent: ({ payload }: { payload: T }) => str
     return function DBListDetailCellInner(props: Parameters<Exclude<MRT_ColumnDef<any, DBList<T>>['Cell'], undefined>>[0]) {
         const value = props.cell.getValue();
         return value == null || value.length === 0 ? null : (
-            <List dense>
+            <List dense className='p-0 m-0'>
                 {(value ?? []).map((item, ix) => (
-                    <ListItem key={ix}>
+                    <ListItem key={ix} className='p-0 m-0'>
                         <ListItemText primary={ItemComponent({ payload: item })} />
                     </ListItem>
                 ))}
@@ -630,9 +651,9 @@ function DBSetDetailCell<T, TParent extends EntityBase>(ItemComponent: ({ payloa
     return function DBListDetailCellInner(props: Parameters<Exclude<MRT_ColumnDef<TParent, DBSet<T>>['Cell'], undefined>>[0]) {
         const value = props.cell.getValue();
         return value == null || value.length === 0 ? null : (
-            <List dense>
+            <List dense className='p-0 m-0'>
                 {(Array.from(value.values())).map((item, ix) => (
-                    <ListItem key={ix}>
+                    <ListItem key={ix} className='p-0 m-0'>
                         <ListItemText primary={ItemComponent({ payload: item })} />
                     </ListItem>
                 ))}

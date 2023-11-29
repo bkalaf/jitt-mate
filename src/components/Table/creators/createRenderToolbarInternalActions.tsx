@@ -6,7 +6,6 @@ import { useCallback } from 'react';
 import { BSON } from 'mongodb';
 import { is } from '../../../dal/is';
 import { useReflectionContext } from '../../Contexts/useReflectionContext';
-import { useOverlayContext } from '../../Contexts/useOverlayContext';
 import { RelationshipTableMRT } from '../../Views/RelationshipTableMRT';
 import { useToggler } from '../../../hooks/useToggler';
 

@@ -14,7 +14,6 @@ declare global {
     export type GetReadOnlyProperties<A extends Record<string, any>> = Exclude<{ [P in keyof A]: IsReadonly<A, P> extends true ? P : never }[keyof A], undefined>;
     export type GetNonReadOnlyProperties<A extends Record<string, any>> = Exclude<{ [P in keyof A]: IsReadonly<A, P> extends true ? never : P }[keyof A], undefined>;
     // eslint-disable-next-line @typescript-eslint/ban-types
-    export type FunctionProperties<T> = { [P in keyof T]: T[P] extends Function ? P : never }[keyof T];
     export type WithoutAccessors<T extends AnyObject> = Pick<T, Exclude<Exclude<keyof T, FunctionProperties<T>>, GetReadOnlyProperties<T>>>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     export type OID = BSON.ObjectId | string;
@@ -22,7 +21,8 @@ declare global {
     export type Len1<TArr extends any[]> = ((...args: TArr) => any) extends (...[x, ...args]: [any, ...infer R]) => any ? R['length'] : never;
     export type Last<TArr extends any[]> = TArr[Len1<TArr>];
     export type EntityBase = { _id: OID };
-    export type RealmTypes = 'objectId' | 'uuid' | 'string' | 'int' | 'double' | 'float' | 'decimal128' | 'bool' | 'object' | 'date' | 'data' | 'list' | 'dictionary' | 'set' | 'enum';
+    export type RealmPrimitives = 'objectId' | 'uuid' | 'string' | 'int' | 'double' | 'float' | 'decimal128' | 'bool' | 'date' | 'data';
+    export type RealmTypes = RealmPrimitives | 'object' | 'list' | 'dictionary' | 'set' | 'enum';
     export type CompareResult = -1 | 0 | 1;
     export type EnumMap<TKey extends string = string, TValue = string> = Record<TKey, TValue>;
     export type MonoidFunction<T, TResult> = (left: T) => (right: T) => TResult;

@@ -1,4 +1,4 @@
-import { MRT_Row, MRT_RowData, MRT_TableInstance } from 'material-react-table';
+import { MRT_Row, MRT_RowData, MRT_TableInstance, MRT_TableOptions } from 'material-react-table';
 import { useMemo } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { IRealmEntity } from '../dal/types';
@@ -14,10 +14,32 @@ import { TableTypeObject, tableType } from './tableType';
 import { AlertColor } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { is } from '../dal/is';
-import { createRenderCreateRowDialogContentRHF } from '../components/Table/creators/createRenderCreateRowDialogContent';
+import { ConvertToRealmFunction, convertToRealm, createRenderCreateRowDialogContentRHF } from '../components/Table/creators/createRenderCreateRowDialogContent';
+import { checkTransaction } from '../util/checkTransaction';
+import { $$queryClient } from '../components/App';
+import * as Realm from 'realm';
+import { useLocalRealm } from '../routes/loaders/useLocalRealm';
+import { dialog, ipcRenderer } from 'electron';
+import { getCurrentWindow } from '@electron/remote';
 
 export function tapOr<T, TArgs extends AnyArray>(funcOr?: T | ((...x: TArgs) => T)) {
     return (...args: TArgs) => (funcOr == null ? undefined : is.func<(...args: TArgs) => T>(funcOr) ? funcOr(...args) : (funcOr as T));
+}
+
+export function updateRecord(collection: string, db: Realm) {
+    return async function (values: any) {
+        const func = () => {
+            db.create(collection, values, Realm.UpdateMode.Modified);
+        };
+        try {
+            checkTransaction(db)(func);
+            await $$queryClient.invalidateQueries({ queryKey: [collection] });
+            await $$queryClient.refetchQueries({ queryKey: [collection] });
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    };
 }
 export function useMUIReactTable<T extends MRT_RowData>({
     type,
@@ -35,9 +57,10 @@ export function useMUIReactTable<T extends MRT_RowData>({
 }) {
     const collectionRoute = useParams<{ collection: string }>().collection;
     const collection = objectType ?? collectionRoute ?? 'n/a';
+    const convertTo = useMemo(() => convertToRealm[collection as keyof typeof convertToRealm] as any as ConvertToRealmFunction<T>, [collection]);
+    const db = useLocalRealm;
     const {
         deleteOne,
-        edit,
         insert,
         invalidator,
         columns,
@@ -86,8 +109,7 @@ export function useMUIReactTable<T extends MRT_RowData>({
         isPending: isEditPending,
         isError: isEditError
     } = useMutation({
-        mutationFn: edit,
-        ...invalidator
+        mutationFn: updateRecord(collection, db())
     });
     const {
         mutateAsync: deleteAsync,
@@ -122,7 +144,7 @@ export function useMUIReactTable<T extends MRT_RowData>({
     const renderRowActions = createRenderRowActions({ getCanInsertDelete, deleteOne: deleteSync });
     const onCreatingRowSave = (props: MRT_TableOptionFunctionParams<T, 'onCreatingRowSave'>) => {
         insertAsync(
-            { values: props.values as T },
+            { values: convertTo(props.values as any) as T },
             {
                 onSuccess: () => {
                     console.error('exiting creating mode');
@@ -132,21 +154,22 @@ export function useMUIReactTable<T extends MRT_RowData>({
         );
     };
     const onEditingRowSave = (props: MRT_TableOptionFunctionParams<T, 'onEditingRowSave'>) => {
-        editAsync(
-            { values: props.values as T },
-            {
-                onSuccess: () => {
-                    console.error('existing editing mode');
-                    props.exitEditingMode();
-                }
+        editAsync(convertTo(props.values as any) as T, {
+            onSuccess: () => {
+                console.error('existing editing mode');
+                props.exitEditingMode();
             }
-        );
+        });
     };
     const onCreatingRowCancel = (props: MRT_TableOptionFunctionParams<T, 'onCreatingRowCancel'>) => {
-        props.table.setCreatingRow(null);
+        ipcRenderer.invoke('confirm-cancel').then((response) => {
+            if (response === 0) props.table.setCreatingRow(null);
+        });
     };
     const onEditingRowCancel = (props: MRT_TableOptionFunctionParams<T, 'onEditingRowCancel'>) => {
-        props.table.setEditingRow(null);
+        ipcRenderer.invoke('confirm-cancel').then((response) => {
+            if (response === 0) props.table.setEditingRow(null);
+        });
     };
     const constants = useTableConstants();
     const defaultColumn = useDefaultColumn<T>();

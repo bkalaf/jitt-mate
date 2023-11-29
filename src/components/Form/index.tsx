@@ -29,15 +29,7 @@ export function Form<T extends AnyObject>({
 }) {
     return (
         <FormContainer defaultValues={defaultValues} onSuccess={onValid} onError={onInvalid}>
-            <div className='flex flex-col'>{children}</div>
-            <div className='flex justify-between w-full'>
-                <Button type='reset' color='secondary'>
-                    Reset
-                </Button>
-                <Button type='submit' color='primary'>
-                    Submit
-                </Button>
-            </div>
+            {children}
         </FormContainer>
     );
 }

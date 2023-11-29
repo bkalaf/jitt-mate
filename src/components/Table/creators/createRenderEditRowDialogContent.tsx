@@ -3,55 +3,46 @@ import { DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { toProperFromCamel } from '../../../common/text/toProperCase';
 import { Form } from '../../Form';
 import { UseMutateAsyncFunction } from '@tanstack/react-query';
-import { convertToRealm } from './createRenderCreateRowDialogContent';
+import { ConvertToRealmFunction, _Serialized, convertToRealm, initialCollection } from './createRenderCreateRowDialogContent';
+import { cloneElement, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { FormContainer } from 'react-hook-form-mui';
 
-/** @deprecated */
-export function createRenderEditRowDialogContent() {
-    // function RenderEditRowDialogContent<T extends AnyObject>(props: MRT_TableOptionFunctionParams<T, 'renderEditRowDialogContent'>) {
-    //     const collection = useCollectionRoute();
-    //     return (
-    //         <>
-    //             <DialogTitle variant='h5' className='flex items-center justify-center font-rubik'>{toProperFromCamel(collection)}</DialogTitle>
-    //             <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-    //                 {props.internalEditComponents} {/* or render custom edit components here */}
-    //             </DialogContent>
-    //             <DialogActions>
-    //                 <MRT_EditActionButtons variant='icon' table={props.table} row={props.row} />
-    //             </DialogActions>
-    //         </>
-    //     );
-    // }
-    // return RenderEditRowDialogContent;
-}
-
-export function createRenderEditRowDialogContentRHF<T extends AnyObject>(collection: string, editAsync: UseMutateAsyncFunction<AnyObject, Error, { values: T }>) {
+export function createRenderEditRowDialogContentRHF<T extends AnyObject>(collection: string, editAsync: UseMutateAsyncFunction<void, Error, T>) {
     function RenderEditRowDialogContent(props: MRT_TableOptionFunctionParams<T, 'renderEditRowDialogContent'>) {
-        const convertTo = convertToRealm[collection] as (payload: Partial<T>) => T
+        console.log('collection', collection);
+        const initializer = initialCollection[collection as keyof typeof initialCollection] as () => Promise<T>;
+        const convertTo = convertToRealm[collection as keyof typeof convertToRealm] as any as ConvertToRealmFunction<T>;
         console.log(`initialForm`, props.row.original.toJSON());
+        const original = async () => props.row.original;
         const initial = async () => props.row.original.toJSON() as T;
         console.log(`internalEditComponents`, props.internalEditComponents);
+        original().then((x) => console.log(`original`, x));
+        initial().then((x) => console.log(`initial`, x));
+        initializer().then((x) => console.log(`initializer`, x));
         return (
             <>
-                <Form defaultValues={initial} onValid={(data: T) => {
-                    const payload = convertTo(data);
-                    return editAsync({ values: payload as T }, { onSuccess: () => {
-                        props.table.setEditingRow(null);
-                    }})
-                }} onInvalid={(errors) => {
-                    alert('ERROR');
-                    const errs = Object.values(errors).map(e => e?.message).join('\n');
-                    alert(errs);
-                }}>
-                    <DialogTitle variant='h5' className='flex items-center justify-center font-rubik'>
-                        {toProperFromCamel(collection)}
-                    </DialogTitle>
+                <FormContainer
+                    defaultValues={() => Promise.resolve(props.row.original.toJSON() as T)}
+                    onSuccess={(data: T) => {
+                        const payload = convertTo(data as _Serialized<T, true>);
+                        return editAsync(
+                            payload as T,
+                            {
+                                onSuccess: () => {
+                                    props.table.setEditingRow(null);
+                                }
+                            }
+                        );
+                    }}>
+                    <DialogTitle className='flex items-center justify-center font-rubik'>{toProperFromCamel(collection)}</DialogTitle>
                     <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                         {props.internalEditComponents} {/* or render custom edit components here */}
                     </DialogContent>
                     <DialogActions>
                         <MRT_EditActionButtons variant='icon' table={props.table} row={props.row} />
                     </DialogActions>
-                </Form>
+                </FormContainer>
             </>
         );
     }

@@ -1,18 +1,19 @@
-import { AutocompleteElement, useController, useFormContext } from 'react-hook-form-mui';
+import { useController, useFormContext } from 'react-hook-form-mui';
 import { useQuery } from '@tanstack/react-query';
 import { useLocalRealm } from '../../routes/loaders/useLocalRealm';
 import { fromOID } from '../../dal/fromOID';
-import { Autocomplete, AutocompleteProps, Chip, CircularProgress, FilterOptionsState, createFilterOptions } from '@mui/material';
+import { Autocomplete, AutocompleteProps, Chip, CircularProgress, FilterOptionsState, Icon, createFilterOptions } from '@mui/material';
 import { MRT_ColumnDef } from 'material-react-table';
-import { ForwardedRef, useCallback, useEffect, useState } from 'react';
+import { ForwardedRef, forwardRef, useCallback, useEffect, useState } from 'react';
 import { checkTransaction } from '../../util/checkTransaction';
 import { useInvalidator } from '../../hooks/useInvalidator';
 import { DebouncedTextFieldElement } from './Controls/DebouncedInput';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClose } from '@fortawesome/pro-solid-svg-icons';
 
 // export function MRTDbSetContainer<T extends AnyObject>(objectType: string, name: string, label: string, labelPropertyName: string, valuePropertyName = '_id') {
 //     return function (props: Parameters<NonNullable<MRT_ColumnDef<any, DBSet<T>>['Edit']>>[0]) {};
 // }
-
 // export function MRTDBSetMultiSelectControl<T extends AnyObject, TParent extends EntityBase>(objectType: string, name: string, header: string, labelPropertyName: string, valuePropertyName = '_id') {
 //     const db = useLocalRealm();
 //     const { data, isLoading } = useQuery({
@@ -47,6 +48,7 @@ import { DebouncedTextFieldElement } from './Controls/DebouncedInput';
 //         />
 //     );
 // }
+
 export function MRTDbSetAutoCompleteControl<T extends AnyObject, TParent extends EntityBase>(
     objectType: string,
     objectType2: string,
@@ -55,7 +57,7 @@ export function MRTDbSetAutoCompleteControl<T extends AnyObject, TParent extends
     labelPropertyName: string,
     valuePropertyName = '_id'
 ) {
-    return function MRT_DbSetControl(props: Parameters<NonNullable<MRT_ColumnDef<Entity<TParent>, Optional<DBSet<T>>>['Edit']>>[0], ref: ForwardedRef<HTMLDivElement>) {
+    const MRT_DbSetControl = (props: Parameters<NonNullable<MRT_ColumnDef<Entity<TParent>, Optional<DBSet<T>>>['Edit']>>[0], ref: ForwardedRef<HTMLDivElement>) => {
         if (objectType2 == null) throw new Error(`objectType mismatch ${objectType} vs ${objectType2}`);
         const db = useLocalRealm();
         const getOptionLabel = (x: T | string) => (typeof x === 'string' ? x : x[labelPropertyName]);
@@ -76,18 +78,17 @@ export function MRTDbSetAutoCompleteControl<T extends AnyObject, TParent extends
         const [current, setCurrent] = useState(props.cell.getValue() as DBSet<T>);
         const invalidate = useInvalidator(objectType2);
         const setValue = useCallback(
-            (func: (params: Parameters<Exclude<AutocompleteProps<T, true, true, true, typeof Chip>['onChange'], undefined>>, prev: DBSet<T>) => () => void) =>
-                (params: Parameters<Exclude<AutocompleteProps<T, true, true, true, typeof Chip>['onChange'], undefined>>) => {
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    const [event, newValue, reason, details] = params;
-                    setCurrent((prev) => {
-                        console.log(`ONCHANGE(selectOption)`, `newValue`, newValue, `prev`, prev);
-                        checkTransaction(db)(func(params, prev));
-                        invalidate.onSuccess();
-                        context.setValue(name, prev);
-                        return prev;
-                    });
-                },
+            (func: (params: Parameters<Exclude<AutocompleteProps<T, true, true, true, typeof Chip>['onChange'], undefined>>, prev: DBSet<T>) => () => void) => (params: Parameters<Exclude<AutocompleteProps<T, true, true, true, typeof Chip>['onChange'], undefined>>) => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const [event, newValue, reason, details] = params;
+                setCurrent((prev) => {
+                    console.log(`ONCHANGE(selectOption)`, `newValue`, newValue, `prev`, prev);
+                    checkTransaction(db)(func(params, prev));
+                    invalidate.onSuccess();
+                    context.setValue(name, prev);
+                    return prev;
+                });
+            },
             [context, db, invalidate]
         );
         useEffect(() => {
@@ -144,6 +145,8 @@ export function MRTDbSetAutoCompleteControl<T extends AnyObject, TParent extends
             const filtered = filters(options, state);
             return filtered;
         }, []);
+
+        const preserveOrder = true;
         return (
             <Autocomplete<T, true, true, true, typeof Chip>
                 loading={isLoading}
@@ -169,6 +172,28 @@ export function MRTDbSetAutoCompleteControl<T extends AnyObject, TParent extends
                         onChange={(value) => setInputValue(typeof value === 'string' ? value : typeof value === 'number' ? value.toFixed(0) : value.target.value)}
                         name={name}
                         label={header}
+                        select
+                        SelectProps={{
+                            renderValue: (selected: unknown) => {
+                                return (
+                                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                                        {(preserveOrder ? ((data as T[]) ?? []).filter((option) => (selected as T[]).includes(option)) : (selected as T[]) || ([] as T[])).map((selectedValue, ix) => (
+                                            <Chip
+                                                key={ix}
+                                                color='info'
+                                                label={selectedValue[labelPropertyName]}
+                                                className='flex flex-wrap'
+                                                onDelete={() => {
+                                                    field.onChange(field.value.filter((i: any) => i !== selectedValue));
+                                                }}
+                                                deleteIcon={<Icon color='error' onMouseDown={(ev) => ev.stopPropagation()}>
+                                                    <FontAwesomeIcon icon={faClose} className='object-contain h-6 text-rose-500' />
+                                                </Icon>} />
+                                        ))}
+                                    </div>
+                                );
+                            }
+                        }}
                         {...params}
                         error={!!fieldState.error}
                         InputLabelProps={{
@@ -187,10 +212,9 @@ export function MRTDbSetAutoCompleteControl<T extends AnyObject, TParent extends
                             ...params.inputProps
                         }}
                         helperText={fieldState.error?.message}
-                        inputRef={field.ref}
-                    />
-                )}
-            />
+                        inputRef={field.ref} />
+                )} />
         );
     };
+    return forwardRef(MRT_DbSetControl);
 }

@@ -1,10 +1,7 @@
 import { TabPanelContext } from './Contexts/TabPanelContext';
 import { useProvideTabPanelContext } from '../hooks/useProvideTabPanelContext';
 
-
-export function TabPanelProvider({ children }: { children?: Children; }) {
+export function TabPanelProvider({ children }: { children?: Children }) {
     const context = useProvideTabPanelContext();
-    return <TabPanelContext.Provider value={context}>
-        {children}
-    </TabPanelContext.Provider>;
+    return <TabPanelContext.Provider value={context}>{children}</TabPanelContext.Provider>;
 }

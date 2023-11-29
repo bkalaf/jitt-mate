@@ -1,4 +1,4 @@
-import { app, BrowserWindow, session } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, session } from 'electron';
 import { initialize, enable } from '@electron/remote/main';
 import * as fs from 'graceful-fs';
 
@@ -47,16 +47,32 @@ const createWindow = () => {
         mainWindow.webContents.openDevTools();
         mainWindow.maximize();
         mainWindow.setTitle('JUNK IN THE TRUNK, INC')
+        return mainWindow;
     });
 };
 
+let browserWindow: BrowserWindow | undefined;
 app.whenReady()
     .then(async () => {
         const devPath = getDevToolsPath('fmkadmapgofadopljbjfkapdkoienihi');
         const extId = await session.defaultSession.loadExtension(devPath, { allowFileAccess: true });
         console.log(JSON.stringify(extId));
     })
-    .then(async () => await createWindow());
+    .then(() => {
+        ipcMain.handle('confirm-cancel', async (event) => {
+            if (browserWindow == null) throw new Error('no window');
+            const response = await dialog.showMessageBox(browserWindow, {
+                message: 'Are you sure you want to lose any unsaved work?',
+                title: 'Please confirm',
+                buttons: ['OK', 'CANCEL'],
+                defaultId: 1,
+                type: 'question',
+                cancelId: 1
+            });
+            return response.response;
+        });
+    })
+    .then(async () => browserWindow = await createWindow());
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -82,3 +98,4 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+
