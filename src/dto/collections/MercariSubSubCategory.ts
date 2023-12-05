@@ -4,12 +4,14 @@ import Realm, { PropertySchema, PropertyTypeName } from 'realm';
 import { $db } from '../../dal/db';
 import { ICustomItemField, IHashTag, IMercariSubCategory, IMercariSubSubCategory, IProductTaxonomy } from '../../dal/types';
 import { cleanup, is } from '../../dal/is';
-import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
-import { prependText } from '../../common/text/prependText';
 import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { $$queryClient } from '../../components/App';
-import { HashTag } from './HashTag';
+import { parentedUpdate } from '../updaters/parentedUpdate';
+import { listDefaultUpdater } from '../updaters/listDefaultUpdater';
+import { categorySelectorUpdater } from '../updaters/categorySelectorUpdater';
+import { hashTaggedUpdater } from '../updaters/hashTaggedUpdater';
+import { taxonUpdater } from '../updaters/taxonUpdater';
 
 export const ifList = (s: string): string | PropertySchema => (is.realmType.list(s) ? { type: 'list', objectType: cleanup(s) } : s);
 export const ifOpt = (s: string): string | PropertySchema => {
@@ -69,49 +71,13 @@ export class MercariSubSubCategory extends Realm.Object<IMercariSubSubCategory> 
 
     @wrapInTransactionDecorator()
     update() {
-        if (!this.id.startsWith('#')) {
-            this.id = prependText('#')(this.id);
-        }
-        if (this.parent) {
-            this.parent = this.parent.update();
-        }
-        if (this.hashTags) {
-            HashTag.pruneList(this.hashTags);
-        }
-        if (this.taxon == null) this.taxon = {} as Entity<IProductTaxonomy>;
-        if (this.parent && !(this.taxon?.lock ?? false)) {
-            [this.parent.taxon?.kingdom, this.parent.taxon?.phylum, this.parent.taxon?.klass, this.parent.taxon?.order, this.parent.taxon?.family, this.parent.taxon?.genus, this.parent.taxon?.species]
-                .filter((x) => x != null && x.length > 0)
-                .forEach((value, ix) => {
-                    switch (ix) {
-                        case 0:
-                            (this.taxon as any).kingdom = value;
-                            break;
-                        case 1:
-                            (this.taxon as any).phylum = value;
-                            break;
-                        case 2:
-                            (this.taxon as any).klass = value;
-                            break;
-                        case 3:
-                            (this.taxon as any).order = value;
-                            break;
-                        case 4:
-                            (this.taxon as any).family = value;
-                            break;
-                        case 5:
-                            (this.taxon as any).genus = value;
-                            break;
-                        case 6:
-                            (this.taxon as any).species = value;
-                            break;
-                    }
-                });
-        }
-        if (this.taxon && this.taxon.update) {
-            this.taxon = this.taxon?.update();
-        }
-        this.fullname = MercariSubSubCategory.generateFullName(this);
+        const lu = listDefaultUpdater<IMercariSubSubCategory>;
+        lu.bind(this)(['hashTags', 'customItemFields']);
+        const pu = parentedUpdate<'parent', IMercariSubCategory, IMercariSubSubCategory>;
+        taxonUpdater.bind(this, pu.bind(this, 'parent'))();
+        categorySelectorUpdater.bind(this)();
+        hashTaggedUpdater.bind(this)();  
+        this.fullname = [this.parent?.parent?.name, this.parent?.name, this.name].filter(x => x != null).join('::');
         return this;
     }
 
@@ -126,19 +92,6 @@ export class MercariSubSubCategory extends Realm.Object<IMercariSubSubCategory> 
     get allHashTags(): Entity<IHashTag>[] {
         return [...(this.parent?.allHashTags ?? []), ...Array.from(this.hashTags.values() ?? [])];
     }
-
-    // update<T>(this: T, realm: Realm): T {
-    //     const $this = this as IMercariSubSubCategory;
-    //     const { categoryName, subCategoryName, subSubCategoryName } = $this.gather();
-    //     const fullname = [categoryName, subCategoryName, subSubCategoryName].join('::');
-    //     const func = () => {
-    //         $this.fullname = fullname;
-    //         HashTag.update(realm, ...$this.hashTags.values());
-    //     };
-    //     checkTransaction(realm)(func);
-    //     return this;
-    // }
-
     static schema: Realm.ObjectSchema = {
         name: $db.mercariSubSubCategory(),
         primaryKey: '_id',
@@ -161,8 +114,4 @@ export class MercariSubSubCategory extends Realm.Object<IMercariSubSubCategory> 
             shipWeightPercent: { type: $db.float() as any, optional: true }
         }
     };
-    @staticColumnsDecorator
-    static columns(...prefixes: string[]): DefinedColumns {
-        return [];
-    }
 }

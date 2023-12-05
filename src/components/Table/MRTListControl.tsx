@@ -12,11 +12,10 @@ import { useInvalidator } from '../../hooks/useInvalidator';
 import { useToggler } from '../../hooks/useToggler';
 import { FieldValues, UseFormReturn } from 'react-hook-form-mui';
 
-
 export function MRTListControl<T extends FieldValues>(
     name: string,
     objectType: string,
-    ItemComponent: ({ payload }: { payload: T; }) => string,
+    ItemComponent: ({ payload }: { payload: T }) => string,
     convertPayload: (x: any) => T,
     editControls: React.FunctionComponent<{ context: UseFormReturn<T, any, undefined> }>,
     init: () => Promise<T>
@@ -53,14 +52,16 @@ export function MRTListControl<T extends FieldValues>(
                         <FontAwesomeIcon icon={faSquarePlus} className='block object-contain w-6 h-6' />
                     </IconButton>
                 </div>
-                <InsertItemModal init={init as any} appendItem={appendItem as any} EditControls={editControls} open={open} toggleOpen={toggleOpen} />
+                <InsertItemModal init={init as any} EditControls={editControls} open={open} toggleOpen={toggleOpen} list={data as any} setList={(l) => (props.row.original[name] = l)} />
                 <List dense>
                     {data.map((item, ix) => (
                         <ListItem
                             key={ix}
-                            secondaryAction={<IconButton className='flex' onClick={deleteItem(ix)}>
-                                <FontAwesomeIcon icon={faTrashCan} className='block object-contain w-6 h-6' />
-                            </IconButton>}>
+                            secondaryAction={
+                                <IconButton className='flex' onClick={deleteItem(ix)}>
+                                    <FontAwesomeIcon icon={faTrashCan} className='block object-contain w-6 h-6' />
+                                </IconButton>
+                            }>
                             <ListItemText primary={ItemComponent({ payload: item })} />
                         </ListItem>
                     ))}

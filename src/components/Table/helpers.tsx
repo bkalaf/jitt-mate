@@ -1,6 +1,6 @@
 import { createMRTColumnHelper } from 'material-react-table';
 import { IDraft, IListing } from '../../dal/db';
-import { IMercariCategory, IProductTaxonomy, IMercariSubCategory, IMercariSubSubCategory, ILocationSegment, IMercariBrand, IBrand, IBarcode, IAddress, IRn, IClassifier, IHashTag, IHashTagUsage, IScan, ICustomItemField, IProductImage, IProduct, ISku } from '../../dal/types';
+import { IMercariCategory, IProductTaxonomy, IMercariSubCategory, IMercariSubSubCategory, ILocationSegment, IMercariBrand, IBrand, IBarcode, IAddress, IRn, IClassifier, IHashTag, IHashTagUsage, IScan, ICustomItemField, IProductImage, IProduct, ISku, IProductLine } from '../../dal/types';
 
 /**
  * @copyright 2023-11-13
@@ -16,6 +16,8 @@ const locationSegmentHelper = createMRTColumnHelper<ILocationSegment>();
 const mercariBrandHelper = createMRTColumnHelper<IMercariBrand>();
 const brandHelper = createMRTColumnHelper<IBrand>();
 const barcodeHelper = createMRTColumnHelper<IBarcode>();
+const productLineHelper = createMRTColumnHelper<IProductLine>();
+// const brandingHelper = createMRTColumnHelper<IBranding>()
 const addressHelper = createMRTColumnHelper<IAddress>();
 const rnHelper = createMRTColumnHelper<IRn>();
 const classifierHelper = createMRTColumnHelper<IClassifier>();
@@ -51,5 +53,8 @@ export default {
     hashTagHelper,
     hashTagUsageHelper,
     locationSegmentHelper,
-    barcodeHelper
+    barcodeHelper,
+    productLineHelper,
+    productImageHelper
+    // brandingHelper
 };

@@ -7,6 +7,7 @@ import { daysDiffFromNow } from '../../common/date/daysDiffFromNow';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { $$queryClient } from '../../components/App';
+import { listDefaultUpdater } from '../updaters/listDefaultUpdater';
 
 @realmCollectionDecorator('name', 'name')
 export class HashTag extends Realm.Object<IHashTag> implements IHashTag {
@@ -53,7 +54,9 @@ export class HashTag extends Realm.Object<IHashTag> implements IHashTag {
 
     @wrapInTransactionDecorator()
     update(): Entity<IHashTag> {
-        if (this.usage == null) this.usage = [] as any;
+        const lu = listDefaultUpdater<IHashTag>;
+        lu.bind(this)(['usage']);
+
         if (this.usage.length <= 2) return this;
         const arr = Array.from(this.usage).map((x, ix) => [ix, x] as [number, IHashTagUsage]);
         const mostRecentIndex = arr.sort((x, y) => $$.date.sort(y[1].from, x[1].from))[0][0];
@@ -64,19 +67,7 @@ export class HashTag extends Realm.Object<IHashTag> implements IHashTag {
             .forEach((x) => this.usage.remove(x));
         return this;
     }
-    // const $this = this as IHashTag;
-    // if ($this.usage.length <= 2) return this;
-    // const arr = Array.from($this.usage).map((x, ix) => [ix, x] as [number, IHashTagUsage]);
-    // const mostRecentIndex = arr.sort((x, y) => $$.date.sort(y[1].from, x[1].from))[0][0];
-    // const maxCountIndex = arr.sort((x, y) => $$.number.sort(y[1].count, x[1].count))[0][0];
-    // const func = () =>
-    //     arr
-    //         .map((x) => x[0])
-    //         .filter((x) => x !== mostRecentIndex && x !== maxCountIndex)
-    //         .reverse()
-    //         .forEach((x) => $this.usage.remove(x));
-    // checkTransaction(realm)(func);
-    // return this;
+
 
     @wrapInTransactionDecorator()
     addUsage(count?: number | undefined): Entity<IHashTag> {

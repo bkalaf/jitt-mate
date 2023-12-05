@@ -69,6 +69,9 @@ export class ProductTaxonomy extends Realm.Object<IProductTaxonomy> implements I
     species: Optional<string>;
     name: Optional<string>;
     lock: Optional<boolean> = false;
+    get fullname(): string {
+        return [this.kingdom, this.phylum, this.klass, this.order, this.family, this.genus, this.species].filter(x => x != null).join('.')
+    }
     update() {
         if (this.lock == null) this.lock = false;
         this.kingdom = this.kingdom?.length === 0 ? undefined : this.kingdom;
@@ -97,10 +100,6 @@ export class ProductTaxonomy extends Realm.Object<IProductTaxonomy> implements I
         }
     };
 
-    @staticColumnsDecorator
-    static columns(...prefixes: string[]): DefinedColumns {
-        return [];
-    }
 }
 
 export type IComboBoxProps<T extends AnyObject> = {

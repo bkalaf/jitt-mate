@@ -128,15 +128,6 @@ export class Barcode extends Realm.Object<IBarcode> implements IBarcode {
     }
     @wrapInTransactionDecorator()
     update(): Entity<IBarcode> {
-        // return runInTransaction(this, realm, () => {
-        //     const bc = this.rawValue.padStart(13, '0');
-        //     if (this.rawValue !== bc) {
-        //         this.rawValue = bc;
-        //     }
-        //     const [valid, type] = Barcode.classify(bc);
-        //     this.valid = valid;
-        //     this.type = type;
-        // });
         if (this.rawValue.length !== 13) {
             this.rawValue = this.rawValue.padStart(13, '0');
         }

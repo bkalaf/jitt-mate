@@ -6,10 +6,12 @@ import { $db } from '../../dal/db';
 import { IClassifier, IMercariSubSubCategory, IHashTag, IProductTaxonomy } from '../../dal/types';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
-import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
 import { surroundText } from '../../common/text/surroundText';
 import { $$queryClient } from '../../components/App';
-import { HashTag } from './HashTag';
+import { parentedUpdate } from '../updaters/parentedUpdate';
+import { boolDefaultUpdater } from '../updaters/boolDefaultUpdater';
+import { hashTaggedUpdater } from '../updaters/hashTaggedUpdater';
+import { taxonUpdater } from '../updaters/taxonUpdater';
 
 @realmCollectionDecorator('name', 'name')
 export class Classifier extends Realm.Object<IClassifier> implements IClassifier {
@@ -67,59 +69,14 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
 
     @wrapInTransactionDecorator()
     update() {
-        if (this.taxon == null) {
-            this.taxon = {} as Entity<IProductTaxonomy>;
-        }
-        if (this.hashTags) {
-            HashTag.pruneList(this.hashTags);
-        }
-        if (this.isAthletic == null) this.isAthletic = false;
-        if (this.mercariSubSubCategory) {
-            this.mercariSubSubCategory.update();
-            [
-                this.mercariSubSubCategory.taxon?.kingdom,
-                this.mercariSubSubCategory.taxon?.phylum,
-                this.mercariSubSubCategory.taxon?.klass,
-                this.mercariSubSubCategory.taxon?.order,
-                this.mercariSubSubCategory.taxon?.family,
-                this.mercariSubSubCategory.taxon?.genus,
-                this.mercariSubSubCategory.taxon?.species
-            ]
-                .filter((x) => x != null && x.length > 0)
-                .forEach((value, ix) => {
-                    if (!(this.taxon?.lock ?? false)) {
-                        switch (ix) {
-                            case 0:
-                                (this.taxon as any).kingdom = value;
-                                break;
-                            case 1:
-                                (this.taxon as any).phylum = value;
-                                break;
-                            case 2:
-                                (this.taxon as any).klass = value;
-                                break;
-                            case 3:
-                                (this.taxon as any).order = value;
-                                break;
-                            case 4:
-                                (this.taxon as any).family = value;
-                                break;
-                            case 5:
-                                (this.taxon as any).genus = value;
-                                break;
-                            case 6:
-                                (this.taxon as any).species = value;
-                                break;
-                        }
-                    }
-                });
-        }
-        if (this.taxon.update != null && typeof this.taxon.update === 'function') {
-            this.taxon = this.taxon.update();
-        }
-        const newName = this.taxon?.name;
+        const pu = parentedUpdate<'mercariSubSubCategory', IMercariSubSubCategory, IClassifier>;
+        taxonUpdater.bind(this, pu.bind(this, 'mercariSubSubCategory'))();
+        hashTaggedUpdater.bind(this)();
+        const bd = boolDefaultUpdater<IClassifier>;
+        bd.bind(this)(['isAthletic']);
+        const newName = Classifier.generateName(this);
         if (newName != null && newName.length > 0) {
-            this.name = Classifier.generateName(this);
+            this.name = newName;
         }
         return this;
     }
@@ -131,7 +88,7 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
     isAthletic = false;
     mercariSubSubCategory: OptionalEntity<IMercariSubSubCategory>;
     hashTags!: DBSet<Entity<IHashTag>>;
-
+    notes: Optional<string>;
     get isMediaMail(): boolean {
         return this.taxon?.kingdom === 'media';
     }
@@ -155,12 +112,8 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
             sizingType: $db.string.opt,
             taxon: $db.productTaxonomy.opt,
             shortname: $db.string.opt,
-            shipWeightPercent: { type: $db.float() as any, optional: true }
+            shipWeightPercent: { type: $db.float() as any, optional: true },
+            notes: $db.string.opt
         }
     };
-
-    @staticColumnsDecorator
-    static columns(...prefixes: string[]): DefinedColumns {
-        return [];
-    }
 }

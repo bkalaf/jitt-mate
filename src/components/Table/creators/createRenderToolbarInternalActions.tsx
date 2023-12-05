@@ -1,13 +1,15 @@
 import { MRT_Row, MRT_ShowHideColumnsButton, MRT_ToggleDensePaddingButton, MRT_ToggleFiltersButton, MRT_ToggleFullScreenButton, MRT_ToggleGlobalFilterButton, createRow } from 'material-react-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBoltLightning, faDumpsterFire, faLink, faRedoAlt, faSquarePlus } from '@fortawesome/pro-solid-svg-icons';
-import { IconButton } from '@mui/material';
+import { IconDefinition, faBoltLightning, faDumpsterFire, faFilterSlash, faFilters, faFloppyDisk, faLink, faMagnifyingGlass, faMagnifyingGlassMinus, faRedoAlt, faSquarePlus } from '@fortawesome/pro-solid-svg-icons';
+import { IconButton, IconButtonPropsColorOverrides } from '@mui/material';
 import { useCallback } from 'react';
 import { BSON } from 'mongodb';
 import { is } from '../../../dal/is';
 import { useReflectionContext } from '../../Contexts/useReflectionContext';
 import { RelationshipTableMRT } from '../../Views/RelationshipTableMRT';
 import { useToggler } from '../../../hooks/useToggler';
+import { usePersistedState } from '../../../hooks/usePersistedState';
+import { RHFM_IconButton } from './RHFM_IconButton';
 
 export function createRenderToolbarInternalActions<T extends AnyObject>(outerProps: {
     defaultObject?: Partial<T>;
@@ -19,7 +21,17 @@ export function createRenderToolbarInternalActions<T extends AnyObject>(outerPro
     propertyName?: string;
     parentRow?: MRT_Row<any>;
     type?: 'list' | 'dictionary' | 'set' | 'object';
+    state: ReturnType<typeof usePersistedState>['state'];
+    handlers: ReturnType<typeof usePersistedState>['handlers'];
 }) {
+    const { showColumnFilters, showGlobalFilter } = outerProps.state;
+    const { onShowColumnFiltersChange, onShowGlobalFilterChange } = outerProps.handlers;
+    const toggleShowColumnFilters = () => {
+        onShowColumnFiltersChange((prev) => !prev);
+    };
+    const toggleShowGlobalFilter = () => {
+        onShowGlobalFilterChange((prev) => !prev);
+    };
     function RenderToolbarInternalActions(props: MRT_TableOptionFunctionParams<T, 'renderToolbarInternalActions'>) {
         const onClickInsert = useCallback(
             () => props.table.setCreatingRow(createRow(props.table, (outerProps.defaultObject as T) ?? ({ _id: new BSON.ObjectId() } as any as T) ?? true)),
@@ -43,7 +55,14 @@ export function createRenderToolbarInternalActions<T extends AnyObject>(outerPro
                         <IconButton color='secondary' className='flex' title='Link records' onClick={setOpen}>
                             <FontAwesomeIcon icon={faLink} className='inline-block object-cover' />
                         </IconButton>
-                        <RelationshipTableMRT type={outerProps.type} objectType={outerProps.objectType} propertyName={outerProps.propertyName} parentRow={outerProps.parentRow} open={open} setClosed={setClosed} />
+                        <RelationshipTableMRT
+                            type={outerProps.type}
+                            objectType={outerProps.objectType}
+                            propertyName={outerProps.propertyName}
+                            parentRow={outerProps.parentRow}
+                            open={open}
+                            setClosed={setClosed}
+                        />
                     </>
                 )}
                 <IconButton color='warning' className='flex' title='Update a record' onClick={() => outerProps.onClickLightning(props.table)} disabled={noRowsSelected}>
@@ -55,11 +74,13 @@ export function createRenderToolbarInternalActions<T extends AnyObject>(outerPro
                 <IconButton color='secondary' className='flex' title='Reset saved table state' onClick={outerProps.resetState}>
                     <FontAwesomeIcon icon={faRedoAlt} className='inline-block object-cover' />
                 </IconButton>
-                <MRT_ToggleFiltersButton table={props.table} />
+                <RHFM_IconButton color='secondary' title='Toggle column filters' icon={showColumnFilters ? faFilterSlash : faFilters} onClick={toggleShowColumnFilters} />
+                {/* <MRT_ToggleFiltersButton table={props.table} /> */}
                 <MRT_ShowHideColumnsButton table={props.table} />
                 <MRT_ToggleDensePaddingButton table={props.table} />
                 <MRT_ToggleFullScreenButton table={props.table} />
-                <MRT_ToggleGlobalFilterButton table={props.table} />
+                {/* <MRT_ToggleGlobalFilterButton table={props.table} /> */}
+                <RHFM_IconButton color='secondary' title='Toggle global filter' icon={showGlobalFilter ? faMagnifyingGlassMinus : faMagnifyingGlass} onClick={toggleShowGlobalFilter} />
             </>
         );
     }

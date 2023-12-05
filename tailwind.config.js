@@ -159,6 +159,8 @@ module.exports = {
             selected: 'selected="true"',
             unselected: 'selected="false"',
             current: 'current="true"',
+            asc: 'sort="asc"',
+            desc: 'sort="desc"',
             'not-current': 'current="false"',
 
         },

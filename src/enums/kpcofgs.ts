@@ -4,6 +4,7 @@ import { taxonomy } from '../dal/enums/taxa';
 import { is } from '../dal/is';
 
 type CBO = Exclude<ComboBoxOption, string>;
+
 function toComboBoxOption(value: string, opt?: ComboBoxOption, node = 0): CBO {
     return {
         node,

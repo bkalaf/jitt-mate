@@ -7,6 +7,7 @@ import { LocationTypesObj } from '../../dal/enums/locationTypes';
 import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { $$queryClient } from '../../components/App';
+import { upcsUpdater } from '../updaters/upcsUpdater';
 
 @realmCollectionDecorator('name', 'barcode.rawValue')
 export class LocationSegment extends Realm.Object<ILocationSegment> implements ILocationSegment {
@@ -33,10 +34,7 @@ export class LocationSegment extends Realm.Object<ILocationSegment> implements I
 
     @wrapInTransactionDecorator()
     update() {
-        if (this.upcs == null) {
-            this.upcs = [] as any;
-        }
-        this.upcs.forEach((upc) => upc.update());
+        upcsUpdater.bind(this)();
         return this;
     }
     // @basicEnumDecorator({ enumMap: LocationTypes, colorMap: LocationTypesColors })

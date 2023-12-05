@@ -1,4 +1,4 @@
-import Realm from 'realm';
+import Realm, { BSON } from 'realm';
 import { LocationTypesKey, LocationTypesObj } from '../enums/locationTypes';
 import { LocationLabelColorsKey } from '../enums/locationLabelColors';
 import { LocationKindsKey } from '../enums/locationKinds';
@@ -6,7 +6,7 @@ import { BarcodeTypesKey } from '../enums/barcodeTypes';
 import { RnNumberTypesKey } from '../enums/rnNumberType';
 import { ProvincesKey } from '../enums/provinces';
 import { Countries } from '../enums/countries';
-import { MaterialTypes } from '../enums/materialTypes';
+import { MaterialTypes, MaterialTypesKey } from '../enums/materialTypes';
 import { Colors } from '../enums/colors';
 
 export type AttributeObject = Record<string, any>;
@@ -108,16 +108,19 @@ export interface IProductTaxonomy extends IRealmObject<IProductTaxonomy> {
     species: Optional<string>; //apparel
     name: Optional<string>;
     lock: Optional<boolean>;
+    readonly fullname: string;
 }
 export interface ICategorySelector extends IProductAttributes {
     id: string;
 }
+export interface IParented<T> {
+    parent: OptionalEntity<T>;
+}
 export interface IMercariCategory extends IRealmEntity<IMercariCategory>, ICategorySelector {
     name: string;
 }
-export interface IMercariSubCategory extends IRealmEntity<IMercariSubCategory>, ICategorySelector {
+export interface IMercariSubCategory extends IRealmEntity<IMercariSubCategory>, ICategorySelector, IParented<IMercariCategory> {
     name: string;
-    parent: OptionalEntity<IMercariCategory>;
     readonly categoryID: Optional<string>;
 }
 
@@ -128,9 +131,8 @@ export interface ICustomItemField {
     readonly $optionMap: Record<number, string>;
 }
 
-export interface IMercariSubSubCategory extends IRealmEntity<IMercariSubSubCategory>, ICategorySelector {
+export interface IMercariSubSubCategory extends IRealmEntity<IMercariSubSubCategory>, ICategorySelector, IParented<IMercariSubCategory> {
     name: string;
-    parent: OptionalEntity<IMercariSubCategory>;
     fullname: string;
     customItemFields: DBList<ICustomItemField>;
     readonly categoryID: Optional<string>;
@@ -142,6 +144,7 @@ export interface IClassifier extends IRealmEntity<IClassifier>, IProductAttribut
     isAthletic: boolean;
     mercariSubSubCategory: OptionalEntity<IMercariSubSubCategory>;
     shortname: Optional<string>;
+    notes: Optional<string>;
     readonly isMediaMail: boolean;
     readonly athletic: Optional<string>;
     readonly categoryID: Optional<string>;
@@ -160,6 +163,31 @@ export interface ILocationSegment extends IRealmEntity<ILocationSegment>, IUPC {
     notes: Optional<string>;
     kind: Optional<LocationKindsKey>;
 }
+export interface IProductLine extends IRealmEntity<IProductLine> {
+    brand: OptionalEntity<IBrand>;
+    name: string;
+}
+// export interface IBranding_Brand extends IRealmEntity<IBranding_Brand>, IHashTagged {
+//     brand: OptionalEntity<IBrand>;
+//     modelNo: Optional<string>;
+//     description: Optional<string>;
+//     readonly getBrand: IBrand;
+// }
+// export interface IBranding_ProductLine extends IRealmEntity<IBranding_ProductLine>, IHashTagged {
+//     productLine: OptionalEntity<IProductLine>;
+//     readonly getBrand: IBrand;
+//     modelNo: Optional<string>;
+//     description: Optional<string>;
+// }
+// export interface IBranding extends IRealmEntity<IBranding>, IHashTagged {
+//     type: 'brand' | 'productLine';
+//     brand: OptionalEntity<IBrand>;
+//     productLine: OptionalEntity<IProductLine>;
+//     modelNo: Optional<string>;
+//     description: Optional<string>;
+//     readonly getBrand: OptionalEntity<IBrand>;
+// }
+
 export interface IScan {
     fixture?: OptionalEntity<ILocationSegment>;
     shelf?: OptionalEntity<ILocationSegment>;
@@ -199,7 +227,19 @@ export type ChargeWithUnits = `${Voltages}Volts` | `${Amperages}Amps` | `${Watta
 export type Electrical = `${CurrentDirection}${ChargeWithUnits}`;
 export type DimensionKeys = `${Distances}Inches` | `${Volumes}FlOz` | `${Capacity}GB` | `${Timespans}Min` | Electrical;
 export type IDimensions = Partial<Record<DimensionKeys, number>>;
-export type IMadeOfDictionary = Partial<Record<string, Record<keyof MaterialTypes, number>>>;
+export type IMadeOfDictionary = Partial<Record<string, Record<keyof typeof MaterialTypes, number>>>;
+
+export type db = Realm.Types.Dictionary<string>
+export interface IMadeOfPart {
+    material: MaterialTypesKey;
+    percent: number;
+}
+export interface IMadeOfSection {
+    name: string;
+    parts: DBList<IMadeOfPart>;
+    readonly isComplete: boolean;
+    addPart(key: MaterialTypesKey, percent: number): void;
+}
 
 export interface IProduct extends IRealmEntity<IProduct>, IProductAttributes {
     // IApparelDetails,
@@ -247,7 +287,9 @@ export interface IProduct extends IRealmEntity<IProduct>, IProductAttributes {
     //     | 'shipWeight'
     //     | 'shipWeightPercent'
     // >
+    folder: BSON.UUID;
     brand: OptionalEntity<IBrand>;
+    productLine?: OptionalEntity<IProductLine>;
     origin: Optional<keyof Countries>;
     circa: Optional<string>;
     classifier: OptionalEntity<IClassifier>;
@@ -258,7 +300,7 @@ export interface IProduct extends IRealmEntity<IProduct>, IProductAttributes {
     heightIn: Optional<number>;
     isRare: boolean;
     isVintage: boolean;
-    madeOf: Partial<Record<keyof MaterialTypes, number>>;
+    madeOf: Partial<Record<keyof typeof MaterialTypes, number>>;
     materials: IMadeOfDictionary;
     modelNo: Optional<string>;
     notes: Optional<string>;
@@ -269,6 +311,8 @@ export interface IProduct extends IRealmEntity<IProduct>, IProductAttributes {
     weightG: Optional<number>;
     widthIn: Optional<number>;
     dimensions: IDimensions;
+    readonly branding: OptionalEntity<IBrand>;
+    readonly isNoBrand: boolean;
     readonly mercariBrandName: Optional<string>;
     readonly brandName: Optional<string>;
     readonly brandFolder: Optional<string>;
@@ -314,26 +358,56 @@ export interface ISku extends IRealmEntity<ISku>, IHashTagged, IUPC {
     readonly categoryID: Optional<string>;
     readonly subCategoryID: Optional<string>;
     readonly subSubCategoryID: Optional<string>;
+    readonly effectiveBrand: Optional<IBrand>;
+
 }
 
 export interface IProductImage extends IRealmEntity<IProductImage> {
-    filename: string;
+    uploadedFrom: string;
     sku: OptionalEntity<ISku>;
-    readonly $sku: ISku;
-    readonly $barcode: string;
-    readonly $paths: {
-        originalSource: (index: number) => string;
-        removeBgSource: string;
-        originalDestination: string;
-        removeBgDestination: string;
-    };
-    readonly $removeBgFilename: string;
-    readonly $hasRemoveBg: boolean;
-    readonly $effectivePath: string;
-    moveOriginal(index: number): Promise<void>;
-    moveRemoveBg(): Promise<void>;
-    checkDestinationFolder(): Promise<void>;
+    doNotRemoveBG: boolean;
+    originalData: Optional<ArrayBuffer>;
+    removeBGData: Optional<ArrayBuffer>;
+
+    originalMimeType: string;
+    removeBGMimeType: string;
+
+    readonly filename: string;
+    readonly removeBGFilename: string;
+    readonly removeBGUploadPath: string;
+
+    readonly brandFolder: string;
+    readonly productFolder: string;
+    readonly skuFolder: string;
+    readonly destinationOriginal: string;
+    readonly destinationRemoveBG: string;
+
+    moveOriginal(): Promise<void>;
+    hasRemoveBGUpload(): boolean;
+    moveRemoveBG(): Promise<void>;
+    hasRemoveBG(): boolean;
+
+    readonly effectivePath: string;
 }
+
+// export interface IProductImage extends IRealmEntity<IProductImage> {
+//     filename: string;
+//     sku: OptionalEntity<ISku>;
+//     readonly $sku: ISku;
+//     readonly $barcode: string;
+//     readonly $paths: {
+//         originalSource: (index: number) => string;
+//         removeBgSource: string;
+//         originalDestination: string;
+//         removeBgDestination: string;
+//     };
+//     readonly $removeBgFilename: string;
+//     readonly $hasRemoveBg: boolean;
+//     readonly $effectivePath: string;
+//     moveOriginal(index: number): Promise<void>;
+//     moveRemoveBg(): Promise<void>;
+//     checkDestinationFolder(): Promise<void>;
+// }
 
 export interface IProductDraft {
     readonly $weightLb: number;

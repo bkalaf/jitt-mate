@@ -1,8 +1,9 @@
+import { kingdoms } from './ProductTaxonomy';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Realm, { BSON } from 'realm';
 import { $db } from '../../dal/db';
-import { IHashTag, IMercariCategory, IMercariSubCategory, IProductTaxonomy } from '../../dal/types';
+import { IHashTag, IMercariCategory, IMercariSubCategory, IProductTaxonomy, IRealmEntity } from '../../dal/types';
 import { ApparelGroups } from '../../dal/enums/apparelGroups';
 import { ApparelTypes } from '../../dal/enums/apparelType';
 import { ItemGroups } from '../../dal/enums/itemGroups';
@@ -12,6 +13,10 @@ import { prependText } from '../../common/text/prependText';
 import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { $$queryClient } from '../../components/App';
 import { HashTag } from './HashTag';
+import { parentedUpdate } from '../updaters/parentedUpdate';
+import { categorySelectorUpdater } from '../updaters/categorySelectorUpdater';
+import { hashTaggedUpdater } from '../updaters/hashTaggedUpdater';
+import { taxonUpdater } from '../updaters/taxonUpdater';
 
 @realmCollectionDecorator('name', 'parent.name', 'name')
 export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implements IMercariSubCategory {
@@ -29,56 +34,18 @@ export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implem
                         });
                     });
             })
-        );    
+        );
     }
-    
+
     get categoryID(): Optional<string> {
         return this.parent?.id;
     }
     @wrapInTransactionDecorator()
     update() {
-
-        console.log(`preupdate`, this);
-        if (!this.id.startsWith('#')) {
-            this.id = prependText('#')(this.id);
-        }
-        if (this.parent) {
-            this.parent = this.parent.update();
-        }
-        if (this.hashTags) {
-            HashTag.pruneList(this.hashTags);
-        }
-        if (this.parent && !(this.taxon?.lock ?? false)) {
-            [this.parent.taxon?.kingdom, this.parent.taxon?.phylum, this.parent.taxon?.klass, this.parent.taxon?.order, this.parent.taxon?.family, this.parent.taxon?.genus, this.parent.taxon?.species].filter(x => x != null && x.length > 0).forEach((value, ix) => {
-                if (this.taxon == null) this.taxon = {} as any;
-                console.log(`updating`, value, ix);
-                switch (ix) {
-                    case 0:                        
-                        (this.taxon as any).kingdom = value;
-                        break;
-                    case 1:
-                        (this.taxon as any).phylum = value;
-                        break;
-                    case 2:
-                        (this.taxon as any).klass = value;
-                        break;
-                    case 3:
-                        (this.taxon as any).order = value;
-                        break;
-                    case 4:
-                        (this.taxon as any).family = value;
-                        break;
-                    case 5:
-                        (this.taxon as any).genus = value;
-                        break;
-                    case 6:
-                        (this.taxon as any).species = value;
-                        break;
-                }
-            })
-            
-        }
-        this.taxon = this.taxon?.update() ?? {} as Entity<IProductTaxonomy>;
+        const pu = parentedUpdate<'parent', IMercariCategory, IMercariSubCategory>;
+        taxonUpdater.bind(this, pu.bind(this, 'parent'))();
+        categorySelectorUpdater.bind(this)();
+        hashTaggedUpdater.bind(this)();        
         return this;
     }
     get effectiveShipWeightPercent(): Optional<number> {

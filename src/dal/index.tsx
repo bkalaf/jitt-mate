@@ -19,8 +19,12 @@ import { Address } from './TAddress';
 import { Rn } from './TRn';
 import { ProductTaxonomy } from '../dto/collections/ProductTaxonomy';
 import { Brand } from '../dto/collections/Brand';
+import { ProductLine } from '../dto/collections/ProductLine';
 
 const $$schema: Realm.ObjectClass<any>[] = [
+    ProductTaxonomy,
+    HashTagUsage,
+    HashTag,
     Address,
     Rn,
     MercariBrand,
@@ -29,18 +33,16 @@ const $$schema: Realm.ObjectClass<any>[] = [
     MercariSubCategory,
     MercariSubSubCategory,
     Classifier,
+    Barcode,
+    LocationSegment,
+    ProductLine,
     Product,
     Sku,
     Draft,
     Listing,
     ProductImage,
     Scan,
-    LocationSegment,
-    HashTagUsage,
-    HashTag,
-    CustomItemField,
-    Barcode,
-    ProductTaxonomy
+    CustomItemField
 ];
 
 export default $$schema;

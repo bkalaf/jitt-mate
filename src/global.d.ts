@@ -6,6 +6,8 @@ import { RankingInfo } from '@tanstack/match-sorter-utils';
 import { MRT_ColumnDef, MRT_RowData, MRT_TableOptions } from 'material-react-table';
 
 declare global {
+    export type DataTypeKind = 'primitive' | 'embedded' | 'reference';
+    export type ListTypeKind = 'set' | 'list' | 'dictionary';
     export type Equals<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? true : false;
     export type Not<A extends boolean> = A extends true ? false : true;
     // export type Or<A extends boolean, B extends boolean> = A extends true ? true : B extends true ? true : false;
@@ -45,12 +47,13 @@ declare global {
     };
     export type StaticTableDefinitions<T extends MRT_RowData> = {
         getColumns: (...p: string[]) => DefinedMRTColumns<T>;
-        createRenderDetailPanel: (fields: FieldInfo[]) => MRT_TableOptions<T>['renderDetailPanel'];
     };
     export type ComboBoxOption = { label: string; value: string; node: number; parent?: string } | string;
     export type MRT_TableOptionFunctionParams<T extends AnyObject, K extends keyof MRT_TableOptions<T>> = Parameters<Exclude<MRT_TableOptions<T>[K], undefined>>[0];
     export type MRT_TableOptionFunctionReturn<T extends AnyObject, K extends keyof MRT_TableOptions<T>> = ReturnType<Exclude<MRT_TableOptions<T>[K], undefined>>;
-    export type MRT_ColumnDefFunctionParams<K extends FunctionProperties<MRT_ColumnDef<T, V>>, V = unknown, T extends MRT_RowData = AnyObject> = Parameters<Exclude<MRT_ColumnDef<T, V>[K] & AnyFunction, undefined>>[0];
+    export type MRT_ColumnDefFunctionParams<K extends FunctionProperties<MRT_ColumnDef<T, V>>, V = unknown, T extends MRT_RowData = AnyObject> = Parameters<
+        Exclude<MRT_ColumnDef<T, V>[K] & AnyFunction, undefined>
+    >[0];
     export type FieldDecoratorFunc = (_target: any, context: ClassFieldDecoratorContext | ClassGetterDecoratorContext) => void;
     export interface IEquatable<T> {
         (left: T): (right: T) => boolean;
@@ -59,30 +62,52 @@ declare global {
         (left: T): (right: T) => CompareResult;
     }
     export type RealmObjects =
+        | 'address'
+        | 'apparelDetails'
+        | 'attachment'
+        | 'auction'
+        | 'auctionLot '
+        | 'barcode'
+        | 'brand'
+        | 'branding'
+        | 'bundle'
+        | 'changeSet'
+        | 'classifier'
+        | 'clothingCare'
+        | 'cloudLink'
+        | 'customItemField'
+        | 'dimensions'
+        | 'draft'
+        | 'flags'
+        | 'fulfillment'
+        | 'hashTag'
+        | 'hashTagUsage'
+        | 'listing'
+        | 'locationSegment'
+        | 'madeOf'
+        | 'task'
+        | 'madeOfPart'
+        | 'madeOfSection'
+        | 'measurements'
+        | 'mediaDetails'
         | 'mercariBrand'
         | 'mercariCategory'
         | 'mercariSubCategory'
         | 'mercariSubSubCategory'
-        | 'brand'
-        | 'classifier'
+        | 'part'
+        | 'price'
         | 'product'
-        | 'sku'
-        | 'listing'
-        | 'draft'
         | 'productImage'
-        | 'scan'
-        | 'locationSegment'
-        | 'hashTag'
-        | 'hashTagUsage'
-        | 'rn'
-        | 'customItemField'
-        | 'barcode'
-        | 'address'
+        | 'productLine'
         | 'productTaxonomy'
-        | 'measurements'
-        | 'flags'
-        | 'madeOf'
-        | 'dimensions';
+        | 'rn'
+        | 'sale '
+        | 'scan'
+        | 'selfStorage '
+        | 'shippingOption'
+        | 'operation'
+        | 'sku'
+        | 'storageFacility';
     export type ContentsTypes = 'icon' | 'label';
     export type ProductAttribute<T = string> = [isSkipped: boolean, text: string | undefined, kvp: string | undefined, selector: string | undefined, value?: T];
     export type TableInfo = { defaultSort?: SortDescriptor[]; defaultFilter?: [string, any[]]; columns?: ColumnDef<any, any>[] };
@@ -241,10 +266,10 @@ declare global {
     export type SubComponentFunction<T> = React.FunctionComponent<{ row: Row<T>; collectionName: string; table: Table<T> }>;
     export type DefinedColumn = ColumnDef<any, any>;
     // eslint-disable-next-line @typescript-eslint/ban-types
-    export type FunctionProperties<T extends AnyObject> = keyof{ [P in keyof T]: T[P] extends AnyFunction ? keyof T : T[P] extends (AnyFunction | undefined) ? keyof T : never }
+    export type FunctionProperties<T extends AnyObject> = keyof { [P in keyof T]: T[P] extends AnyFunction ? keyof T : T[P] extends AnyFunction | undefined ? keyof T : never };
     export type DefinedMRTColumn<T extends MRT_RowData> = MRT_ColumnDef<T, any>;
     export type DefinedColumns = DefinedColumn[];
-    export type DefinedMRTColumns<T  extends MRT_RowData = any> = DefinedMRTColumn<T>[];
+    export type DefinedMRTColumns<T extends MRT_RowData = any> = DefinedMRTColumn<T>[];
     export type StringOr<T = string> = string | T | undefined;
     export type PreProcessFunction<TInput, TOutput> = (x?: TInput) => TOutput;
     export type RealmCollectionTypes = 'list' | 'dictionary' | 'set' | 'linkingObjects';
@@ -272,7 +297,7 @@ declare global {
         readonly setDefaultValues: unique symbol;
     }
     export type ListOf<T> = T extends DBList<infer R> ? R : T extends DBDictionary<infer R> ? R : T extends DBSet<infer R> ? R : T extends Array<infer R> ? R : never;
-    export type ValueOutFunc<T> = (x?: string | string[]) => (T | null | ListOf<T>[])
+    export type ValueOutFunc<T> = (x?: string | string[]) => T | null | ListOf<T>[];
 }
 
 declare module '@tanstack/table-core' {
@@ -281,8 +306,8 @@ declare module '@tanstack/table-core' {
         required?: boolean;
         justify?: 'justify-center' | 'justify-start' | 'justify-end' | 'justify-between' | 'justify-evenly' | 'justify-around';
         valueIn?: ((x?: TValue | null) => string) | ((x?: DBSet<ListOf<TValue>> | null) => string[]);
-        valueOut?: ((x?: string) => (TValue | null)) | ((x?: string[]) => ListOf<TValue>[]);
-        defaultValue?: TValue | (() => Promise<TValue>)
+        valueOut?: ((x?: string) => TValue | null) | ((x?: string[]) => ListOf<TValue>[]);
+        defaultValue?: TValue | (() => Promise<TValue>);
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     interface TableMeta<TData extends RowData> {

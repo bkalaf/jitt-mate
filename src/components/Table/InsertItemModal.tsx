@@ -17,7 +17,7 @@ export function InsertItemModal<T extends FieldValues & EntityBase>({
     setList
 }: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    EditControls: React.FunctionComponent;
+    EditControls: React.FunctionComponent<{ context: any }>;
     init: () => Promise<T>;
     list: T[];
     open: boolean;
@@ -50,7 +50,7 @@ export function InsertItemModal<T extends FieldValues & EntityBase>({
             <FormContainer context={context}>
                 <Box className='absolute top-1/2 left-1/2 -translate-x-1/2 w-[400px] bg-neutral-300 border-solid border-2 border-white shadow-lg pt-2 px-4 pb-3'>
                     <>
-                        <EditControls />
+                        <EditControls context={context} />
                         <div className='flex justify-end w-full'>
                             <IconButton
                                 className='inline-flex'

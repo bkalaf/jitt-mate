@@ -15,7 +15,7 @@ export function useProvideReflectionContext(): IReflectionContext {
         setRegistrar((prev) => {
             const { [name]: _current, ...remain } = prev;
             const fieldInfos = Object.entries(propertiesRegistrar)
-                .filter(([k, v]) => ['list', 'dictionary', 'set'].some((x) => x === v.type) || v.objectType === 'productTaxonomy')
+                .filter(([k, v]) => v.objectType === 'productTaxonomy')
                 .map(([k, { type, objectType }]) => [k, type, objectType] as FieldInfo);
             const newValue = [{ embedded, name, primaryKey, asymmetric }, propertiesRegistrar, fieldInfos] as CollectionRegistrarValue;
             return { ...remain, [name]: newValue };

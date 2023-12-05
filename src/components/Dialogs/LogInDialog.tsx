@@ -11,26 +11,23 @@ import { RHFM_TextFieldElement } from './RHFM_TextFieldElement';
 
 export function LogInDialog({ open, toggler }: { open: boolean; toggler: () => void }) {
     const { logIn } = useRealmContext();
-    const navigate = useNavigate();
-    useController;
     const onSuccess = useCallback(
         async (data: any, event: any) => {
             try {
-                alert('starting log-in');
                 await logIn(data);
-                navigate('/');
+                // navigate('/');
                 toggler();
                 return;
             } catch (err) {
                 catchError(err);
             }
         },
-        [logIn, navigate, toggler]
+        [logIn, toggler]
     );
     return (
         <Dialog maxWidth='md' fullWidth open={open} onClose={toggler}>
             <DialogTitle variant='h4' className='font-bold text-white bg-slate-600 font-rubik'>
-                LOG IN FORM
+                LOGIN FORM
             </DialogTitle>
             <Divider variant='middle' className='border-yellow-700' />
             <FormContainer onSuccess={onSuccess} criteriaMode='all' reValidateMode='onChange' mode='onBlur' defaultValues={{ password: 'diane1221', email: 'admin@junk-in-the-trunk.com' }}>

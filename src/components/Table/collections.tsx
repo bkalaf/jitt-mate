@@ -11,38 +11,36 @@ import {
     IMercariCategory,
     IMercariSubCategory,
     IMercariSubSubCategory,
+    IProductImage,
+    IProductLine,
     IProductTaxonomy
 } from '../../dal/types';
 import { MRT_OIDCell } from './Cells/MRT_OIDCell';
 import helpers from './helpers';
-import { createSubComponent } from './creators/createSubComponent';
-import { OuterTaxonomyComboBox } from './Controls/OuterTaxonomyComboBox';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckSquare, faSquareDashed } from '@fortawesome/pro-solid-svg-icons';
-import { Chip, Icon, List, ListItem, ListItemText } from '@mui/material';
-import { konst } from '../../common/functions/konst';
-import { CheckBoxCell } from './Cells/CheckBoxCell';
 import { DateCell } from './Cells/DateCell';
-import { LookupCell } from './Cells/LookupCell';
-import { BarcodeCell, PercentCell } from './Cells/PercentCell';
 import { fromOID } from '../../dal/fromOID';
-import { toNotNullOID, toOID } from '../../dal/toOID';
+import { toOID } from '../../dal/toOID';
 import { BSON } from 'realm';
-import { MRTIntegerControl, MRTPercentageControl } from './MRTPercentageControl';
-import { MRTTextControl } from './MRTTextControl';
-import { MRTDbSetAutoCompleteControl } from './MRTDbSetAutoCompleteControl';
-import { MRTEnumControl, MRTLookupControl } from './MRTLookupControl';
-import { MRTListControl } from './MRTListControl';
-import { MRTBoolControl } from './MRTBoolControl';
-import { toProperFromCamel } from '../../common/text/toProperCase';
+import { RHFM_TextControl } from './Controls/RHFM_TextControl';
 import { BarcodeTypes, BarcodeTypesColors } from '../../dal/enums/barcodeTypes';
 import { LocationTypes, LocationTypesColors } from '../../dal/enums/locationTypes';
 import { LocationKinds } from '../../dal/enums/locationKinds';
 import { LocationLabelColors, LocationLabelColorsColors } from '../../dal/enums/locationLabelColors';
-import { FieldValues, TextFieldElement, UseFormReturn } from 'react-hook-form-mui';
+import { TextFieldElement } from 'react-hook-form-mui';
 import { Barcode } from '../../dto/collections/Barcode';
-import { MUIDBSetControl } from './MUIDBSetControl';
-import { MRTMultipleControl } from './MRTMultipleControl';
+import { RHFM_TaxonSelect } from './Controls/RHFM_TaxonSelect';
+import React from 'react';
+import { IntCell } from './IntCell';
+import { intMeta } from './intMeta';
+import { dataStructureMeta } from './dataStructureMeta';
+import { percentageMeta } from './percentageMeta';
+import { barcodeMeta } from './barcodeMeta';
+import { lookupMeta } from './lookupMeta';
+import { stringMeta } from './stringMeta';
+import { enumMeta } from './enumMeta';
+import { dbListMeta } from './dbListMeta';
+import { dateMeta } from './dateMeta';
+import { boolMeta } from './boolMeta';
 const {
     taxonomy: productTaxonomyHelper,
     category: categoryHelper,
@@ -54,132 +52,11 @@ const {
     hashTagHelper,
     hashTagUsageHelper,
     locationSegmentHelper,
-    barcodeHelper
+    barcodeHelper,
+    productLineHelper,
+    productImageHelper
 } = helpers;
 
-const intMeta = (name: string, opts: { header?: string; min?: number; max?: number } = {}) => ({
-    header: opts.header ?? toProperFromCamel(name),
-    enableColumnActions: false,
-    enableColumnDragging: false,
-    maxSize: 200,
-    meta: {
-        valueIn: (x?: number | null) => x?.toFixed(4) ?? '',
-        valueOut: (x?: string) => (x != null && typeof x === 'string' && x.length > 0 ? parseFloat(x) : x != null && typeof x === 'number' ? x : null),
-        defaultValue: undefined
-    },
-    Edit: MRTIntegerControl(name, opts.header ?? toProperFromCamel(name), { min: opts.min, max: opts.max }),
-    Cell: IntCell
-});
-const percentageMeta = function (name: string, opts: { header?: string } = {}) {
-    return {
-        header: opts.header ?? toProperFromCamel(name),
-        enableColumnActions: false,
-        enableColumnDragging: false,
-        maxSize: 200,
-        meta: {
-            valueIn: (x?: number | null) => x?.toFixed(4) ?? '',
-            valueOut: (x?: string) => (x != null && typeof x === 'string' && x.length > 0 ? parseFloat(x) : x != null && typeof x === 'number' ? x : null),
-            defaultValue: undefined
-        },
-        Edit: MRTPercentageControl(name, opts.header ?? toProperFromCamel(name)),
-        Cell: PercentCell as any
-    };
-};
-const barcodeMeta = function (name: string, opts: { header?: string } = {}) {
-    return {
-        header: opts.header ?? toProperFromCamel(name),
-        meta: {
-            // valueIn: (x?: string | null) => x ?? '',
-            // valueOut: (x?: string) => (x != null && x.length > 0 ? x : null),
-            defaultValue: undefined
-        },
-        enableEditing: false,
-        Cell: BarcodeCell as any
-    };
-};
-// const entityDbListMeta = function (opts: { header: string }) {
-//     return {
-//         Cell: DBListCell,
-//         header: opts.header.concat(' #'),
-//         enableEditing: false
-//     };
-// };
-const entityDbSetMeta = function <TItem extends EntityBase>(objectType: string, name: string, lookupProperty: string, opts: { header?: string } = {}) {
-    return {
-        Cell: DBSetCell,
-        header: 'HashTag #',
-        enableEditing: true,
-        enableColumnFilter: false,
-        maxSize: 200,
-        meta: {
-            valueIn: (x?: DBSet<Entity<TItem>> | null) => (x?.map((y) => fromOID(y?._id)).filter((y) => y != null) ?? []) as string[],
-            valueOut: (x?: string[]) => (x?.map((y) => window.$$store?.objectForPrimaryKey<TItem>(objectType, toOID(y) as any)) ?? []) as Entity<TItem>[],
-            defaultValue: () => Promise.resolve([]) as any
-        },
-        muiEditTextFieldProps: {
-            type: 'hidden',
-            className: 'hidden'
-        },
-        // Edit: MRTDbSetControl<IHashTag>(objectType, name, opts.header ?? [toProperFromCamel(name), '#'].join(' '), lookupProperty, '_ID')
-    };
-};
-const lookupMeta = <TLookup extends AnyObject, TParent extends EntityBase>(name: string, objectType: string, lookupProperty: string, opts: { maxSize?: number; header?: string } = {}) => ({
-    header: opts.header ?? toProperFromCamel(name),
-    maxSize: opts.maxSize ?? 200,
-    Cell: LookupCell<TLookup, TParent>(lookupProperty),
-    enableColumnFilter: false,
-    editVariant: 'select' as const,
-    meta: {
-        valueIn: (x?: OptionalEntity<TLookup> | null) => fromOID(x?._id) ?? '',
-        valueOut: (x?: string) => (x != null && x.length > 0 ? window.$$store?.objectForPrimaryKey<TLookup>(objectType, toOID(x) as any) ?? null : null),
-        defaultValue: undefined
-    },
-    Edit: MRTLookupControl(objectType, name, opts.header ?? toProperFromCamel(name), lookupProperty)
-});
-const dateMeta = (name: string, opts: { header?: string }) => ({
-    header: opts.header ?? toProperFromCamel(name),
-    Cell: DateCell,
-    meta: {
-        valueIn: (x?: Date | null) => (x != null ? (typeof x === 'string' ? new Date(Date.parse(x)) : x instanceof Date ? x : null) : null)?.toLocaleString() ?? '',
-        valueOut: (x?: string) => (x != null && x.length > 0 ? new Date(Date.parse(x)) : null),
-        defaultValue: () => Promise.resolve(new Date(Date.now()))
-    },
-    Edit: MRTTextControl(name, opts.header ?? toProperFromCamel(name), undefined, undefined, undefined, undefined, undefined, 'datetime-local')
-});
-
-const boolMeta = (opts: { propertyName: string; header: string; defaultValue?: boolean; required?: boolean; readOnly?: boolean }) => ({
-    header: opts.header,
-    Cell: CheckBoxCell,
-    meta: {
-        valueIn: (x?: string | boolean | null) => x?.toString() ?? '',
-        valueOut: (x?: string | boolean) => (x == null ? null : typeof x === 'boolean' ? x : typeof x === 'string' ? (x === 'true' ? true : x === 'false' ? false : null) : null),
-        defaultValue: false
-    },
-    enableEditing: !(opts.readOnly ?? false),
-    Edit: opts.readOnly ?? false ? undefined : MRTBoolControl(opts.propertyName, opts.header, opts.defaultValue, opts.required)
-});
-const stringMeta = (opts: { propertyName: string; header: string; maxLength?: number; minLength?: number; pattern?: RegExp; required?: boolean; type?: React.HTMLInputTypeAttribute }) => ({
-    header: opts.header,
-    meta: {
-        valueIn: (x?: string | null) => x ?? '',
-        valueOut: (x?: string) => (x == null || x.length === 0 ? null : x),
-        defaultValue: ''
-    },
-    Edit: MRTTextControl(opts.propertyName, opts.header, opts.maxLength, opts.minLength, opts.pattern, opts.required, false, opts.type),
-    muiTableHeadCellProps: {
-        'aria-required': opts.required ?? false
-    }
-});
-const enumMeta = (name: string, enumMap: EnumMap, opts: { colorMap?: EnumMap; header?: string } = {}) => ({
-    header: opts.header ?? toProperFromCamel(name),
-    Cell: OuterEnumCell(enumMap, opts.colorMap),
-    Edit: MRTEnumControl(name, opts.header ?? toProperFromCamel(name), enumMap),
-    meta: {
-        valueIn: (x?: string | null) => (x == null || x.length === 0 ? '' : x),
-        valueOut: (x?: string) => (x == null || x.length === 0 ? null : (x as any)),
-        defaultValue: undefined
-    }
-});
 const objectIdMeta = {
     id: '_id',
     header: 'OID',
@@ -194,25 +71,47 @@ const objectIdMeta = {
         valueOut: (x?: string) => (x == null || x.length === 0 ? null : toOID(x) ?? null),
         defaultValue: () => Promise.resolve(new BSON.ObjectId())
     },
-    Edit: MRTTextControl('_id', 'OID', undefined, undefined, undefined, true, true)
+    Edit: RHFM_TextControl('_id', 'OID', undefined, undefined, undefined, true, true)
 };
-const dbListMeta = function <T extends FieldValues>(
-    name: string,
-    objectType: string,
-    opts: {
-        header?: string;
-        ItemComponent: ({ payload }: { payload: T }) => string;
-        convertPayload: (x: any) => T;
-        editControls: React.FunctionComponent<{ context: UseFormReturn<T, any, undefined> }>;
-        init: () => Promise<T>;
-    }
-) {
-    return {
-        header: opts.header ?? toProperFromCamel(name),
-        Cell: DBListDetailCell(opts.ItemComponent) as any,
-        Edit: MRTListControl(name, objectType, opts.ItemComponent, opts.convertPayload, opts.editControls, opts.init) as any
-    };
-};
+const $productTaxonomy = {
+    getColumns: (...pre: string[]) =>
+        [
+            productTaxonomyHelper.accessor('name', {
+                ...stringMeta({ propertyName: 'name', header: 'Name' })
+            }),
+            productTaxonomyHelper.accessor('kingdom', {
+                header: 'Kingdom',
+                Edit: RHFM_TaxonSelect as React.FunctionComponent<Parameters<Exclude<MRT_ColumnDef<IProductTaxonomy, string>['Edit'], undefined>>[0]>
+            }),
+            productTaxonomyHelper.accessor('phylum', {
+                header: 'Phlyum',
+                Edit: RHFM_TaxonSelect as any
+            }),
+            productTaxonomyHelper.accessor('klass', {
+                header: 'Class',
+                Edit: RHFM_TaxonSelect as any
+            }),
+            productTaxonomyHelper.accessor('order', {
+                header: 'Order',
+                Edit: RHFM_TaxonSelect as any
+            }),
+            productTaxonomyHelper.accessor('family', {
+                header: 'Family',
+                Edit: RHFM_TaxonSelect as any
+            }),
+            productTaxonomyHelper.accessor('genus', {
+                header: 'Genus',
+                Edit: RHFM_TaxonSelect as any
+            }),
+            productTaxonomyHelper.accessor('species', {
+                header: 'Species',
+                Edit: RHFM_TaxonSelect as any
+            }),
+            productTaxonomyHelper.accessor('lock', {
+                ...boolMeta({ propertyName: 'lock', header: 'Is Locked' })
+            })
+        ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as MRT_ColumnDef<IProductTaxonomy>[]
+} as StaticTableDefinitions<IProductTaxonomy>;
 export const collections: Record<string, StaticTableDefinitions<any>> = {
     string: {
         getColumns: (): DefinedMRTColumns => [
@@ -220,8 +119,7 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
                 accessorKey: '1',
                 ...stringMeta({ propertyName: '1', header: 'Value', required: true, maxLength: 150 })
             }
-        ],
-        createRenderDetailPanel: () => () => null
+        ]
     },
     hashTagUsage: {
         getColumns: (...pre: string[]): DefinedMRTColumns =>
@@ -232,8 +130,7 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
                 hashTagUsageHelper.accessor('from', {
                     ...dateMeta('from', { header: 'Timestamp' })
                 })
-            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns,
-        createRenderDetailPanel: () => () => null
+            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns
     } as StaticTableDefinitions<IHashTagUsage>,
     hashTag: {
         getColumns: (...pre: string[]): DefinedMRTColumns =>
@@ -252,11 +149,7 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
                     enableEditing: false,
                     Cell: DateCell
                 })
-            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns,
-        createRenderDetailPanel:
-            (subComponentTabPanels: FieldInfo[]) =>
-            ({ row, table }: MRT_TableOptionFunctionParams<IHashTag, 'renderDetailPanel'>) =>
-                createSubComponent(subComponentTabPanels)<IHashTag>({ row, table, collectionName: 'hashTag' })
+            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns
     } as StaticTableDefinitions<IHashTag>,
     brand: {
         getColumns: (...pre: string[]): DefinedMRTColumns =>
@@ -278,26 +171,9 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
                     ...lookupMeta<IBrand, IBrand>('parent', 'brand', 'name', { header: 'Parent' })
                 }),
                 brandHelper.accessor('hashTags', {
-                    header: 'Hash Tags',
-                    Cell: DBSetDetailCell<Entity<IHashTag>, IBrand>(({ payload }) => payload.name),
-                    Edit: MRTMultipleControl(
-                        'hashTags',
-                        'Hash Tags',
-                        'hashTag',
-                        'name',
-                        (props: {data: IHashTag} ) => props.data.name,
-                        (prev: IHashTag[]) => (x: IHashTag) => {
-                            console.log(`appender`, `prev`, prev, 'item', x);
-                            return [...prev, x];
-                        },
-                        true
-                    ) as any
+                    ...dataStructureMeta<IBrand, IHashTag, 'hashTags'>('hashTags', 'name', 'brand', 'reference', 'hashTag', 'set', { header: 'Hash Tags' })
                 })
-            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns,
-        createRenderDetailPanel:
-            (subComponentTabPanels: FieldInfo[]) =>
-            ({ row, table }: MRT_TableOptionFunctionParams<IBrand, 'renderDetailPanel'>) =>
-                createSubComponent(subComponentTabPanels)<IBrand>({ row, table, collectionName: 'brand' })
+            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns
     } as StaticTableDefinitions<IBrand>,
     barcode: {
         getColumns: (...pre: string[]): DefinedMRTColumns =>
@@ -313,8 +189,7 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
                     ...boolMeta({ propertyName: 'valid', readOnly: true, header: 'Is Valid' }),
                     enableEditing: false
                 })
-            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns,
-        createRenderDetailPanel: () => () => null
+            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns
     } as StaticTableDefinitions<IBarcode>,
     locationSegment: {
         getColumns: (...pre: string[]): DefinedMRTColumns =>
@@ -323,22 +198,16 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
                 locationSegmentHelper.accessor('name', {
                     ...stringMeta({ propertyName: 'name', header: 'Name', required: true, maxLength: 50 })
                 }),
-                locationSegmentHelper.group({
-                    header: 'Barcode',
+                locationSegmentHelper.accessor('barcode', {
+                    ...barcodeMeta('barcode', { header: '' }),
                     enableEditing: false,
-                    columns: [
-                        locationSegmentHelper.accessor('barcode', {
-                            ...barcodeMeta('barcode', { header: '' }),
-                            enableEditing: false,
-                            enableClickToCopy: true,
-                            sortingFn: 'sortBarcode'
-                        }) as any,
-                        locationSegmentHelper.accessor('barcode.valid', {
-                            ...boolMeta({ propertyName: 'valid', header: 'Valid', readOnly: true }),
-                            enableEditing: false,
-                            Edit: undefined
-                        })
-                    ]
+                    enableClickToCopy: true,
+                    sortingFn: 'sortBarcode'
+                }) as any,
+                locationSegmentHelper.accessor('barcode.valid', {
+                    ...boolMeta({ propertyName: 'valid', header: 'Valid', readOnly: true }),
+                    enableEditing: false,
+                    Edit: undefined
                 }),
                 locationSegmentHelper.accessor('upcs', {
                     ...dbListMeta<Entity<IBarcode>>('upcs', 'barcode', {
@@ -373,8 +242,7 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
                 })
 
                 // upcs, barcode (get), name, type keyof type LocationTypesObj, color LocationLabelColorsKey, notes Opt<String>, kind LocationKindsKey
-            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns,
-        createRenderDetailPanel: () => () => null
+            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns
     } as StaticTableDefinitions<ILocationSegment>,
     mercariBrand: {
         getColumns: (...pre: string[]): DefinedMRTColumns =>
@@ -384,23 +252,9 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
                     ...stringMeta({ propertyName: 'name', header: 'Name', required: true, maxLength: 100 })
                 }),
                 mercariBrandHelper.accessor('hashTags', {
-                    header: 'Hash Tags',
-                    Cell: DBSetDetailCell<Entity<IHashTag>, IMercariBrand>(({ payload }) => payload.name),
-                    Edit: MRTMultipleControl(
-                        'hashTags',
-                        'Hash Tags',
-                        'hashTag',
-                        'name',
-                        (props: {data: IHashTag} ) => props.data.name,
-                        (prev: IHashTag[]) => (x: IHashTag) => [...prev, x],
-                        true
-                    ) as any
+                    ...dataStructureMeta<IMercariBrand, IHashTag, 'hashTags'>('hashTags', 'name', 'mercariBrand', 'reference', 'hashTag', 'set', { header: 'Hash Tags' })
                 })
-            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns,
-        createRenderDetailPanel:
-            (subComponentTabPanels: FieldInfo[]) =>
-            ({ row, table }: MRT_TableOptionFunctionParams<IMercariBrand, 'renderDetailPanel'>) =>
-                createSubComponent(subComponentTabPanels)<IMercariBrand>({ row, table, collectionName: 'mercariBrand' })
+            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns
     } as StaticTableDefinitions<IMercariBrand>,
     classifier: {
         getColumns: (...pre: string[]): DefinedMRTColumns =>
@@ -419,106 +273,15 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
                     ...stringMeta({ propertyName: 'shortname', header: 'Short Name', maxLength: 30 })
                 }),
                 classifierHelper.accessor('hashTags', {
-                    ...entityDbSetMeta<IHashTag>('hashTag', 'hashTags', 'name')
+                    ...dataStructureMeta<IClassifier, IHashTag, 'hashTags'>('hashTags', 'name', 'classifier', 'reference', 'hashTag', 'set', { header: 'Hash Tags' })
                 }),
                 classifierHelper.accessor('shipWeightPercent', {
                     ...percentageMeta('shipWeightPercent', { header: 'Ship Weight %' })
-                })
-            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns,
-        createRenderDetailPanel:
-            (subComponentTabPanels: FieldInfo[]) =>
-            ({ row, table }: MRT_TableOptionFunctionParams<IClassifier, 'renderDetailPanel'>) =>
-                createSubComponent(subComponentTabPanels)<IClassifier>({ row, table, collectionName: 'classifier' })
+                }),
+                ...($productTaxonomy.getColumns('taxon') as DefinedMRTColumns<IClassifier>)
+            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns
     } as StaticTableDefinitions<IClassifier>,
-    productTaxonomy: {
-        getColumns: (...pre: string[]) =>
-            [
-                productTaxonomyHelper.accessor('name', {
-                    ...stringMeta({ propertyName: 'name', header: 'Name' })
-                }),
-                productTaxonomyHelper.accessor((row) => row.kingdom ?? '', {
-                    header: 'Kingdom',
-                    editVariant: 'select',
-                    id: 'kingdom',
-                    Cell: (props) => {
-                        const value = props.renderedCellValue;
-                        return value ?? '';
-                    },
-                    Edit: OuterTaxonomyComboBox({ label: 'Kingdom', name: 'kingdom' }) as any
-                }),
-                productTaxonomyHelper.accessor((row) => row.phylum ?? '', {
-                    header: 'Phlyum',
-                    id: 'phylum',
-                    Cell: (props) => {
-                        const value = props.renderedCellValue;
-                        return value ?? '';
-                    },
-                    editVariant: 'select',
-                    Edit: OuterTaxonomyComboBox<any>({ label: 'Phlyum', name: 'phylum' }) as any
-                }),
-                productTaxonomyHelper.accessor((row) => row.klass ?? '', {
-                    header: 'Class',
-                    editVariant: 'select',
-                    id: 'klass',
-                    Cell: (props) => {
-                        const value = props.renderedCellValue;
-                        return value ?? '';
-                    },
-                    Edit: OuterTaxonomyComboBox<any>({ label: 'Class', name: 'klass' }) as any
-                }),
-                productTaxonomyHelper.accessor((row) => row.order ?? '', {
-                    header: 'Order',
-                    editVariant: 'select',
-                    id: 'order',
-                    Cell: (props) => {
-                        const value = props.renderedCellValue;
-                        return value ?? '';
-                    },
-                    Edit: OuterTaxonomyComboBox<any>({ label: 'Order', name: 'order' }) as any
-                }),
-                productTaxonomyHelper.accessor((row) => row.family ?? '', {
-                    header: 'Family',
-                    editVariant: 'select',
-                    id: 'family',
-                    Cell: (props) => {
-                        const value = props.renderedCellValue;
-                        return value ?? '';
-                    },
-                    Edit: OuterTaxonomyComboBox<any>({ label: 'Family', name: 'family' }) as any
-                }),
-                productTaxonomyHelper.accessor((row) => row.genus ?? '', {
-                    header: 'Genus',
-                    editVariant: 'select',
-                    id: 'genus',
-                    Cell: (props) => {
-                        const value = props.renderedCellValue;
-                        return value ?? '';
-                    },
-                    Edit: OuterTaxonomyComboBox<any>({ label: 'Genus', name: 'genus' }) as any
-                }),
-                productTaxonomyHelper.accessor((row) => row.species ?? '', {
-                    header: 'Species',
-                    editVariant: 'select',
-                    id: 'species',
-                    Cell: (props) => {
-                        const value = props.renderedCellValue;
-                        console.log(`cell value`, value);
-                        return value ?? '';
-                    },
-                    Edit: OuterTaxonomyComboBox<any>({ label: 'Species', name: 'species' }) as any
-                }),
-                productTaxonomyHelper.accessor('lock', {
-                    header: 'Is Locked',
-                    Cell: BoolCell,
-                    muiEditTextFieldProps: {
-                        type: 'checkbox'
-                    }
-                })
-            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as MRT_ColumnDef<IProductTaxonomy>[],
-        getRowCanExpand: () => false,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        createRenderDetailPanel: (subComponentTabPanels: FieldInfo[]) => () => <></>
-    } as StaticTableDefinitions<IProductTaxonomy>,
+    productTaxonomy: $productTaxonomy,
     mercariCategory: {
         getColumns: (...pre: string[]) =>
             [
@@ -530,17 +293,13 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
                     ...stringMeta({ propertyName: 'id', header: 'ID', required: true, maxLength: 30 })
                 }),
                 categoryHelper.accessor('hashTags', {
-                    ...entityDbSetMeta<IHashTag>('hashTag', 'hashTags', 'name')
+                    ...dataStructureMeta<IMercariCategory, IHashTag, 'hashTags'>('hashTags', 'name', 'mercariCategory', 'reference', 'hashTag', 'set', { header: 'Hash Tags' })
                 }),
                 categoryHelper.accessor('shipWeightPercent', {
                     ...percentageMeta('shipWeightPercent', { header: 'Ship Weight %' })
-                })
-            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as MRT_ColumnDef<IMercariCategory>[],
-        getRowCanExpand: () => true,
-        createRenderDetailPanel:
-            (subComponentTabPanels: FieldInfo[]) =>
-            ({ row, table }: MRT_TableOptionFunctionParams<IMercariCategory, 'renderDetailPanel'>) =>
-                createSubComponent(subComponentTabPanels)<IMercariCategory>({ row, table, collectionName: 'mercariCategory' })
+                }),
+                ...($productTaxonomy.getColumns('taxon') as DefinedMRTColumns<IMercariCategory>)
+            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as MRT_ColumnDef<IMercariCategory>[]
     } as StaticTableDefinitions<IMercariCategory>,
     mercariSubCategory: {
         getColumns: (...pre: string[]) =>
@@ -561,17 +320,13 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
                     ...lookupMeta<IMercariCategory, IMercariSubCategory>('parent', 'mercariCategory', 'name', { header: 'Parent' })
                 }),
                 subCategory.accessor('hashTags', {
-                    ...entityDbSetMeta<IHashTag>('hashTag', 'hashTags', 'name')
+                    ...dataStructureMeta<IMercariSubCategory, IHashTag, 'hashTags'>('hashTags', 'name', 'mercariSubCategory', 'reference', 'hashTag', 'set', { header: 'Hash Tags' })
                 }),
                 subCategory.accessor('shipWeightPercent', {
                     ...percentageMeta('shipWeightPercent', { header: 'Ship Weight %' })
-                })
-            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })),
-        getRowCanExpand: () => true,
-        createRenderDetailPanel:
-            (subComponentTabPanels: FieldInfo[]) =>
-            ({ row, table }: MRT_TableOptionFunctionParams<IMercariSubCategory, 'renderDetailPanel'>) =>
-                createSubComponent(subComponentTabPanels)<IMercariSubCategory>({ row, table, collectionName: 'mercariSubCategory' })
+                }),
+                ...($productTaxonomy.getColumns('taxon') as DefinedMRTColumns<IMercariSubCategory>)
+            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined }))
     } as StaticTableDefinitions<IMercariSubCategory>,
     mercariSubSubCategory: {
         getColumns: (...pre: string[]): MRT_ColumnDef<IMercariSubSubCategory, any>[] =>
@@ -590,74 +345,65 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
                     ...lookupMeta<IMercariSubCategory, IMercariSubSubCategory>('parent', 'mercariSubCategory', 'name', { header: 'Parent' })
                 }),
                 subSubCategory.accessor('hashTags', {
-                    ...entityDbSetMeta<IHashTag>('hashTag', 'hashTags', 'name')
+                    ...dataStructureMeta<IMercariSubSubCategory, IHashTag, 'hashTags'>('hashTags', 'name', 'mercariSubSubCategory', 'reference', 'hashTag', 'set', { header: 'Hash Tags' })
                 }),
                 subSubCategory.accessor('shipWeightPercent', {
                     ...percentageMeta('shipWeightPercent', { header: 'Ship Weight %' })
+                }),
+                ...($productTaxonomy.getColumns('taxon') as DefinedMRTColumns<IMercariSubSubCategory>)
+            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as MRT_ColumnDef<IMercariSubSubCategory, any>[]
+    } as StaticTableDefinitions<IMercariSubSubCategory>,
+    productLine: {
+        getColumns: (...pre: string[]): MRT_ColumnDef<IProductLine, any>[] =>
+            [
+                productLineHelper.accessor('_id', objectIdMeta),
+                productLineHelper.accessor('name', {
+                    ...stringMeta({
+                        propertyName: 'name',
+                        header: 'Name',
+                        required: true,
+                        maxLength: 50
+                    })
+                }),
+                productLineHelper.accessor('brand', {
+                    ...lookupMeta<IBrand, IProductLine>('brand', 'brand', 'name', { header: 'Brand' })
                 })
-            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as MRT_ColumnDef<IMercariSubSubCategory, any>[],
-        getRowCanExpand: () => true,
-        createRenderDetailPanel:
-            (subComponentTabPanels: FieldInfo[]) =>
-            ({ row, table }: MRT_TableOptionFunctionParams<IMercariSubSubCategory, 'renderDetailPanel'>) =>
-                createSubComponent(subComponentTabPanels)<IMercariSubSubCategory>({ row, table, collectionName: 'mercariSubSubCategory' })
-    } as StaticTableDefinitions<IMercariSubSubCategory>
+            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as MRT_ColumnDef<IProductLine, any>[]
+    } as StaticTableDefinitions<IProductLine>,
+    // branding: {
+    //     getColumns: (...pre: string[]): DefinedMRTColumns =>
+    //         [
+    //             brandingHelper.accessor('_id', objectIdMeta),
+    //             brandingHelper.accessor('brand', {
+    //                 ...lookupMeta<IBrand, IBranding>('brand', 'brand', 'name', { header: 'Brand' })
+    //             }),
+    //             brandingHelper.accessor('productLine', {
+    //                 ...lookupMeta<IProductLine, IBranding>('productLine', 'productLine', 'name', { header: 'Product Line' })
+    //             }),
+    //             brandingHelper.accessor('description', {
+    //                 ...stringMeta({ propertyName: 'description', header: 'Description', maxLength: 100, required: true })
+    //             }),
+    //             brandingHelper.accessor('modelNo', {
+    //                 ...stringMeta({ propertyName: 'modelNo', header: 'Model #', maxLength: 30 })
+    //             }),
+    //             brandingHelper.accessor('hashTags', {
+    //                 ...dataStructureMeta<IBranding, IHashTag, 'hashTags'>('hashTags', 'name', 'branding', 'reference', 'hashTag', 'set', { header: 'Hash Tags' })
+    //             })
+    //         ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns
+    // } as StaticTableDefinitions<IBranding>,
+    productImage: {
+        getColumns: (...pre: string[]): DefinedMRTColumns =>
+            [
+                productImageHelper.accessor('_id', {
+                    id: '_id',
+                    header: 'OID',
+                    Cell: MRT_OIDCell,
+                    enableEditing: false,
+                    enableColumnActions: false,
+                    enableColumnDragging: false,
+                    maxSize: 100,
+                    muiTableBodyCellProps: { style: { justifyContent: 'center' } }
+                })
+            ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns
+    } as StaticTableDefinitions<IProductImage>
 };
-
-function IntCell<T extends EntityBase>(props: MRT_ColumnDefFunctionParams<'Cell', Optional<number>, T>) {
-    return (props.cell.getValue() as Optional<number>)?.toFixed(0);
-}
-
-function BoolCell<T extends EntityBase>(props: MRT_ColumnDefFunctionParams<'Cell', Optional<boolean>, T>) {
-    const value = (props.cell?.getValue ?? konst(false))() ?? false;
-    return (
-        <Icon className='bg-yellow-500 h-7 w-7'>
-            {value ? <FontAwesomeIcon icon={faCheckSquare} className='inline-block object-cover' /> : <FontAwesomeIcon icon={faSquareDashed} className='inline-block object-cover' />}
-        </Icon>
-    );
-}
-
-function DBSetCell<T extends EntityBase>(props: MRT_ColumnDefFunctionParams<'Cell', Optional<DBSet<any>>, T>) {
-    const value = props.cell.getValue() as Optional<DBSet<any>>;
-    return (value?.size ?? 0).toFixed(0);
-}
-// function DBListCell<T extends EntityBase>(props: MRT_ColumnDefFunctionParams<'Cell', Optional<DBList<any>>, T>) {
-//     const value = props.cell.getValue() as Optional<DBList<any>>;
-//     return (value?.length ?? 0).toFixed(0);
-// }
-function OuterEnumCell(enumMap: EnumMap, colorMap?: EnumMap) {
-    return function EnumCell<T extends EntityBase>(props: MRT_ColumnDefFunctionParams<'Cell', Optional<string>, T>) {
-        const value = props.cell.getValue() as Optional<string>;
-        const output = value != null ? enumMap[value] : value;
-        const colors = value != null && colorMap != null ? colorMap[value] : '';
-        return value != null && <Chip className={colors} label={output}></Chip>;
-    };
-}
-function DBListDetailCell<T>(ItemComponent: ({ payload }: { payload: T }) => string) {
-    return function DBListDetailCellInner(props: Parameters<Exclude<MRT_ColumnDef<any, DBList<T>>['Cell'], undefined>>[0]) {
-        const value = props.cell.getValue();
-        return value == null || value.length === 0 ? null : (
-            <List dense className='p-0 m-0'>
-                {(value ?? []).map((item, ix) => (
-                    <ListItem key={ix} className='p-0 m-0'>
-                        <ListItemText primary={ItemComponent({ payload: item })} />
-                    </ListItem>
-                ))}
-            </List>
-        );
-    };
-}
-function DBSetDetailCell<T, TParent extends EntityBase>(ItemComponent: ({ payload }: { payload: T }) => string) {
-    return function DBListDetailCellInner(props: Parameters<Exclude<MRT_ColumnDef<TParent, DBSet<T>>['Cell'], undefined>>[0]) {
-        const value = props.cell.getValue();
-        return value == null || value.length === 0 ? null : (
-            <List dense className='p-0 m-0'>
-                {(Array.from(value.values())).map((item, ix) => (
-                    <ListItem key={ix} className='p-0 m-0'>
-                        <ListItemText primary={ItemComponent({ payload: item })} />
-                    </ListItem>
-                ))}
-            </List>
-        );
-    };
-}

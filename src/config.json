@@ -12,6 +12,8 @@
     "removeBgSuffix": "-removebg-preview.png",
     "downloadsPath": "/home/bobby/Downloads",
     "missingRemoveBG": "/home/bobby/Desktop/missing-remove-bg",
+    "fsRoot": "/media/bobby/1TB/jitt-mate",
+    "productsRoot": "/media/bobby/1TB/jitt-mate/products",
     "UI": {
         "button": {
             "icon&label": [

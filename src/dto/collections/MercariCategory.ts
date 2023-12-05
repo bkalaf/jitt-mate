@@ -8,30 +8,31 @@ import { IHashTag, IMercariCategory, IProductTaxonomy } from '../../dal/types';
 import { ItemGroups } from '../../dal/enums/itemGroups';
 import { Genders } from '../../dal/enums/genders';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
-import { prependText } from '../../common/text/prependText';
 import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
 import { $$queryClient } from '../../components/App';
-import { HashTag } from './HashTag';
+import { listDefaultUpdater } from '../updaters/listDefaultUpdater';
+import { categorySelectorUpdater } from '../updaters/categorySelectorUpdater';
+import { hashTaggedUpdater } from '../updaters/hashTaggedUpdater';
+import { taxonUpdater } from '../updaters/taxonUpdater';
 
 @realmCollectionDecorator('name', 'name')
 export class MercariCategory extends Realm.Object<IMercariCategory> implements IMercariCategory {
     constructor(realm: Realm, args: any) {
         super(realm, args);
-        setImmediate(
-            () =>
-                Promise.resolve(this.update()).then(() => {
-                    $$queryClient
-                        .invalidateQueries({
+        setImmediate(() =>
+            Promise.resolve(this.update()).then(() => {
+                $$queryClient
+                    .invalidateQueries({
+                        queryKey: [MercariCategory.schema.name]
+                    })
+                    .then(() => {
+                        $$queryClient.refetchQueries({
                             queryKey: [MercariCategory.schema.name]
-                        })
-                        .then(() => {
-                            $$queryClient.refetchQueries({
-                                queryKey: [MercariCategory.schema.name]
-                            });
                         });
-                })
-        );     
+                    });
+            })
+        );
     }
 
     get effectiveShipWeightPercent(): Optional<number> {
@@ -41,25 +42,18 @@ export class MercariCategory extends Realm.Object<IMercariCategory> implements I
         return this.taxon;
     }
     get allHashTags(): Entity<IHashTag>[] {
-        return Array.from(this.hashTags.toJSON()) as any
+        return Array.from(this.hashTags.toJSON()) as any;
     }
     gender: Optional<keyof Genders>;
     itemGroup: Optional<keyof ItemGroups>;
 
     @wrapInTransactionDecorator()
     update() {
-        if (this.taxon == null) {
-            this.taxon = {} as Entity<IProductTaxonomy>;
-        }
-        if (this.taxon != null && this.taxon.update != null) {
-            this.taxon = this.taxon.update();
-        }
-        if (!this.id.startsWith('#')) {
-            this.id = prependText('#')(this.id);
-        }
-        if (this.hashTags){
-            HashTag.pruneList(this.hashTags);
-        }
+        const lu = listDefaultUpdater<IMercariCategory>;
+        lu.bind(this)(['hashTags']);
+        taxonUpdater.bind(this)();
+        categorySelectorUpdater.bind(this)();
+        hashTaggedUpdater.bind(this)();
         return this;
     }
 
@@ -85,9 +79,4 @@ export class MercariCategory extends Realm.Object<IMercariCategory> implements I
         }
     };
 
-    @staticColumnsDecorator
-    static columns(...prefixes: string[]): DefinedColumns {
-        return [];
-    }
 }
-

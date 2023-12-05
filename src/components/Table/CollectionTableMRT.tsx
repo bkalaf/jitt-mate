@@ -24,7 +24,7 @@ export function CollectionTableMRT<T extends MRT_RowData & EntityBase & IRealmEn
                 return bcA < bcB ? -1 : bcA > bcB ? 1 : 0;
             }
         }
-    } as MRT_TableOptions<T>);
+    } as any);
 
     return (
         <>
@@ -37,5 +37,3 @@ export function CollectionTableMRT<T extends MRT_RowData & EntityBase & IRealmEn
         </>
     );
 }
-
-

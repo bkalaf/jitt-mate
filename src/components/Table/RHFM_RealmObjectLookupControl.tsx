@@ -61,13 +61,13 @@ export function RHFM_RealmObjectLookupControl<T extends EntityBase>({ objectType
                 getOptionLabel: getOptionLabel,
                 isOptionEqualToValue: isOptionEqualToValue,
                 filterOptions: filterOptions,
-                renderOption: renderOption,
+                // renderOption: renderOption,
                 onChange: onChange,
-                className: 'text-base font-normal font-rubik',
+                className: 'text-base font-normal font-rubik flex w-full',
                 size: 'small'
             }}
             textFieldProps={{
-                className: 'text-base font-normal font-rubik',
+                className: 'text-base font-normal font-rubik flex',
                 error: fieldState.error != null,
                 helperText: fieldState.error?.message,
                 color: color(),

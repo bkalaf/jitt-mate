@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 
 
 export function useDebounceFunction<TArguments extends AnyArray, TReturnValue>(func: (...args: TArguments) => TReturnValue, delay = 400, ...initialArguments: TArguments) {
-    const [debouncedValue, setDebouncedValue] = useState<TReturnValue>(func(...initialArguments));
+    const [debouncedValue, setDebouncedValue] = useState<TReturnValue>(initialArguments.length > 0 ? func(...initialArguments) : undefined as any);
     const token = useRef<NodeJS.Timeout | undefined>();
     const debouncedFunction = useCallback((...args: TArguments) => {
         if (token.current) {

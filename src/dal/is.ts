@@ -1,7 +1,7 @@
 // ///<reference path="./../../global.d.ts" />
 import { BSON } from 'realm';
 import { both } from '../common/functions/both';
-import { either } from './either';
+import { either } from '../common/either';
 import { not } from '../common/not';
 import { toInstanceOf } from '../common/toInstanceOf';
 import { toTypeOf } from '../common/toTypeOf';

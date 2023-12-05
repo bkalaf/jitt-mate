@@ -1,12 +1,10 @@
 import Realm, { PropertySchema, PropertyTypeName, Types, BSON } from 'realm';
 
-import {
-    MaterialKeys,
-    AuctionSiteKeys} from '../enums/importNecklineType';
 import { toType } from '../common/toType';
 import { ISku } from './types';
+import { MaterialTypesKey } from './enums/materialTypes';
 
-export type MadeOf = Partial<Record<MaterialKeys, number>>;
+export type MadeOf = Partial<Record<MaterialTypesKey, number>>;
 // export type Optional<T> = T | undefined;
 export type OptObj<T> = (Realm.Object<T> & T) | undefined;
 
@@ -68,26 +66,52 @@ export const $db: DB = {
     uuid: 'uuid',
     date: toType('date'),
     data: toType('data'),
-    mercariBrand: toType('mercariBrand'),
+    address: toType('address'),
+    apparelDetails: toType('apparelDetails'),
+    attachment: toType('attachment'),
+    auction: toType('auction'),
+    auctionLot: toType('auctionLot'),
+    barcode: toType('barcode'),
     brand: toType('brand'),
+    branding: toType('branding'),
+    bundle: toType('bundle'),
+    changeSet: toType('changeSet'),
+    classifier: toType('classifier'),
+    clothingCare: toType('clothingCare'),
+    cloudLink: toType('cloudLink'),
+    customItemField: toType('customItemField'),
+    dimensions: toType('dimensions'),
+    draft: toType('draft'),
+    flags: toType('flags'),
+    fulfillment: toType('fullfillment'),
+    hashTag: toType('hashTag'),
+    hashTagUsage: toType('hashTagUsage'),
+    listing: toType('listing'),
+    locationSegment: toType('locationSegment'),
+    madeOfPart: toType('madeOfPart'),
+    madeOfSection: toType('madeOfSection'),
+    madeOf: toType('madeOf'),
+    measurements: toType('measurements'),
+    mediaDetails: toType('mediaDetails'),
+    mercariBrand: toType('mercariBrand'),
     mercariCategory: toType('mercariCategory'),
     mercariSubCategory: toType('mercariSubCategory'),
     mercariSubSubCategory: toType('mercariSubSubCategory'),
-    classifier: toType('classifier'),
+    part: toType('part'),
+    price: toType('price'),
     product: toType('product'),
-    sku: toType('sku'),
-    listing: toType('listing'),
-    draft: toType('draft'),
-    locationSegment: toType('locationSegment'),
     productImage: toType('productImage'),
-    scan: toType('scan'),
-    customItemField: toType('customItemField'),
-    hashTagUsage: toType('hashTagUsage'),
-    hashTag: toType('hashTag'),
+    productLine: toType('productLine'),
+    productTaxonomy: toType('productTaxonomy'),
     rn: toType('rn'),
-    barcode: toType('barcode'),
-    address: toType('address'),
-    productTaxonomy: toType('productTaxonomy')
+    sale: toType('sale'),
+    scan: toType('scan'),
+    selfStorage: toType('selfStorage'),
+    shippingOption: toType('shippingOption'),
+    sku: toType('sku'),
+    storageFacility: toType('storageFacility'),
+    task: toType('task'),
+    operation: toType('operation')
 } as any;
 
 $db.backlink = (name: keyof typeof $db, property: string) =>
@@ -142,7 +166,7 @@ export interface IDraft {
 export interface IListing {
     _id: BSON.ObjectId;
     draft: OptObj<IDraft>;
-    auctionSite: AuctionSiteKeys;
+    // auctionSite: AuctionSiteKeys;
     listingId: string;
     createdOn: Date;
 }

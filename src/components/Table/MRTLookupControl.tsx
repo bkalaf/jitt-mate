@@ -24,19 +24,19 @@ export function MRTLookupControl<T extends AnyObject>(objectType: string, name: 
             queryKey: [objectType, 'dropdown'],
             queryFn: () => {
                 return Promise.resolve(
-                    (
-                        db.objects<T>(objectType).map((x) => ({
-                            entity: x,
-                            label: x[itemValue] as string,
-                            value: (x as any)._id.toHexString()
-                        })) ?? []
-                    ).sort((a, b) => a.label.localeCompare(b.label))
+                    Array.from(db.objects<T>(objectType).sorted([itemValue]))
+                    // .map((x) => ({
+                    //     entity: x,
+                    //     label: x[itemValue] as string,
+                    //     value: (x as any)._id.toHexString()
+                    // })) ?? []
                 );
             }
         });
         const context = useFormContext();
         return (
             <AutocompleteElement
+                control={context.control}
                 name={name}
                 label={label}
                 loading={isLoading}
@@ -44,11 +44,9 @@ export function MRTLookupControl<T extends AnyObject>(objectType: string, name: 
                 autocompleteProps={{
                     getOptionLabel: (option: T) => option[itemValue] ?? '',
                     isOptionEqualToValue: (option: T, value: OID) => {
-                        console.error('isOptionalEqualToValue', option, value);
                         return option.value === toOID((value as any)._id)?.toHexString();
                     }
                 }}
-                control={context.control}
             />
         );
     };

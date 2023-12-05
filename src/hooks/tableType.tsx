@@ -393,9 +393,7 @@ export const tableType: Record<string, (args: { parentRow: MRT_Row<EntityBase & 
             return new Promise<T>((resolve, reject) => {
                 try {
                     const func = () => {
-                        const payload = flattenPayload(args.values) as T;
-                        console.log(`payload`, args.values, payload);
-                        const result = window.$$store?.create<Entity<T> & IRealmEntity<T>>(collection, payload as any, Realm.UpdateMode.Modified);
+                        const result = window.$$store?.create<Entity<T> & IRealmEntity<T>>(collection, args.values as any, Realm.UpdateMode.Modified);
                         if (result == null) throw new Error('unsucessful create');
                         if (result.update && typeof result.update === 'function') {
                             result.update();

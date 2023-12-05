@@ -1,23 +1,30 @@
-import { MRT_RowData, MRT_TableOptions } from 'material-react-table';
+import { MRT_ColumnDef, MRT_RowData, MRT_TableOptions } from 'material-react-table';
 import { useMemo } from 'react';
 import { ColumnResizeMode } from '@tanstack/react-table';
+
+type T = MRT_TableOptions<any>['muiPaginationProps'];
 
 export function useTableConstants<T extends MRT_RowData>() {
     return useMemo(
         () =>
             ({
-                sortingFns: {
-                    sortBarcode: (rowA, rowB, columnId) => {}
-                },
+                // sortingFns: {
+                //     sortBarcode: (rowA, rowB, columnId) => {}
+                // },
                 autoResetAll: false,
                 autoResetExpanded: false,
                 autoResetPageIndex: false,
+                debugAll: true,
                 columnResizeMode: 'onEnd' as ColumnResizeMode,
                 createDisplayMode: 'modal' as MRT_TableOptions<T>['createDisplayMode'],
                 editDisplayMode: 'modal' as MRT_TableOptions<T>['editDisplayMode'],
+                paginationDisplayMode: 'pages' as const,
+                positionPagination: 'both' as const,
                 enableColumnFilters: true,
                 enableColumnOrdering: true,
                 enableColumnResizing: true,
+                positionGlobalFilter: 'left' as const,
+                selectAllMode: 'page' as const,
                 enableRowSelection: true,
                 enableStickyFooter: true,
                 enableStickyHeader: true,
@@ -26,15 +33,21 @@ export function useTableConstants<T extends MRT_RowData>() {
                 muiPaginationProps: {
                     rowsPerPageOptions: [15, 25, 50, 100, 250, 500, 1000, 2500]
                 },
-                muiTableBodyRowProps: {
-                    className: 'odd:bg-neutral-300 even:bg-cyan-300 aria-selected:bg-yellow-500 aria-selected:scale-105'
+                muiTableBodyRowProps: (params: Parameters<Extract<Exclude<MRT_TableOptions<any>['muiTableBodyRowProps'], undefined>, (...args: any[]) => any>>[0]) => ({
+                    className: 'odd:bg-zinc-300 aria-selected:bg-rose-500 ring ring-transparent hover:ring-rose-500',
+                    'aria-selected': Object.keys(params.table.getSelectedRowModel().rowsById).includes(params.row.id)
+                    // Object.entries(params.table.getState().rowSelection).filter(([k, v]) => v).map(([k]) => k).includes(params.row.id)
+                }),
+                muiTableBodyCellProps: {
+                    className: 'bg-inherit'
                 },
-                muiTableHeadCellProps: {
+                muiTableHeadCellProps: (params: Parameters<Extract<Exclude<MRT_TableOptions<any>['muiTableHeadCellProps'], undefined>, (...args: any[]) => any>>[0]) => ({
+                    'aria-sort': params.column.getIsSorted() ? params.column.getIsSorted() : undefined,
                     className:
-                        'aria-required:text-red-500 aria-required:after:content-["_(*)"] aria-required:after:text-red-500 aria-required:text-lg aria-required:after:font-extrabold whitespace-nowrap'
-                },
+                        'aria-required:text-red-500 aria-required:after:text-red-500 aria-required:text-lg aria-required:after:font-extrabold whitespace-nowrap aria-asc:bg-rose-300 aria-desc:bg-indigo-300'
+                }),
                 positionToolbarAlertBanner: 'bottom' as MRT_TableOptions<T>['positionToolbarAlertBanner'],
-                columnFilterDisplayMode: 'popover' as MRT_TableOptions<T>['columnFilterDisplayMode']
+                columnFilterDisplayMode: 'subheader' as MRT_TableOptions<T>['columnFilterDisplayMode']
             } as any as MRT_TableOptions<T>),
         []
     );

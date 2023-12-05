@@ -1,49 +1,63 @@
-import { MRT_EditActionButtons } from 'material-react-table';
-import { DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { MRT_Row } from 'material-react-table';
+import { CircularProgress, DialogActions, DialogContent, DialogTitle, Divider, IconButton, Tooltip } from '@mui/material';
 import { toProperFromCamel } from '../../../common/text/toProperCase';
-import { Form } from '../../Form';
 import { UseMutateAsyncFunction } from '@tanstack/react-query';
-import { ConvertToRealmFunction, _Serialized, convertToRealm, initialCollection } from './createRenderCreateRowDialogContent';
-import { cloneElement, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { ConvertToRealmFunction, _Serialized } from './createRenderCreateRowDialogContent';
+import { useMemo } from 'react';
 import { FormContainer } from 'react-hook-form-mui';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCancel, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
+import { ignore } from '../../../common/functions/ignore';
+import { $convertToRealm } from './$convertToRealm';
+
+export function toEditFormInitializer<T extends AnyObject>(row: MRT_Row<T>) {
+    return () => Promise.resolve(row.original.toJSON() as T);
+}
 
 export function createRenderEditRowDialogContentRHF<T extends AnyObject>(collection: string, editAsync: UseMutateAsyncFunction<void, Error, T>) {
     function RenderEditRowDialogContent(props: MRT_TableOptionFunctionParams<T, 'renderEditRowDialogContent'>) {
-        console.log('collection', collection);
-        const initializer = initialCollection[collection as keyof typeof initialCollection] as () => Promise<T>;
-        const convertTo = convertToRealm[collection as keyof typeof convertToRealm] as any as ConvertToRealmFunction<T>;
-        console.log(`initialForm`, props.row.original.toJSON());
-        const original = async () => props.row.original;
-        const initial = async () => props.row.original.toJSON() as T;
-        console.log(`internalEditComponents`, props.internalEditComponents);
-        original().then((x) => console.log(`original`, x));
-        initial().then((x) => console.log(`initial`, x));
-        initializer().then((x) => console.log(`initializer`, x));
+        // const initializer = initialCollection[collection as keyof typeof initialCollection] as () => Promise<T>;
+        const initializer = useMemo(() => toEditFormInitializer(props.row), [props.row])
+        const convertTo = $convertToRealm[collection as keyof typeof $convertToRealm] as any as ConvertToRealmFunction<T>;
+        const { isSaving } = props.table.getState();
         return (
-            <>
-                <FormContainer
-                    defaultValues={() => Promise.resolve(props.row.original.toJSON() as T)}
-                    onSuccess={(data: T) => {
-                        const payload = convertTo(data as _Serialized<T, true>);
-                        return editAsync(
-                            payload as T,
-                            {
-                                onSuccess: () => {
-                                    props.table.setEditingRow(null);
-                                }
-                            }
-                        );
-                    }}>
-                    <DialogTitle className='flex items-center justify-center font-rubik'>{toProperFromCamel(collection)}</DialogTitle>
-                    <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                        {props.internalEditComponents} {/* or render custom edit components here */}
-                    </DialogContent>
+            <FormContainer
+                mode='onBlur'
+                criteriaMode='all'
+                reValidateMode='onChange'
+                defaultValues={initializer}
+                onSuccess={(data: T) => {
+                    console.info(`onSuccess.data`, data);
+                    const payload = convertTo(data as _Serialized<T, true>);
+                    console.info(`onSuccess.payload`, payload);
+
+                    return editAsync(payload as T, {
+                        onSuccess: () => {
+                            props.table.setEditingRow(null);
+                        }
+                    });
+                }}>
+                <>
+                    <DialogTitle variant='h4' className='font-bold text-white bg-slate-600 font-rubik'>
+                        {toProperFromCamel(collection)}
+                    </DialogTitle>
+                    <Divider variant='middle' className='border-yellow-700' />
+                    <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>{props.internalEditComponents}</DialogContent>
+                    <Divider variant='middle' className='border-yellow-700' />
                     <DialogActions>
-                        <MRT_EditActionButtons variant='icon' table={props.table} row={props.row} />
+                        <Tooltip title='Cancel'>
+                            <IconButton aria-label='Cancel' onClick={() => (props.table.options.onCreatingRowCancel ?? ignore)(props)}>
+                                <FontAwesomeIcon icon={faCancel} className='block object-contain w-8 h-8' />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title='Save'>
+                            <IconButton aria-label='Save' color='info' type='submit'>
+                                {isSaving ? <CircularProgress size={18} /> : <FontAwesomeIcon icon={faFloppyDisk} className='block object-contain w-8 h-8' />}
+                            </IconButton>
+                        </Tooltip>
                     </DialogActions>
-                </FormContainer>
-            </>
+                </>
+            </FormContainer>
         );
     }
     return RenderEditRowDialogContent;

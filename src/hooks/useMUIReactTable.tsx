@@ -1,5 +1,5 @@
-import { MRT_Row, MRT_RowData, MRT_TableInstance, MRT_TableOptions } from 'material-react-table';
-import { useMemo } from 'react';
+import { MRT_Row, MRT_RowData, MRT_TableInstance } from 'material-react-table';
+import { useCallback, useMemo } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { IRealmEntity } from '../dal/types';
 import { usePersistedState } from './usePersistedState';
@@ -13,34 +13,13 @@ import { useDefaultColumn } from './useDefaultColumn';
 import { TableTypeObject, tableType } from './tableType';
 import { AlertColor } from '@mui/material';
 import { useParams } from 'react-router-dom';
-import { is } from '../dal/is';
-import { ConvertToRealmFunction, convertToRealm, createRenderCreateRowDialogContentRHF } from '../components/Table/creators/createRenderCreateRowDialogContent';
-import { checkTransaction } from '../util/checkTransaction';
-import { $$queryClient } from '../components/App';
-import * as Realm from 'realm';
+import { ConvertToRealmFunction, createRenderCreateRowDialogContentRHF } from '../components/Table/creators/createRenderCreateRowDialogContent';
 import { useLocalRealm } from '../routes/loaders/useLocalRealm';
-import { dialog, ipcRenderer } from 'electron';
-import { getCurrentWindow } from '@electron/remote';
+import { ipcRenderer } from 'electron';
+import { updateRecord } from './updateRecord';
+import { createDetailSubComponent } from '../components/Table/creators/createDetailSubComponent';
+import { $convertToRealm } from '../components/Table/creators/$convertToRealm';
 
-export function tapOr<T, TArgs extends AnyArray>(funcOr?: T | ((...x: TArgs) => T)) {
-    return (...args: TArgs) => (funcOr == null ? undefined : is.func<(...args: TArgs) => T>(funcOr) ? funcOr(...args) : (funcOr as T));
-}
-
-export function updateRecord(collection: string, db: Realm) {
-    return async function (values: any) {
-        const func = () => {
-            db.create(collection, values, Realm.UpdateMode.Modified);
-        };
-        try {
-            checkTransaction(db)(func);
-            await $$queryClient.invalidateQueries({ queryKey: [collection] });
-            await $$queryClient.refetchQueries({ queryKey: [collection] });
-        } catch (error) {
-            console.error(error);
-            throw error;
-        }
-    };
-}
 export function useMUIReactTable<T extends MRT_RowData>({
     type,
     objectType,
@@ -57,7 +36,7 @@ export function useMUIReactTable<T extends MRT_RowData>({
 }) {
     const collectionRoute = useParams<{ collection: string }>().collection;
     const collection = objectType ?? collectionRoute ?? 'n/a';
-    const convertTo = useMemo(() => convertToRealm[collection as keyof typeof convertToRealm] as any as ConvertToRealmFunction<T>, [collection]);
+    const convertTo = useMemo(() => $convertToRealm[collection as keyof typeof $convertToRealm] as any as ConvertToRealmFunction<T>, [collection]);
     const db = useLocalRealm;
     const {
         deleteOne,
@@ -70,12 +49,15 @@ export function useMUIReactTable<T extends MRT_RowData>({
         persistedName,
         queryFn,
         queryKey,
-        renderDetailPanel: toRenderDetailPanel
+        // renderDetailPanel: toRenderDetailPanel
     } = useMemo(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         () => tableType[type ?? 'collection']({ collection: collectionRoute ?? '', objectType: objectType ?? '', propertyName: propertyName ?? '', parentRow: parentRow as any }) as TableTypeObject<T>,
         [collectionRoute, objectType, parentRow, propertyName, type]
     );
+    const toRenderDetailPanel = useCallback((subComponentTabPanels: FieldInfo[]) => {
+        return createDetailSubComponent;
+    }, [])
     const {
         queryFn: $queryFn,
         queryKey: $queryKey,
@@ -138,27 +120,24 @@ export function useMUIReactTable<T extends MRT_RowData>({
     const enableRowNumbers = type != null && (type === 'set' || type === 'list');
     const { getFieldInfos } = useReflectionContext();
     const fieldInfos = useMemo(() => getFieldInfos(collection), [collection, getFieldInfos]);
-    const getRowCanExpand = toGetRowCanExpand(fieldInfos);
+    const getRowCanExpand = useMemo(() => toGetRowCanExpand(fieldInfos), [fieldInfos, toGetRowCanExpand]);
     const renderDetailPanel = (toRenderDetailPanel ?? konst(konst(<></>)))(fieldInfos);
-    const renderToolbarInternalActions = createRenderToolbarInternalActions({ onClickDumpsterFire, resetState, onClickLightning, getCanInsertDelete, objectType, propertyName, parentRow, type });
+    const renderToolbarInternalActions = createRenderToolbarInternalActions({ onClickDumpsterFire, resetState, onClickLightning, getCanInsertDelete, objectType, propertyName, parentRow, type, state, handlers });
     const renderRowActions = createRenderRowActions({ getCanInsertDelete, deleteOne: deleteSync });
     const onCreatingRowSave = (props: MRT_TableOptionFunctionParams<T, 'onCreatingRowSave'>) => {
         insertAsync(
             { values: convertTo(props.values as any) as T },
             {
-                onSuccess: () => {
-                    console.error('exiting creating mode');
-                    props.exitCreatingMode();
-                }
+                onSuccess: props.exitCreatingMode
             }
         );
     };
     const onEditingRowSave = (props: MRT_TableOptionFunctionParams<T, 'onEditingRowSave'>) => {
+        console.info(`onEditingRowSave.values`, props.values);
+        const result = convertTo(props.values as any) as T;
+        console.info(`onEditingRowSave.result`, result);
         editAsync(convertTo(props.values as any) as T, {
-            onSuccess: () => {
-                console.error('existing editing mode');
-                props.exitEditingMode();
-            }
+            onSuccess: props.exitEditingMode
         });
     };
     const onCreatingRowCancel = (props: MRT_TableOptionFunctionParams<T, 'onCreatingRowCancel'>) => {
@@ -201,8 +180,7 @@ export function useMUIReactTable<T extends MRT_RowData>({
                 showAlertBanner: isError,
                 showProgressBars: isLoading
             },
-            paginationDisplayMode: 'pages',
-            positionPagination: 'both',
+            
             muiToolbarAlertBannerProps: isError
                 ? {
                       color: 'error' as AlertColor,

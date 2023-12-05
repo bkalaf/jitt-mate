@@ -6,7 +6,7 @@ import { IBrand, IHashTag, IMercariBrand } from '../../dal/types';
 import { ObjectId } from 'mongodb';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { $$queryClient } from '../../components/App';
-import { HashTag } from './HashTag';
+import { listDefaultUpdater } from '../updaters/listDefaultUpdater';
 
 export class Brand extends Realm.Object<IBrand> implements IBrand {
     get mercariBrandName(): Optional<string> {
@@ -14,10 +14,9 @@ export class Brand extends Realm.Object<IBrand> implements IBrand {
     }
     @wrapInTransactionDecorator()
     update() {
+        const lu = listDefaultUpdater<IBrand>;
+        lu.bind(this)(['hashTags']);
         this.folder = normalizeStringForFS('-')(this.name);
-        if (this.hashTags) {
-            HashTag.pruneList(this.hashTags);
-        }
         return this;
     }
     hashTags: DBSet<Entity<IHashTag>> = [] as any;
@@ -79,3 +78,6 @@ export class Brand extends Realm.Object<IBrand> implements IBrand {
     //     Def.ctor('hashTags').list('hashTag').$(helper)
     // ];
 }
+
+
+

@@ -6,11 +6,11 @@
 import Realm, { BSON } from 'realm';
 import { $db } from '../../dal/db';
 import { IHashTag, IMercariBrand } from '../../dal/types';
-import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { $$queryClient } from '../../components/App';
 import { HashTag } from './HashTag';
+import { listDefaultUpdater } from '../updaters/listDefaultUpdater';
 
 @realmCollectionDecorator('name', 'name')
 export class MercariBrand extends Realm.Object<IMercariBrand> implements IMercariBrand {
@@ -36,6 +36,8 @@ export class MercariBrand extends Realm.Object<IMercariBrand> implements IMercar
 
     @wrapInTransactionDecorator()
     update() {
+        const lu = listDefaultUpdater<IMercariBrand>;
+        lu.bind(this)(['hashTags']);
         HashTag.pruneList(this.hashTags);
         return this;
     }
@@ -53,9 +55,4 @@ export class MercariBrand extends Realm.Object<IMercariBrand> implements IMercar
             hashTags: $db.hashTag.set
         }
     };
-
-    @staticColumnsDecorator
-    static columns(...prefixes: string[]): DefinedColumns {
-        return [];
-    }
 }
