@@ -52,7 +52,8 @@ export const $tagIs = {
     input: tagIs<HTMLInputElement>('input'),
     select: tagIs<HTMLSelectElement>('select'),
     textarea: tagIs<HTMLTextAreaElement>('textarea'),
-    form: tagIs<HTMLFormElement>('form')
+    form: tagIs<HTMLFormElement>('form'),
+    dataEntryControl: (el?: Element | null): el is (HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) => either(tagIs<HTMLInputElement>('input'))(either(tagIs<HTMLSelectElement>('select'))(tagIs<HTMLTextAreaElement>('textarea')))(el as any)
 };
 export const cleanup = (input: string) => ['?', '[', ']', '{', '}', '<', '>'].map((toReplace) => (s: string) => s.replaceAll(toReplace, '')).reduce((pv, cv) => cv(pv), input);
 

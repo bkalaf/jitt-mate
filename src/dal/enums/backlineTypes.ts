@@ -1,5 +1,4 @@
 export interface BacklineTypes {
-    closed: null | string;
     open: string;
     u: string;
     v: string;
@@ -9,7 +8,6 @@ export interface BacklineTypes {
     strappy: string;
 }
 export const BacklineTypes = {
-    closed: null,
     open: 'open-back',
     u: 'u-shape-back',
     v: 'v-shape-back',

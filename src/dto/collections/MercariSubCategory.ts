@@ -1,4 +1,4 @@
-import { kingdoms } from './ProductTaxonomy';
+import { kingdoms } from '../embedded/ProductTaxonomy';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Realm, { BSON } from 'realm';
@@ -10,15 +10,14 @@ import { ItemGroups } from '../../dal/enums/itemGroups';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
 import { prependText } from '../../common/text/prependText';
-import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { $$queryClient } from '../../components/App';
 import { HashTag } from './HashTag';
 import { parentedUpdate } from '../updaters/parentedUpdate';
 import { categorySelectorUpdater } from '../updaters/categorySelectorUpdater';
 import { hashTaggedUpdater } from '../updaters/hashTaggedUpdater';
 import { taxonUpdater } from '../updaters/taxonUpdater';
+import { mergeProductTaxonomy } from '../embedded/mergeProductTaxonomy';
 
-@realmCollectionDecorator('name', 'parent.name', 'name')
 export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implements IMercariSubCategory {
     constructor(realm: Realm, args: any) {
         super(realm, args);
@@ -45,7 +44,11 @@ export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implem
         const pu = parentedUpdate<'parent', IMercariCategory, IMercariSubCategory>;
         taxonUpdater.bind(this, pu.bind(this, 'parent'))();
         categorySelectorUpdater.bind(this)();
-        hashTaggedUpdater.bind(this)();        
+        hashTaggedUpdater.bind(this)();    
+        const merged = mergeProductTaxonomy(this.taxon, this.parent?.taxon)
+        if (merged) {
+            this.taxon = merged as any;
+        }
         return this;
     }
     get effectiveShipWeightPercent(): Optional<number> {

@@ -6,11 +6,9 @@ import { IBarcode } from '../../dal/types';
 import { sum } from '../../common/math/sum';
 import { konst } from '../../common/functions/konst';
 import { unpad } from '../../dal/unpad';
-import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { $$queryClient } from '../../components/App';
 
-@realmCollectionDecorator('rawValue', 'rawValue')
 export class Barcode extends Realm.Object<IBarcode> implements IBarcode {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(realm: Realm, args: any) {

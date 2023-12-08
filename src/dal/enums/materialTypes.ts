@@ -4,7 +4,7 @@ export const MaterialTypes = {
     cashmere: 'cashmere',
     denim: 'denim',
     polyurethane: 'polyurethane',
-    leath: 'leather',
+    leather: 'leather',
     silk: 'silk',
     linen: 'linen',
     modal: 'modal',

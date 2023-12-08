@@ -5,15 +5,14 @@ import Realm, { BSON } from 'realm';
 import { $db } from '../../dal/db';
 import { IClassifier, IMercariSubSubCategory, IHashTag, IProductTaxonomy } from '../../dal/types';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
-import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { surroundText } from '../../common/text/surroundText';
 import { $$queryClient } from '../../components/App';
 import { parentedUpdate } from '../updaters/parentedUpdate';
 import { boolDefaultUpdater } from '../updaters/boolDefaultUpdater';
 import { hashTaggedUpdater } from '../updaters/hashTaggedUpdater';
 import { taxonUpdater } from '../updaters/taxonUpdater';
+import { mergeProductTaxonomy } from '../embedded/mergeProductTaxonomy';
 
-@realmCollectionDecorator('name', 'name')
 export class Classifier extends Realm.Object<IClassifier> implements IClassifier {
     constructor(realm: Realm, args: any) {
         super(realm, args);
@@ -74,10 +73,15 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
         hashTaggedUpdater.bind(this)();
         const bd = boolDefaultUpdater<IClassifier>;
         bd.bind(this)(['isAthletic']);
+        const merged = mergeProductTaxonomy(this.taxon, this.mercariSubSubCategory?.taxon);
+        if (merged) {
+            this.taxon = merged as any;
+        }
         const newName = Classifier.generateName(this);
         if (newName != null && newName.length > 0) {
             this.name = newName;
         }
+        
         return this;
     }
     _id: BSON.ObjectId = new BSON.ObjectId();

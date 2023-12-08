@@ -1,7 +1,46 @@
 import { checkTransaction } from '../util/checkTransaction';
 import { $$queryClient } from '../components/App';
 import * as Realm from 'realm';
+import { MRT_Row, MRT_RowData } from 'material-react-table';
+import { useFormContext } from 'react-hook-form-mui';
+import { getProperty } from '../components/Contexts/getProperty';
+import { ignore } from '../common/functions/ignore';
+import { $convertToRealm } from '../components/Table/creators/$convertToRealm';
 
+export function updateRecordProperty<T extends MRT_RowData>(db: Realm, collection: string,  context: ReturnType<typeof useFormContext>) {
+    return async function ({ propertyNames, row }: { propertyNames: string[]; row: MRT_Row<T> }) {
+        const _id = row.original._id as Realm.BSON.ObjectId;
+        const { getValues, getFieldState } = context;
+        const values = getValues();
+        console.log(`values`, values);
+        const convertTo = $convertToRealm[collection as keyof typeof $convertToRealm];
+        const convertedValues = convertTo(values as any);
+        console.log('convertedValues', convertedValues);
+        const func = function (propName: string) {
+            return () => {
+                const { isDirty } = getFieldState(propName);
+                const next = getProperty(propName)(convertedValues);
+                const obj = db.objectForPrimaryKey<T>(collection, _id as T[keyof T]);
+                if (obj == null) throw new Error(`could not retrieve Realm.Object: ${_id.toHexString()}`);
+                if (isDirty) {
+                    obj[propName as keyof typeof obj] = next as any;
+                }
+            };
+        };
+        const f = [...propertyNames.map(func), () => {
+            if (row?.original.update && typeof row?.original.update === 'function') {
+                row.original.update();
+            }
+        }].reduce(
+            (f: () => void, g: () => void) => () => {
+                f();
+                g();
+            },
+            ignore
+        );
+        checkTransaction(db)(f);
+    };
+}
 export function updateRecord(collection: string, db: Realm) {
     return async function (values: any) {
         const func = () => {

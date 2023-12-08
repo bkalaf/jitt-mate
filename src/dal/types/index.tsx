@@ -8,7 +8,16 @@ import { ProvincesKey } from '../enums/provinces';
 import { Countries } from '../enums/countries';
 import { MaterialTypes, MaterialTypesKey } from '../enums/materialTypes';
 import { Colors } from '../enums/colors';
+import { BacklineTypes } from '../enums/backlineTypes';
+import { NecklineTypes } from '../enums/necklineTypes';
+import { CollarTypes } from '../enums/collarTypes';
+import { CuffTypes } from '../enums/cuffTypes';
+import { TopAdornments } from '../enums/topAdornments';
+import { WaistTypes } from '../enums/waistTypes';
+import { SleeveTypes } from '../enums/sleeveTypes';
+import * as LaundryCare from '../../../laundry-care.json';
 
+export type LaundryCareOptions = keyof typeof LaundryCare;
 export type AttributeObject = Record<string, any>;
 
 export interface IRealmObject<T> {
@@ -29,7 +38,9 @@ export interface IProductAttributes extends IHashTagged {
 }
 
 export type Measurements = 'chest' | 'neck' | 'inseam' | 'length' | 'sleeve' | 'torso' | 'waist' | 'hip' | 'foot' | 'bust' | 'head' | 'heel';
-export type Flags = 'athletic' | 'decorative' | 'graphic' | 'rare' | 'vintage' | 'collectible' | 'discontinued' | 'mediaMail';
+export type Flags = 'athletic' | 'decorative' | 'graphic' | 'rare' | 'vintage' | 'collectible' | 'discontinued' | 'mediaMail' | 'missingTags';
+
+export const Flags = ['isAthletic', 'isDecorative', 'isGraphic', 'isRare', 'isVintage', 'isCollectible', 'isDiscontinued', 'isMediaMail', 'isMissingTags'];
 export type MeasurementKeys = `${Measurements}Inches`;
 
 export interface IHashTagUsage {
@@ -75,13 +86,13 @@ export interface IAddress {
 
 export interface IRn extends IRealmEntity<IRn> {
     companyName: string;
-    no: number;
+    rnNo: number;
     legalBusinessName: Optional<string>;
     companyType: Optional<string>;
-    isImporter: boolean;
     isRetailer: boolean;
     isMailOrder: boolean;
     isInternet: boolean;
+    isImporter: boolean;
     isOther: boolean;
     noType: Optional<RnNumberTypesKey>;
     isManufacturer: boolean;
@@ -90,14 +101,26 @@ export interface IRn extends IRealmEntity<IRn> {
     material: Optional<string>;
     url: Optional<string>;
     brand: OptionalEntity<IBrand>;
-    products: DBBacklink<IProduct>;
     readonly scrapedOn: Date;
     addresses: DBList<IAddress>;
 }
 
 export type FlagsKeys = `is${Capitalize<Flags>}`;
-export type IFlagDictionary = Partial<Record<FlagsKeys, boolean>>;
-export type IMeasurementDictionary = Partial<Record<MeasurementKeys, number>>;
+// export type IFlagDictionary = Partial<Record<FlagsKeys, boolean>>;
+export interface IMeasurementDictionary {
+    chestInches: Optional<number>;
+    neckInches: Optional<number>;
+    inseamInches: Optional<number>;
+    lengthInches: Optional<number>;
+    sleeveInches: Optional<number>;
+    torsoInches: Optional<number>;
+    bustInches: Optional<number>;
+    headInches: Optional<number>;
+    heelInches: Optional<number>;
+    hipInches: Optional<number>;
+    footInches: Optional<number>;
+    waistInches: Optional<number>;
+}
 export interface IProductTaxonomy extends IRealmObject<IProductTaxonomy> {
     kingdom: Optional<string>;
     phylum: Optional<string>;
@@ -225,101 +248,92 @@ export type Wattages = 'Wattage';
 export type Amperages = 'Amperage';
 export type ChargeWithUnits = `${Voltages}Volts` | `${Amperages}Amps` | `${Wattages}Watts`;
 export type Electrical = `${CurrentDirection}${ChargeWithUnits}`;
-export type DimensionKeys = `${Distances}Inches` | `${Volumes}FlOz` | `${Capacity}GB` | `${Timespans}Min` | Electrical;
-export type IDimensions = Partial<Record<DimensionKeys, number>>;
+export type DimensionKeys = `${Distances}Inches` | `${Volumes}FlOz` | `${Capacity}GB` | `${Timespans}Min` | `weightGrams` | Electrical;
+export type IDimensions = Record<DimensionKeys, number>;
 export type IMadeOfDictionary = Partial<Record<string, Record<keyof typeof MaterialTypes, number>>>;
 
 export type db = Realm.Types.Dictionary<string>
-export interface IMadeOfPart {
-    material: MaterialTypesKey;
-    percent: number;
-}
-export interface IMadeOfSection {
-    name: string;
-    parts: DBList<IMadeOfPart>;
-    readonly isComplete: boolean;
-    addPart(key: MaterialTypesKey, percent: number): void;
+// export interface IMadeOfPart {
+//     material:   ;
+//     percent: number;
+// }
+// export interface IMadeOfSection {
+//     parts: DBList<IMadeOfPart>;
+//     readonly isComplete: boolean;
+//     addPart(key: MaterialTypesKey, percent: number): void;
+// }
+
+export interface IApparelDetails extends IRealmObject<IApparelDetails> {
+    backlineType: Optional<keyof BacklineTypes>;
+    collarType: Optional<keyof CollarTypes>;
+    cuffType: Optional<keyof CuffTypes>;
+    cutNo: Optional<string>;
+    measurements: IMeasurementDictionary;
+    necklineType: Optional<keyof NecklineTypes>;
+    pocketCount: Optional<number>;
+    size: Optional<string>;
+    sleeveType: Optional<keyof SleeveTypes>;
+    topAdornment: Optional<keyof TopAdornments>;
+    waistType: Optional<keyof WaistTypes>;
+    rn: OptionalEntity<IRn>;
+    styleNo: Optional<string>;
+    clothingCare: DBSet<LaundryCareOptions>;
 }
 
-export interface IProduct extends IRealmEntity<IProduct>, IProductAttributes {
-    // IApparelDetails,
-    // IMediaDetails,
-    // IVideoDetails,
-    // IBookDetails,
-    // IGather<
-    //     IProduct,
-    //     | 'brandName'
-    //     | 'brandFolder'
-    //     | 'mercariBrandName'
-    //     | 'subSubCategoryId'
-    //     | 'apparelType'
-    //     | 'apparelGroup'
-    //     | 'itemGroup'
-    //     | 'legType'
-    //     | 'topAdornment'
-    //     | 'sleeveType'
-    //     | 'sizingType'
-    //     | 'customItemFields'
-    //     | 'gender'
-    //     | 'categoryId'
-    //     | 'subCategoryId'
-    //     | 'apparelType'
-    //     | 'apparelGroup'
-    //     | 'itemGroup'
-    //     | 'categoryName'
-    //     | 'subCategoryName'
-    //     | 'subSubCategoryName'
-    //     | 'isMediaMail'
-    //     | 'color'
-    //     | 'cutNo'
-    //     | 'features'
-    //     | 'isRare'
-    //     | 'isVintage'
-    //     | 'height'
-    //     | 'width'
-    //     | 'length'
-    //     | 'madeOf'
-    //     | 'modelNo'
-    //     | 'styleNo'
-    //     | 'origin'
-    //     | 'upcs'
-    //     | 'rawWeight'
-    //     | 'shipWeight'
-    //     | 'shipWeightPercent'
-    // >
-    folder: BSON.UUID;
+export interface IMaterialComposition extends IRealmObject<IMaterialComposition> {
+    acrylic: Optional<number>;
+    cotton: Optional<number>;
+    cashmere: Optional<number>;
+    denim: Optional<number>;
+    polyurethane: Optional<number>;
+    leather: Optional<number>;
+    silk: Optional<number>;
+    linen: Optional<number>;
+    modal: Optional<number>;
+    nylon: Optional<number>;
+    organicCotton: Optional<number>;
+    polyester: Optional<number>;
+    rayon: Optional<number>;
+    suede: Optional<number>;
+    wool: Optional<number>;
+    spandex: Optional<number>;
+    readonly isComplete: boolean;
+    readonly remaining: number;
+    readonly hasValues: boolean;
+}
+
+export interface IProduct extends IRealmEntity<IProduct>, IProductAttributes, IHashTagged {
+    _id: BSON.ObjectId;
+
+    apparelDetails: OptionalEntity<IApparelDetails>;
     brand: OptionalEntity<IBrand>;
-    productLine?: OptionalEntity<IProductLine>;
-    origin: Optional<keyof Countries>;
     circa: Optional<string>;
     classifier: OptionalEntity<IClassifier>;
     color: Optional<keyof typeof Colors>;
-    cutNo: Optional<string>;
     descriptiveText: Optional<string>;
-    features: string[];
-    heightIn: Optional<number>;
-    isRare: boolean;
-    isVintage: boolean;
-    madeOf: Partial<Record<keyof typeof MaterialTypes, number>>;
-    materials: IMadeOfDictionary;
+    dimensions: IDimensions;
+    features: DBList<string>;
+    flags: DBSet<FlagsKeys>;
+    folder: BSON.UUID;
+    materials: DBDictionary<IMaterialComposition>;
     modelNo: Optional<string>;
     notes: Optional<string>;
-    // origin: Optional<OriginKeys>;
+    origin: Optional<keyof Countries>;
+    productLine?: OptionalEntity<IProductLine>;
     styleNo: Optional<string>;
-    upcs: DBList<IBarcode>;
-    _barcodes: string[];
-    weightG: Optional<number>;
-    widthIn: Optional<number>;
-    dimensions: IDimensions;
-    readonly branding: OptionalEntity<IBrand>;
+    taxon: OptionalEntity<IProductTaxonomy>;
+    upcs: DBList<Entity<IBarcode>>;
+
     readonly isNoBrand: boolean;
-    readonly mercariBrandName: Optional<string>;
-    readonly brandName: Optional<string>;
-    readonly brandFolder: Optional<string>;
-    readonly skuBarcode: Optional<string>;
-    readonly categoryID: Optional<string>;
-    readonly subCategoryID: Optional<string>;
-    readonly subSubCategoryID: Optional<string>;
+
+    readonly effectiveShipWeightPercent: Optional<number>;
+    readonly effectiveBrand: Optional<IBrand>;
+    readonly effectiveMercariBrandName: Optional<string>;
+    readonly effectiveBrandName: Optional<string>;
+    readonly effectiveBrandFolder: Optional<string>;
+    readonly effectiveCategoryID: Optional<string>;
+    readonly effectiveSubCategoryID: Optional<string>;
+    readonly effectiveSubSubCategoryID: Optional<string>;
 }
 
 export interface IBarcode extends IRealmObject<IBarcode> {

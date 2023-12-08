@@ -1,14 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import { useRealmContext } from '../../../hooks/useRealmContext';
 import { useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTable } from '@fortawesome/pro-solid-svg-icons';
 import { useNavigate } from 'react-router';
-import { menuItems } from '../../menuItems';
+import * as Config from './../../../config.json';
+import { toProperFromCamel } from '../../../common/text/toProperCase';
 
 export function LeftDrawer(props: { open: boolean; toggleOpen: () => void; setClosed: () => void }) {
+    const menuItems = Config.menus.leftDrawer;
     const { open, setClosed, toggleOpen } = props;
     const { isAuthenticated } = useRealmContext();
     const authenticated = isAuthenticated();
@@ -29,28 +31,35 @@ export function LeftDrawer(props: { open: boolean; toggleOpen: () => void; setCl
     }, [setClosed]);
     return (
         <Drawer id='left-drawer' anchor='left' open={open} onClose={toggleOpen} className='w-1/5 h-full text-white bg-neutral-400' onMouseLeave={onMouseLeave}>
-            {authenticated &&
-                Object.entries(menuItems).map(([_, { value, label, color, children }]) => (
-                    <List key={value} disablePadding>
-                        <ListItem className='flex flex-col px-1 py-2' disableGutters disablePadding>
-                            <Typography sx={{ }} variant='h6' component='div' className={`${color} whitespace-pre flex w-full indent-2 font-bold`}>
-                                {label}
-                            </Typography>
-                            <List disablePadding className='w-full'>
-                                {Object.values(children as Record<string, { value: string; label: string; children: any[]; color: string }>).map(({ color: c, value: v, label: l }) => (
-                                    <ListItem key={v} className={c} disableGutters disablePadding>
-                                        <ListItemButton onClick={goTo(v)}>
-                                            <ListItemIcon>
-                                                <FontAwesomeIcon icon={faTable} className='inline-block object-fill w-5 h-5' />
-                                            </ListItemIcon>
-                                            <ListItemText primary={l} />
-                                        </ListItemButton>
-                                    </ListItem>
-                                ))}
-                            </List>
+            {authenticated && (
+                <List disablePadding>
+                    {Object.entries(menuItems).map(([groupName, { classes, subMenus, itemClasses }], ix) => (
+                        <ListItem key={ix} className='flex flex-col px-1 py-2' disableGutters disablePadding>
+                            <Accordion className='w-full' disableGutters>
+                                <AccordionSummary className='w-full'>
+                                    <Typography sx={{}} variant='h6' component='div' className={`${classes} whitespace-pre w-full indent-2 text-lg font-bold`}>
+                                        {toProperFromCamel(groupName)}
+                                    </Typography>
+                                </AccordionSummary>
+                                <AccordionDetails className={'w-full p-0 m-0 '.concat(itemClasses)}>
+                                    <List disablePadding className={'w-full '.concat(itemClasses)}>
+                                        {subMenus.map((subMenuName, ix2) => (
+                                            <ListItem key={ix2} className={'w-full '.concat(itemClasses)} disableGutters disablePadding>
+                                                <ListItemButton onClick={goTo(subMenuName)}>
+                                                    <ListItemIcon>
+                                                        <FontAwesomeIcon icon={faTable} className='inline-block object-fill w-5 h-5' />
+                                                    </ListItemIcon>
+                                                    <ListItemText primary={<span className={'w w-full border '.concat(itemClasses)}>{toProperFromCamel(subMenuName)}</span>} className={'w-full '.concat(itemClasses)} />
+                                                </ListItemButton>
+                                            </ListItem>
+                                        ))}
+                                    </List>
+                                </AccordionDetails>
+                            </Accordion>
                         </ListItem>
-                    </List>
-                ))}
+                    ))}
+                </List>
+            )}
         </Drawer>
     );
 }

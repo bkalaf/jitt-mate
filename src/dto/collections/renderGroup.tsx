@@ -2,7 +2,7 @@ import React from 'react';
 import { AutocompleteRenderGroupParams } from '@mui/material';
 import { toProperFromCamel } from '../../common/text/toProperCase';
 import { $cn } from '../../util/$cn';
-import { GroupItems, GroupHeader } from './ProductTaxonomy';
+import { GroupItems, GroupHeader } from '../embedded/ProductTaxonomy';
 
 export function renderGroup(props: AutocompleteRenderGroupParams) {
     const { key, group, children } = props;

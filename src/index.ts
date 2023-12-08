@@ -59,16 +59,17 @@ app.whenReady()
         console.log(JSON.stringify(extId));
     })
     .then(() => {
-        ipcMain.handle('confirm-cancel', async (event) => {
+        ipcMain.handle('confirm-cancel', async (event): Promise<number> => {
             if (browserWindow == null) throw new Error('no window');
             const response = await dialog.showMessageBox(browserWindow, {
                 message: 'Are you sure you want to lose any unsaved work?',
                 title: 'Please confirm',
-                buttons: ['OK', 'CANCEL'],
-                defaultId: 1,
+                buttons: ['CANCEL', 'OK'],
+                defaultId: 0,
                 type: 'question',
-                cancelId: 1
+                cancelId: 0
             });
+            console.log(`response`, response)
             return response.response;
         });
     })

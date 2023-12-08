@@ -1,5 +1,5 @@
 import { DateCell } from './Cells/DateCell';
-import { RHFM_TextControl } from './Controls/RHFM_TextControl';
+import { RHFM_TextControl } from '../Controls/RHFM_TextControl';
 import { toProperFromCamel } from '../../common/text/toProperCase';
 
 export function dateMeta(name: string, opts: { header?: string; }) {

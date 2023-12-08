@@ -39,7 +39,7 @@ export function RHFM_RealmObjectLookupControl<T extends EntityBase>({ objectType
         },
         [labelPropertyName]
     );
-    const renderOption = useCallback((props: any, value: T) => <ItemElement {...props} data={value} />, [ItemElement]);
+    // const renderOption = useCallback((props: any, value: T) => <ItemElement {...props} data={value} />, [ItemElement]);
     const context = useFormContext();
     const onChange = useCallback(
         (event: React.BaseSyntheticEvent<any>, newValue: any) => {
@@ -52,6 +52,7 @@ export function RHFM_RealmObjectLookupControl<T extends EntityBase>({ objectType
     return (
         <AutocompleteElement
             name={name}
+            control={context.control}
             options={data ?? []}
             loading={isLoading}
             loadingIndicator={<CircularProgress color='warning' />}

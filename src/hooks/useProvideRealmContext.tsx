@@ -1,58 +1,67 @@
 import { useCallback, useMemo, useState } from 'react';
-import Realm, { OpenRealmBehaviorType,  OpenRealmTimeOutBehavior } from 'realm';
+import Realm, { BSON, OpenRealmBehaviorType, OpenRealmTimeOutBehavior } from 'realm';
 import Config from '../config.json';
 import { IRealmContext } from '../components/Contexts/RealmContext';
 import { useToasterContext } from './useToasterContext';
 import { toastCatchBlock } from '../util/toastCatchBlock';
 import $$schema from '../dal';
 import { catchError } from '../components/catchError';
+import { MongoClient } from 'mongodb';
+import { DBProperties } from '../components/Table/creators/createRenderCreateRowDialogContent';
+import { IProduct, IProductTaxonomy } from '../dal/types';
+import { Barcode } from '../dto/collections/Barcode';
 
 export function useProvideRealmContext(): IRealmContext {
     const app = useMemo(() => new Realm.App(Config.realm.appID), []);
     const [currentUser, setCurrentUser] = useState<Realm.User | null>(null);
     const [db, setDB] = useState<Realm | null>(null);
-    const dbIsOpen = useCallback(() => db != null, [db])
+    const dbIsOpen = useCallback(() => db != null, [db]);
     const isAuthenticated = useCallback(() => currentUser != null, [currentUser]);
     const { createSuccessToast, createFailureToast, createErrorToast } = useToasterContext();
     const setGlobal = useCallback((db?: Realm) => {
         window.$$store = db;
-        document.dispatchEvent(new CustomEvent('realm-change'))
+        document.dispatchEvent(new CustomEvent('realm-change'));
         alert('Database opened');
-    }, [])
-    const changeCurrentUser = useCallback((nextUser: null | Realm.User) => {
-        if (nextUser == null) {
-            console.log('user null');
-            setCurrentUser(null);
-            setDB(null);
-            setGlobal(undefined);
-        } else {
-            console.log('user', nextUser);
-            setCurrentUser(nextUser);
-            Realm.open({
-                schema: $$schema,
-                sync: {
-                    partitionValue: nextUser.profile?.email ?? 'n/a',
-                    user: nextUser,
-                    newRealmFileBehavior: {
-                        type: 'downloadBeforeOpen' as OpenRealmBehaviorType,
-                        timeOut: 5 * 60 * 1000,
-                        timeOutBehavior: 'throwException' as OpenRealmTimeOutBehavior
-                    },
-                    existingRealmFileBehavior: {
-                        type: 'downloadBeforeOpen' as OpenRealmBehaviorType,
-                        timeOut: 5 * 60 * 1000,
-                        timeOutBehavior: 'throwException' as OpenRealmTimeOutBehavior
-                    },
-                    clientReset: {
-                        mode: Realm.ClientResetMode.RecoverOrDiscardUnsyncedChanges
+    }, []);
+    const changeCurrentUser = useCallback(
+        (nextUser: null | Realm.User) => {
+            if (nextUser == null) {
+                console.log('user null');
+                setCurrentUser(null);
+                setDB(null);
+                setGlobal(undefined);
+            } else {
+                console.log('user', nextUser);
+                setCurrentUser(nextUser);
+                Realm.open({
+                    schema: $$schema,
+                    sync: {
+                        partitionValue: nextUser.profile?.email ?? 'n/a',
+                        user: nextUser,
+                        newRealmFileBehavior: {
+                            type: 'downloadBeforeOpen' as OpenRealmBehaviorType,
+                            timeOut: 5 * 60 * 1000,
+                            timeOutBehavior: 'throwException' as OpenRealmTimeOutBehavior
+                        },
+                        existingRealmFileBehavior: {
+                            type: 'downloadBeforeOpen' as OpenRealmBehaviorType,
+                            timeOut: 5 * 60 * 1000,
+                            timeOutBehavior: 'throwException' as OpenRealmTimeOutBehavior
+                        },
+                        clientReset: {
+                            mode: Realm.ClientResetMode.RecoverOrDiscardUnsyncedChanges
+                        }
                     }
-                }
-            }).then((localRealm) => {
-                setGlobal(localRealm);
-                setDB(localRealm);
-            }).catch(catchError);
-        }
-    }, [setGlobal]);
+                })
+                    .then((localRealm) => {
+                        setGlobal(localRealm);
+                        setDB(localRealm);
+                    })
+                    .catch(catchError)
+            }
+        },
+        [setGlobal]
+    );
     const logOut = useCallback(async () => {
         try {
             if (currentUser == null) throw new Error('no currentUser to log out');

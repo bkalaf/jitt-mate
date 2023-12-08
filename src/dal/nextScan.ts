@@ -1,5 +1,5 @@
 import * as Realm from 'realm';
-import { Scan, Scanning } from './TScan';
+import { Scan, Scanning } from '../dto/embedded/Scan';
 import { IScan } from './types';
 
 export function nextScan(scan: IScan, realm: Realm, barcodes: string[]): [IScan, string[]] | never[] {
@@ -40,8 +40,7 @@ export function nextScan(scan: IScan, realm: Realm, barcodes: string[]): [IScan,
         }
         break;
         case 'sku': {
-            item.appendScan(realm, scan.fixture, scan.shelf, scan.bin);
-            console.log(`added scan to: ${item.sku} - ${item.product?.brand?.name ?? 'no-brand'} - ${item.product?.notes ?? 'no notes'}`);
+            item.appendScan(scan.fixture, scan.shelf, scan.bin);
             return [scan, tail];
         }
     }

@@ -5,13 +5,13 @@ import { $db } from '../../dal/db';
 import { ICustomItemField, IHashTag, IMercariSubCategory, IMercariSubSubCategory, IProductTaxonomy } from '../../dal/types';
 import { cleanup, is } from '../../dal/is';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
-import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { $$queryClient } from '../../components/App';
 import { parentedUpdate } from '../updaters/parentedUpdate';
 import { listDefaultUpdater } from '../updaters/listDefaultUpdater';
 import { categorySelectorUpdater } from '../updaters/categorySelectorUpdater';
 import { hashTaggedUpdater } from '../updaters/hashTaggedUpdater';
 import { taxonUpdater } from '../updaters/taxonUpdater';
+import { mergeProductTaxonomy } from '../embedded/mergeProductTaxonomy';
 
 export const ifList = (s: string): string | PropertySchema => (is.realmType.list(s) ? { type: 'list', objectType: cleanup(s) } : s);
 export const ifOpt = (s: string): string | PropertySchema => {
@@ -29,7 +29,6 @@ export const ifPrimitive = (s: string): PropertySchema | string => (is.realmType
 
 export const handleIf = (func: (s: string) => string | PropertySchema) => (item: string | PropertySchema) => is.string(item) ? func(item) : item;
 
-@realmCollectionDecorator('fullname', 'fullname')
 export class MercariSubSubCategory extends Realm.Object<IMercariSubSubCategory> implements IMercariSubSubCategory {
     constructor(realm: Realm, args: any) {
         super(realm, args);
@@ -78,6 +77,10 @@ export class MercariSubSubCategory extends Realm.Object<IMercariSubSubCategory> 
         categorySelectorUpdater.bind(this)();
         hashTaggedUpdater.bind(this)();  
         this.fullname = [this.parent?.parent?.name, this.parent?.name, this.name].filter(x => x != null).join('::');
+        const merged = mergeProductTaxonomy(this.taxon, this.parent?.taxon);
+        if (merged) {
+            this.taxon = merged as any;
+        }
         return this;
     }
 

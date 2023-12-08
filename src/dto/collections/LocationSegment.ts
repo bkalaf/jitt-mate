@@ -4,12 +4,10 @@ import { IBarcode, ILocationSegment } from '../../dal/types';
 import { LocationKinds } from '../../dal/enums/locationKinds';
 import { LocationLabelColorsKey, _LocationLabelColors } from '../../dal/enums/locationLabelColors';
 import { LocationTypesObj } from '../../dal/enums/locationTypes';
-import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { $$queryClient } from '../../components/App';
 import { upcsUpdater } from '../updaters/upcsUpdater';
 
-@realmCollectionDecorator('name', 'barcode.rawValue')
 export class LocationSegment extends Realm.Object<ILocationSegment> implements ILocationSegment {
     constructor(realm: Realm, args: any) {
         super(realm, args);

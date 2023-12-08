@@ -5,7 +5,7 @@ export interface TopAdornments {
 
 export type TopAdornmentsKey = keyof TopAdornments;
 
-export const TopAdornments: TopAdornments = {
+export const TopAdornments = {
     zip: 'full-zip',
     hood: 'hooded'
 };

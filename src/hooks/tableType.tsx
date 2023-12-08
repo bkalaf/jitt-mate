@@ -386,7 +386,9 @@ export const tableType: Record<string, (args: { parentRow: MRT_Row<EntityBase & 
         queryKey: [collection],
         renderDetailPanel: createDetailSubComponent,
         getCanInsertDelete: () => true,
-        queryFn: () => Promise.resolve(Array.from(window.$$store?.objects(collection) ?? [])),
+        queryFn: () => Promise.resolve(Array.from(window.$$store?.objects<T>(collection) ?? []).sort((a, b) => {
+            return (a._id < b._id) ? 1 : (a._id > b._id) ? -1 : 0;
+        })),
         columns: collections[collection].getColumns(),
         getRowId: (row: EntityBase) => fromOID(row._id),
         insert: (args: { values: AnyObject }) => {

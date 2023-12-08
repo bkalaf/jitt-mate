@@ -1,39 +1,54 @@
 import { $db } from './db';
 import Realm, { BSON } from 'realm';
-import { IBarcode, IBrand, IClassifier, IHashTag, IProduct } from './types';
+import { IBarcode, IBrand, IClassifier, IHashTag, IMadeOfSection, IProduct, IProductLine, IProductTaxonomy } from './types';
+import { UUID } from 'mongodb';
+import { Colors } from './enums/colors';
+import { Countries } from './enums/countries';
 
 export class Product extends Realm.Object<IProduct> implements IProduct {
+    backlineType: Optional<string>;
+    collarType: Optional<string>;
+    color: Optional<keyof Colors>;
+    cuffType: Optional<string>;
+    dimensions!: DBDictionary<number>;
+    flags!: DBDictionary<boolean>;
+    folder!: UUID;
+    hasTags: Optional<boolean>;
+    materials!: DBDictionary<IMadeOfSection>;
+    necklineType: Optional<string>;
+    origin: Optional<keyof Countries>;
+    pocketCount: Optional<number>;
+    rn: Optional<string>;
+    size: Optional<string>;
+    sleeveType: Optional<string>;
+    topAdornment: Optional<string>;
+    waistType: Optional<string>;
+    productLine?: OptionalEntity<IProductLine>;
+    shipWeightPercent: Optional<number>;
+    taxon: OptionalEntity<IProductTaxonomy>;
+    branding: OptionalEntity<IBrand>;
+    isNoBrand!: boolean;
+    mercariBrandName: Optional<string>;
+    brandName: Optional<string>;
+    brandFolder: Optional<string>;
+    skuBarcode: Optional<string>;
+    categoryID: Optional<string>;
+    subCategoryID: Optional<string>;
+    subSubCategoryID: Optional<string>;
+    update(this: Entity<IProduct>): Entity<IProduct> {
+        throw new Error('Method not implemented.');
+    }
+    effectiveShipWeightPercent: Optional<number>;
+    effectiveTaxon: OptionalEntity<IProductTaxonomy>;
+    hashTags!: DBSet<Entity<IHashTag>>;
+    allHashTags!: Entity<IHashTag>[];
     _barcodes: string[] = [];
     brand: OptionalEntity<IBrand>;
     circa: Optional<string>;
     classifier: OptionalEntity<IClassifier>;
-    color: Optional<
-        | 'red'
-        | 'orange'
-        | 'yellow'
-        | 'green'
-        | 'blue'
-        | 'purple'
-        | 'pink'
-        | 'brown'
-        | 'gold'
-        | 'silver'
-        | 'white'
-        | 'black'
-        | 'grey'
-        | 'beige'
-        | 'burgundy'
-        | 'aqua'
-        | 'cyan'
-        | 'teal'
-        | 'cream'
-        | 'tan'
-        | 'navy'
-    >;
     cutNo: Optional<string>;
     descriptiveText: Optional<string>;
     features: string[] = [];
-    hashTags: DBSet<IHashTag> = [] as any;
     heightIn: Optional<number>;
     isRare = false;
     isVintage = false;
@@ -45,9 +60,7 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
     weightG: Optional<number>;
     widthIn: Optional<number>;
     _id: BSON.ObjectId = new BSON.ObjectId();
-    update<T>(this: T, realm: Realm): T {
-        return this;
-    }
+
     chestIn: Optional<number>;
     neckIn: Optional<number>;
     inseamIn: Optional<number>;

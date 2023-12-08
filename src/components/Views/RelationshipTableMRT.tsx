@@ -21,6 +21,7 @@ export function RelationshipTableMRT<T extends MRT_RowData & EntityBase & IRealm
     // const deleteOne = useDeleteOne(collectionRoute);
     // const { state, ...options } = useStandardTableOptions(data, isLoading, isError, deleteOne, { collection: collectionRoute });
     const { dataUpdatedAt, options, invalidator } = useMUIReactTable<T>({ ...props, isLink: true });
+    const renderFallback: MRT_TableOptions<any>['renderFallbackValue'] = null
     const table = useMaterialReactTable({
         ...options,
         enableEditing: false,

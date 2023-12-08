@@ -3,7 +3,7 @@ import Realm, { BSON, SortDescriptor, ObjectSchema, PropertyTypeName, PropertySc
 import { ColumnDef, ColumnMeta, FilterFn, IdentifiedColumnDef, Row, RowData, SortingFn, Table } from '@tanstack/react-table';
 import { UseMutateFunction } from '@tanstack/react-query';
 import { RankingInfo } from '@tanstack/match-sorter-utils';
-import { MRT_ColumnDef, MRT_RowData, MRT_TableOptions } from 'material-react-table';
+import { MRT_ColumnDef, MRT_Row, MRT_RowData, MRT_TableOptions } from 'material-react-table';
 
 declare global {
     export type DataTypeKind = 'primitive' | 'embedded' | 'reference';
@@ -86,8 +86,7 @@ declare global {
         | 'locationSegment'
         | 'madeOf'
         | 'task'
-        | 'madeOfPart'
-        | 'madeOfSection'
+        | 'materialComposition'
         | 'measurements'
         | 'mediaDetails'
         | 'mercariBrand'
@@ -301,14 +300,9 @@ declare global {
 }
 
 declare module '@tanstack/table-core' {
-    interface ColumnMeta<TData extends RowData, TValue> {
-        datatype?: RealmTypes;
-        required?: boolean;
-        justify?: 'justify-center' | 'justify-start' | 'justify-end' | 'justify-between' | 'justify-evenly' | 'justify-around';
-        valueIn?: ((x?: TValue | null) => string) | ((x?: DBSet<ListOf<TValue>> | null) => string[]);
-        valueOut?: ((x?: string) => TValue | null) | ((x?: string[]) => ListOf<TValue>[]);
-        defaultValue?: TValue | (() => Promise<TValue>);
-    }
+    // interface ColumnMeta<TData extends RowData, TValue> {
+        
+    // }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     interface TableMeta<TData extends RowData> {
         collectionName: string;
@@ -316,6 +310,7 @@ declare module '@tanstack/table-core' {
         scope: TableScope;
         objectType?: ['list' | 'dictionary' | 'set', string];
         propertyName?: string;
+        createOnBlur?: ({ row }: { row: MRT_Row<any> }) => () => void;
     }
 }
 

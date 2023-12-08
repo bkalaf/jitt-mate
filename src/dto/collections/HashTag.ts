@@ -5,11 +5,9 @@ import { IHashTag, IHashTagUsage } from '../../dal/types';
 import { $$ } from '../../common/comparator/areRealmObjectsEqual';
 import { daysDiffFromNow } from '../../common/date/daysDiffFromNow';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
-import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { $$queryClient } from '../../components/App';
 import { listDefaultUpdater } from '../updaters/listDefaultUpdater';
 
-@realmCollectionDecorator('name', 'name')
 export class HashTag extends Realm.Object<IHashTag> implements IHashTag {
     @wrapInTransactionDecorator()
     static pruneList(list: DBSet<Entity<IHashTag>>) {

@@ -19,6 +19,7 @@ import { ipcRenderer } from 'electron';
 import { updateRecord } from './updateRecord';
 import { createDetailSubComponent } from '../components/Table/creators/createDetailSubComponent';
 import { $convertToRealm } from '../components/Table/creators/$convertToRealm';
+import { useOnSave } from './useOnBlur';
 
 export function useMUIReactTable<T extends MRT_RowData>({
     type,
@@ -55,9 +56,6 @@ export function useMUIReactTable<T extends MRT_RowData>({
         () => tableType[type ?? 'collection']({ collection: collectionRoute ?? '', objectType: objectType ?? '', propertyName: propertyName ?? '', parentRow: parentRow as any }) as TableTypeObject<T>,
         [collectionRoute, objectType, parentRow, propertyName, type]
     );
-    const toRenderDetailPanel = useCallback((subComponentTabPanels: FieldInfo[]) => {
-        return createDetailSubComponent;
-    }, [])
     const {
         queryFn: $queryFn,
         queryKey: $queryKey,
@@ -121,7 +119,7 @@ export function useMUIReactTable<T extends MRT_RowData>({
     const { getFieldInfos } = useReflectionContext();
     const fieldInfos = useMemo(() => getFieldInfos(collection), [collection, getFieldInfos]);
     const getRowCanExpand = useMemo(() => toGetRowCanExpand(fieldInfos), [fieldInfos, toGetRowCanExpand]);
-    const renderDetailPanel = (toRenderDetailPanel ?? konst(konst(<></>)))(fieldInfos);
+    const renderDetailPanel = (createDetailSubComponent ?? konst(konst(<></>)))(fieldInfos);
     const renderToolbarInternalActions = createRenderToolbarInternalActions({ onClickDumpsterFire, resetState, onClickLightning, getCanInsertDelete, objectType, propertyName, parentRow, type, state, handlers });
     const renderRowActions = createRenderRowActions({ getCanInsertDelete, deleteOne: deleteSync });
     const onCreatingRowSave = (props: MRT_TableOptionFunctionParams<T, 'onCreatingRowSave'>) => {
@@ -132,43 +130,49 @@ export function useMUIReactTable<T extends MRT_RowData>({
             }
         );
     };
-    const onEditingRowSave = (props: MRT_TableOptionFunctionParams<T, 'onEditingRowSave'>) => {
-        console.info(`onEditingRowSave.values`, props.values);
-        const result = convertTo(props.values as any) as T;
-        console.info(`onEditingRowSave.result`, result);
-        editAsync(convertTo(props.values as any) as T, {
-            onSuccess: props.exitEditingMode
-        });
-    };
-    const onCreatingRowCancel = (props: MRT_TableOptionFunctionParams<T, 'onCreatingRowCancel'>) => {
-        ipcRenderer.invoke('confirm-cancel').then((response) => {
-            if (response === 0) props.table.setCreatingRow(null);
-        });
-    };
-    const onEditingRowCancel = (props: MRT_TableOptionFunctionParams<T, 'onEditingRowCancel'>) => {
-        ipcRenderer.invoke('confirm-cancel').then((response) => {
-            if (response === 0) props.table.setEditingRow(null);
-        });
-    };
+    // const onEditingRowSave = (props: MRT_TableOptionFunctionParams<T, 'onEditingRowSave'>) => {
+    //     console.group('onEditingRowSave');
+    //     console.log(`props.values`, props.values);
+    //     const result = convertTo(props.values as any) as T;
+    //     console.log(`result`, result);
+    //     editAsync(convertTo(props.values as any) as T, {
+    //         onSuccess: props.exitEditingMode
+    //     });
+    //     console.groupEnd();
+    // };
+    // const onCreatingRowCancel = (props: MRT_TableOptionFunctionParams<T, 'onCreatingRowCancel'>) => {
+    //     const func = async () => {
+    //         const token = await (ipcRenderer.invoke('confirm-cancel') as Promise<number>);
+    //         if (token === 0) {
+    //             return 
+    //         }
+    //     }
+    //     ipcRenderer.invoke('confirm-cancel').then((response) => {
+    //         console.log(`ipcRenderer.invoke`, response);
+    //         if (response === 0) props.table.setCreatingRow(null);
+    //     });
+    // };
+    // const onEditingRowCancel = (props: MRT_TableOptionFunctionParams<T, 'onEditingRowCancel'>) => {
+    //     ipcRenderer.invoke('confirm-cancel').then((response) => {
+    //         if (response === 0) props.table.setEditingRow(null);
+    //     });
+    // };
     const constants = useTableConstants();
     const defaultColumn = useDefaultColumn<T>();
     return {
         dataUpdatedAt,
         options: {
             ...constants,
-            onEditingRowCancel,
-            onEditingRowSave,
-            onCreatingRowSave,
-            onCreatingRowCancel,
             renderDetailPanel,
             renderToolbarInternalActions,
             renderRowActions,
             renderCreateRowDialogContent: createRenderCreateRowDialogContentRHF(collection, insertAsync),
-            renderEditRowDialogContent: createRenderEditRowDialogContentRHF(collection, editAsync),
+            renderEditRowDialogContent: createRenderEditRowDialogContentRHF(collection),
             data: data ?? [],
             enableRowNumbers,
             getRowId: $getRowId,
             getRowCanExpand,
+            renderFallbackValue: null,
             columns: $columns,
             defaultColumn,
             ...handlers,

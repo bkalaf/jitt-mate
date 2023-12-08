@@ -7,12 +7,10 @@ import Realm, { BSON } from 'realm';
 import { $db } from '../../dal/db';
 import { IHashTag, IMercariBrand } from '../../dal/types';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
-import { realmCollectionDecorator } from '../../decorators/class/realmCollectionDecorator';
 import { $$queryClient } from '../../components/App';
 import { HashTag } from './HashTag';
 import { listDefaultUpdater } from '../updaters/listDefaultUpdater';
 
-@realmCollectionDecorator('name', 'name')
 export class MercariBrand extends Realm.Object<IMercariBrand> implements IMercariBrand {
     constructor(realm: Realm, args: any) {
         super(realm, args);
@@ -28,7 +26,7 @@ export class MercariBrand extends Realm.Object<IMercariBrand> implements IMercar
                         });
                     });
             })
-        );  
+        );
     }
     get allHashTags(): Entity<IHashTag>[] {
         return Array.from(this.hashTags.values() ?? []);

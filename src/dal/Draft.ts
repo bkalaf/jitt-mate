@@ -1,13 +1,6 @@
 import Realm, { Types, BSON } from 'realm';
-import { getDescription } from './getDescription';
-import { checkTransaction } from '../util/checkTransaction';
-import * as Config from './../config.json';
-import * as fs from 'graceful-fs';
-import { ColorKeys, importColors } from '../enums/importNecklineType';
-import path from 'path';
-import { checkForFolder } from '../common/fs/checkForFolder';
 import { IDraft, IListing, $db } from './db';
-import { ISku, IProductImage, IProduct, IClassifier } from './types';
+import { ISku } from './types';
 
 export const MAX_IMAGE_SIZE = 10485760;
 

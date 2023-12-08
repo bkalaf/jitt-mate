@@ -1,15 +1,9 @@
-import { ItemConditions } from './enums/itemConditions';
 import Realm, { BSON } from 'realm';
 import { $db } from './db';
-import {
-    SizeKeys} from '../enums/importNecklineType';
-import { IBarcode, IHashTag, ILocationSegment, IProduct, IProductImage, IScan, ISku } from './types';
+import { IBarcode, IBrand, IHashTag, ILocationSegment, IProduct, IProductImage, IScan, ISku } from './types';
 import { ISizeEntry } from '../enums/sizes';
-import { Scan } from './TScan';
 import { createColumnHelper } from '@tanstack/react-table';
-import { runInTransaction } from '../util/realm/runInTransaction';
 
-const helper = createColumnHelper<ISku>();
 export class Sku extends Realm.Object<ISku> implements ISku {
     markForPrinting(realm: Realm): Entity<ISku> {
         throw new Error('Method not implemented.');
@@ -20,6 +14,8 @@ export class Sku extends Realm.Object<ISku> implements ISku {
     appendScan(fixture?: ILocationSegment | undefined, shelf?: ILocationSegment | undefined, bin?: ILocationSegment | undefined): Entity<ISku> {
         throw new Error('Method not implemented.');
     }
+    effectiveBrand: Optional<IBrand>;
+
     mercariBrandName: Optional<string>;
     brandName: Optional<string>;
     brandFolder: Optional<string>;
@@ -99,6 +95,3 @@ export class Sku extends Realm.Object<ISku> implements ISku {
     ];
 }
 
-export const sizeName = (sizeMap: (value?: SizeKeys) => ISizeEntry) => (value?: SizeKeys) => value != null ? sizeMap(value).name : undefined;
-
-const sizeSelector = (sizeMap: (value?: SizeKeys) => ISizeEntry) => (value?: SizeKeys) => value != null ? sizeMap(value).selector : undefined;

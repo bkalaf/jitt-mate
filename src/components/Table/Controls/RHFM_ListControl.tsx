@@ -15,7 +15,7 @@ import { $convertToRealm } from '../creators/$convertToRealm';
 
 export type DeleteByIndexAction = (index: number) => Promise<void>;
 export type DeleteByKeyAction = (key: string) => Promise<void>;
-export type RHFM_ListControlProps<TParent extends EntityBase, TName extends Path<TParent>, TListOf> = {
+export type RHFM_ListControlProps<TParent, TName extends Path<TParent>, TListOf> = {
     name: TName;
     header?: string;
     objectType: string;
@@ -25,7 +25,7 @@ export type RHFM_ListControlProps<TParent extends EntityBase, TName extends Path
     ItemElement: React.FunctionComponent<{ data: TListOf }>;
     // InsertControlElement: React.FunctionComponent;
     deleteItemMode: 'key' | 'index';
-    labelPropertyName: string;
+    labelPropertyName?: string;
 };
 
 const deleteActions = {
@@ -46,7 +46,7 @@ const deleteActions = {
     }
 };
 
-export function RHFM_ListControl<TParent extends EntityBase, TName extends Path<TParent>, TListOf>({
+export function RHFM_ListControl<TParent, TName extends Path<TParent>, TListOf>({
     name,
     header,
     objectType,
@@ -123,7 +123,7 @@ export function RHFM_ListControl<TParent extends EntityBase, TName extends Path<
                                 name='value'
                                 objectType={listObjectType}
                                 labelPropertyName={labelPropertyName as any}
-                                ItemElement={({ data }) => <span>{(data as any)[labelPropertyName]}</span>}
+                                ItemElement={({ data }) => <span>{labelPropertyName == null ? data : (data as any)[labelPropertyName as keyof typeof data]}</span>}
                                 header='Value'
                             />
                         )}

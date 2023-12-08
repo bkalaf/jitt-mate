@@ -1,14 +1,9 @@
 import { createMRTColumnHelper } from 'material-react-table';
 import { IDraft, IListing } from '../../dal/db';
-import { IMercariCategory, IProductTaxonomy, IMercariSubCategory, IMercariSubSubCategory, ILocationSegment, IMercariBrand, IBrand, IBarcode, IAddress, IRn, IClassifier, IHashTag, IHashTagUsage, IScan, ICustomItemField, IProductImage, IProduct, ISku, IProductLine } from '../../dal/types';
+import { IMercariCategory, IProductTaxonomy, IMercariSubCategory, IMercariSubSubCategory, ILocationSegment, IMercariBrand, IBrand, IBarcode, IAddress, IRn, IClassifier, IHashTag, IHashTagUsage, IScan, ICustomItemField, IProductImage, IProduct, ISku, IProductLine, IApparelDetails, IMaterialComposition } from '../../dal/types';
 
-/**
- * @copyright 2023-11-13
- */
+
 const categoryHelper = createMRTColumnHelper<IMercariCategory>();
-/**
- * @copyright 2023-11-13
- */
 const productTaxonomyHelper = createMRTColumnHelper<IProductTaxonomy>();
 const subCategoryHelper = createMRTColumnHelper<IMercariSubCategory>();
 const subSubCategoryHelper = createMRTColumnHelper<IMercariSubSubCategory>();
@@ -25,6 +20,8 @@ const hashTagHelper = createMRTColumnHelper<IHashTag>();
 const hashTagUsageHelper = createMRTColumnHelper<IHashTagUsage>();
 const scanHelper = createMRTColumnHelper<IScan>();
 const customFieldHelper = createMRTColumnHelper<ICustomItemField>();
+const materialCompositionHelper = createMRTColumnHelper<IMaterialComposition>();
+const apparelDetailsHelper = createMRTColumnHelper<IApparelDetails>();
 const productImageHelper = createMRTColumnHelper<IProductImage>();
 const productHelper = createMRTColumnHelper<IProduct>();
 const skuHelper = createMRTColumnHelper<ISku>();
@@ -43,18 +40,23 @@ const auctionHelper = createMRTColumnHelper<any>();
 const auctionPriceHelper = createMRTColumnHelper<any>();
 
 export default {
-    category: categoryHelper,
-    taxonomy: productTaxonomyHelper,
-    subCategory: subCategoryHelper,
-    subSubCategory: subSubCategoryHelper,
-    classifierHelper: classifierHelper,
-    mercariBrandHelper,
+    addressHelper,
+    apparelDetailsHelper,
+    barcodeHelper,
     brandHelper,
+    category: categoryHelper,
+    classifierHelper: classifierHelper,
     hashTagHelper,
     hashTagUsageHelper,
     locationSegmentHelper,
-    barcodeHelper,
+    materialCompositionHelper,
+    mercariBrandHelper,
+    productHelper,
+    productImageHelper,
     productLineHelper,
-    productImageHelper
-    // brandingHelper
+    rnHelper,
+    scanHelper,
+    subCategory: subCategoryHelper,
+    subSubCategory: subSubCategoryHelper,
+    taxonomy: productTaxonomyHelper,
 };

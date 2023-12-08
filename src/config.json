@@ -41,5 +41,34 @@
         "description": "JITT UI settings",
         "name": "jitt-matt-forager",
         "version": 1
+    },
+    "menus": {
+        "leftDrawer": {
+            "classification": {
+                "classes": "bg-rose-500 text-white border-black",
+                "itemClasses": "bg-rose-200 text-black border-black",
+                "subMenus": ["hashTag", "mercariCategory", "mercariSubCategory", "mercariSubSubCategory", "mercariCategories", "classifier"]
+            },
+            "fileSystem": {
+                "classes": "bg-amber-500 text-white border-black",
+                "itemClasses": "bg-amber-200 text-black border-black",
+                "subMenus": ["productImage"]
+            },
+            "branding": {
+                "classes": "bg-yellow-500 text-black border-black",
+                "itemClasses": "bg-yellow-200 text-black border-black",
+                "subMenus": ["mercariBrand", "brand", "productLine"]
+            },
+            "inventory": {
+                "classes": "bg-lime-500 text-black border-black",
+                "itemClasses": "bg-lime-200 text-black border-black",
+                "subMenus": ["locationSegment"]
+            },
+            "productInfo": {
+                "classes": "bg-sky-500 text-white border-black",
+                "itemClasses": "bg-sky-200 text-black border-black",
+                "subMenus": ["rn", "product"]
+            }
+        }
     }
 }
