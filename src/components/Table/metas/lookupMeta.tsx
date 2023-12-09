@@ -1,10 +1,9 @@
 import { LookupCell } from '../Cells/LookupCell';
-import { fromOID } from '../../../dal/fromOID';
-import { toOID } from '../../../dal/toOID';
 import { RHFM_LookupControl } from '../../Controls/RHFM_LookupControl';
 import { toProperFromCamel } from '../../../common/text/toProperCase';
+import { IDependency } from '../Controls/RHFM_Depends';
 
-export function lookupMeta<TLookup extends AnyObject, TParent extends EntityBase>(name: string, objectType: string, lookupProperty: string, opts: { maxSize?: number; header?: string; } = {}) {
+export function lookupMeta<TLookup extends AnyObject, TParent extends EntityBase>(name: string, objectType: string, lookupProperty: string, opts: { maxSize?: number; header?: string; } = {}, ...dependencies: IDependency[]) {
     return ({
         header: opts.header ?? toProperFromCamel(name),
         // maxSize: opts.maxSize ?? 200,
@@ -16,6 +15,6 @@ export function lookupMeta<TLookup extends AnyObject, TParent extends EntityBase
         //     valueOut: (x?: string) => (x != null && x.length > 0 ? window.$$store?.objectForPrimaryKey<TLookup>(objectType, toOID(x) as any) ?? null : null),
         //     defaultValue: undefined
         // },
-        Edit: RHFM_LookupControl(objectType, name, opts.header ?? toProperFromCamel(name), lookupProperty)
+        Edit: RHFM_LookupControl(objectType, name, opts.header ?? toProperFromCamel(name), lookupProperty, ...dependencies)
     });
 }

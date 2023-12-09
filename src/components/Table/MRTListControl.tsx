@@ -15,6 +15,7 @@ import { _Serialized } from './creators/createRenderCreateRowDialogContent';
 import { useCollectionFuncs } from './useCollectionFuncs';
 import { useEditControls } from '../../hooks/useEditControls';
 import { useIsCreatingOrEditing } from './useIsCreatingOrEditing';
+import { is } from '../../dal/is';
 
 export type RHFM_ListControlProps<T> = {
     propertyName: string;
@@ -37,12 +38,18 @@ export function RHFMListControl<T extends FieldValues, TListOf>({ ItemComponent,
         const { isEditing, isCreating } = useIsCreatingOrEditing(props.table);
         const $value = React.useRef<DBList<TListOf> | undefined>();
         React.useEffect(() => {
-            const func = (
-                isCreating ? init : isEditing ? () => Promise.resolve(props.row.original[propertyName as keyof T]) : () => Promise.reject(new Error('not Editing or Creating but in Edit Component'))
-            ) as () => Promise<DBList<TListOf>>;
+            const func = (() => {
+                return (
+                    isCreating
+                        ? () => Promise.resolve([])
+                        : isEditing
+                        ? () => Promise.resolve(props.row.original[propertyName as keyof T])
+                        : () => Promise.reject(new Error('not Editing or Creating but in Edit Component'))
+                ) as () => Promise<DBList<TListOf>>;
+            })();
             func().then((x) => ($value.current = x));
         }, [init, isCreating, isEditing, props.row.original]);
-        const data = $value == null ? [] : Array.from($value.current?.values() ?? []);
+        const data = $value.current == null ? [] : is.dbSet($value.current) ? Array.from($value.current?.values()) : is.dbList($value.current) ? Array.from($value.current.values()) : is.array($value.current) ? $value.current : [];
         const db = useLocalRealm();
         const [isInsertItemModalOpen, toggleInsertItemModal] = useToggler(false);
 

@@ -1,8 +1,7 @@
 import { ColumnDef, createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { Params, json } from 'react-router';
 import { SortDescriptor } from 'realm';
-import $defs from '../../schema';
-import $$schema from '../../dal';
+import $$schema from '../../dto/collections';
 
 export function handleSorted<T>(results: Realm.Results<T>, sort?: SortDescriptor[]) {
     return sort != null ? results.sorted(sort) : results;

@@ -36,13 +36,12 @@ import {
     LaundryCareOptions,
     IScan,
     IProduct,
-    FlagsKeys,
     IMaterialComposition,
 } from '../../../dal/types';
 import { Barcode } from '../../../dto/collections/Barcode';
 import { ConvertToRealmFunction, Serialized } from './createRenderCreateRowDialogContent';
 import { Colors } from '../../../dal/enums/colors';
-import { MaterialTypesKey } from '../../../dal/enums/materialTypes';
+import { ItemConditions } from '../../../dal/enums/itemConditions';
 
 const unserializeUUID = (x?: string | BSON.UUID) => x == null ? undefined : x instanceof BSON.UUID ? x : typeof x === 'string' ? new BSON.UUID(x) : undefined;
 const unserializeInt = (x?: string | null | number) => (x == null ? undefined : typeof x === 'number' ? x : typeof x === 'string' ? parseInt(x, 10) : undefined);
@@ -160,10 +159,11 @@ const toClassifier: ConvertToRealmFunction<IClassifier> = ({ _id, hashTags, merc
         shipWeightPercent != null ? (typeof shipWeightPercent === 'number' ? shipWeightPercent : typeof shipWeightPercent === 'string' ? parseFloat(shipWeightPercent) : undefined) : undefined,
     mercariSubSubCategory: unserializedLookup<IMercariSubSubCategory>('mercariSubSubCategory')(mercariSubSubCategory)
 });
-const toProductLine: ConvertToRealmFunction<IProductLine> = ({ _id, name, brand }) => ({
+const toProductLine: ConvertToRealmFunction<IProductLine> = ({ _id, name, brand, hashTags }) => ({
     _id: toNotNullOID(_id),
     name,
-    brand: unserializedLookup<IBrand>('brand')(brand)
+    brand: unserializedLookup<IBrand>('brand')(brand),
+    hashTags: hashTags.map((x) => window.$$store?.objectForPrimaryKey<IHashTag>('hashTag', toOID(x))) as Entity<IHashTag>[]
 });
 const toProductImage: ConvertToRealmFunction<IProductImage> = ({ _id, doNotRemoveBG, originalData, originalMimeType, removeBGData, removeBGMimeType, sku, uploadedFrom }) => ({
     _id: toNotNullOID(_id),
@@ -288,7 +288,8 @@ const toProduct: ConvertToRealmFunction<IProduct> = ({
     shipWeightPercent,
     styleNo,
     taxon,
-    upcs
+    upcs,
+    apparelDetails
 }) => ({
     _id: toNotNullOID(_id),
     brand: $unserialize.lookup<IBrand>('brand')(brand),
@@ -301,7 +302,7 @@ const toProduct: ConvertToRealmFunction<IProduct> = ({
     descriptiveText: $unserialize.string(descriptiveText),
     notes: $unserialize.string(notes),
     color: $unserialize.enum<keyof Colors>(color),
-    dimensions: Object.fromEntries(Object.entries(dimensions ?? {}).map(([k, v]) => [k, $unserialize.float(v)] as [string, number])),
+    dimensions: Object.fromEntries(Object.entries(dimensions ?? {}).map(([k, v]) => [k, $unserialize.float(v) ?? 0] as [string, number])) as any,
     features: features ?? [],
     upcs: (upcs ?? []).map(toBarcode) as Entity<IBarcode>[],
     shipWeightPercent: $unserialize.float(shipWeightPercent),
@@ -309,7 +310,21 @@ const toProduct: ConvertToRealmFunction<IProduct> = ({
     taxon: taxon ? (toProductTaxonomy(taxon) as Entity<IProductTaxonomy>) : ({ lock: false } as Entity<IProductTaxonomy>),
     hashTags: hashTags.map((x) => window.$$store?.objectForPrimaryKey<IHashTag>('hashTag', toOID(x))) as Entity<IHashTag>[],
     flags: (flags ? flags : []) as any,
-    materials: materials ? Object.entries(materials).map(([name, parts]) => [name, toMaterialComposition(parts)]) : {}
+    materials: materials ? Object.entries(materials).map(([name, parts]) => [name, toMaterialComposition(parts)]) : {},
+    apparelDetails: toApparelDetails((apparelDetails ?? {}) as any) as any
+});
+const toSku: ConvertToRealmFunction<ISku> = ({ _barcode, _id, condition, defects, hashTags, price, product, scans, shipWeightPercent, skuPrinted, upcs }) => ({
+    _id: toNotNullOID(_id),
+    defects: defects ?? [],
+    condition: $unserialize.enum<keyof typeof ItemConditions>(condition) ?? ('good' as const),
+    hashTags: hashTags.map((x) => window.$$store?.objectForPrimaryKey<IHashTag>('hashTag', toOID(x))) as Entity<IHashTag>[],
+    skuPrinted: $unserialize.bool(skuPrinted) ?? false,
+    price: $unserialize.float(price) ?? 0,
+    product: $unserialize.lookup<IProduct>('product')(product),
+    shipWeightPercent: $unserialize.float(shipWeightPercent),
+    upcs: (upcs ?? []).map(toBarcode) as Entity<IBarcode>[],
+    _barcode: _barcode ?? undefined,
+    scans: (scans ?? []).map(toScan) as Entity<IScan>[]
 });
 export const $convertToRealm = {
     address: toAddress,
@@ -330,5 +345,6 @@ export const $convertToRealm = {
     productLine: toProductLine,
     productTaxonomy: toProductTaxonomy,
     rn: toRn,
-    scan: toScan
+    scan: toScan,
+    sku: toSku
 };

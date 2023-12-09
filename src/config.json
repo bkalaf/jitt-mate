@@ -62,7 +62,7 @@
             "inventory": {
                 "classes": "bg-lime-500 text-black border-black",
                 "itemClasses": "bg-lime-200 text-black border-black",
-                "subMenus": ["locationSegment"]
+                "subMenus": ["locationSegment", "sku"]
             },
             "productInfo": {
                 "classes": "bg-sky-500 text-white border-black",

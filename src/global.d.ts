@@ -68,6 +68,7 @@ declare global {
         | 'auction'
         | 'auctionLot '
         | 'barcode'
+        | 'binaryFile'
         | 'brand'
         | 'branding'
         | 'bundle'

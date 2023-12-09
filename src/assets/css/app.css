@@ -12,6 +12,9 @@
 /* .active {
     @apply text-white border border-white bg-magenta;
 } */
+#app-root>div>div.flex.flex-grow.p-5.overflow-auto>section>div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation2.css-1atu56z-MuiPaper-root>div.MuiBox-root.css-16t83wm>div.MuiBox-root.css-zrlv9q {
+    justify-content: start;
+}
 
 .font-small-caps {
     font-variant-caps: small-caps;

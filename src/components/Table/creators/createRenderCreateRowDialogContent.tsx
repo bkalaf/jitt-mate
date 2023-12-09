@@ -136,7 +136,7 @@ export function createRenderCreateRowDialogContentRHF<T extends AnyObject>(colle
                     console.log(`no onBlur name`);
                     return;
                 }
-                formContext.setValue(name, ev.target.value);
+                formContext.setValue(name, typeof ev === 'object' ? ev.target.value : ev as any);
             },
             [formContext]
         );

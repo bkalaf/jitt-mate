@@ -119,7 +119,7 @@ function buildColorInfoMaps() {
     const colors = Object.entries(Colors);
     const colors2 = colors.map(([k, v]) => ({ ...(typeof v === 'string' ? { name: v } : v)}));
     const { toClasses, toName, toSelector } = colors2.map(({ name, classes, aliases, selector }) => [...aliases as string[] ?? [], name].map(n => ({
-        toName: [n, name] as [string, string],
+        toName: [name, n] as [string, string],
         toClasses: [n, classes] as [string, string],
         toSelector: [n, selector] as [string, string]
     })).reduce(({ toClasses: pvToClasses, toSelector: pvToSelector, toName: pvToName }, { toClasses: cvToClasses, toSelector: cvToSelector, toName: cvToName }) => {

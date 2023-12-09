@@ -12,7 +12,11 @@ import { useDebounceFunction } from '../useDebounceFunction';
 import { createPopupForKey } from '../createPopupForKey';
 import { SubmitResetButton } from '../SubmitResetButton';
 import { $convertToRealm } from '../creators/$convertToRealm';
-
+import { useReflectionContext } from '../../Contexts/useReflectionContext';
+import { is } from '../../../dal/is';
+import { randomString } from '../../../util/randomString';
+import { getProperty } from '../../Contexts/getProperty';
+import { MRT_ColumnDef } from 'material-react-table';
 export type DeleteByIndexAction = (index: number) => Promise<void>;
 export type DeleteByKeyAction = (key: string) => Promise<void>;
 export type RHFM_ListControlProps<TParent, TName extends Path<TParent>, TListOf> = {
@@ -20,11 +24,9 @@ export type RHFM_ListControlProps<TParent, TName extends Path<TParent>, TListOf>
     header?: string;
     objectType: string;
     listObjectType: RealmObjects | RealmPrimitives;
-    ofTypeKind: DataTypeKind;
     listType: ListTypeKind;
     ItemElement: React.FunctionComponent<{ data: TListOf }>;
     // InsertControlElement: React.FunctionComponent;
-    deleteItemMode: 'key' | 'index';
     labelPropertyName?: string;
 };
 
@@ -46,6 +48,10 @@ const deleteActions = {
     }
 };
 
+export function useRandomID() {
+    return useMemo(() => randomString(24), []);
+}
+
 export function RHFM_ListControl<TParent, TName extends Path<TParent>, TListOf>({
     name,
     header,
@@ -53,16 +59,18 @@ export function RHFM_ListControl<TParent, TName extends Path<TParent>, TListOf>(
     ItemElement,
     listType,
     listObjectType,
-    deleteItemMode,
-    ofTypeKind,
     labelPropertyName
 }: RHFM_ListControlProps<TParent, TName, TListOf>) {
-        const convertTo = $convertToRealm[objectType as keyof typeof $convertToRealm] as any as ConvertToRealmFunction<TListOf & AnyObject>;
+    const convertTo = $convertToRealm[objectType as keyof typeof $convertToRealm] as any as ConvertToRealmFunction<TListOf & AnyObject>;
 
-    function InnerListControl() {
+    function InnerListControl(props: Parameters<Exclude<MRT_ColumnDef<T, any>['Edit'], undefined>>[0]) {
+        console.log(`rendering: ${name}`);
         console.log(`watchedValue.name`, name);
-        const watchedValue = useWatch({ name }) as TListOf[] | Record<string, TListOf> | undefined;
-        const listArray = useMemo(() => (deleteItemMode === 'key' ? Object.entries(watchedValue as Record<string, TListOf>) : (watchedValue as TListOf[])), [watchedValue]);
+        console.log(`objectType`, objectType, 'ItemElement', ItemElement, 'listType', listType, 'listObjectType', listObjectType, 'labelPropertyName', labelPropertyName);
+        const watchedValue = useMemo(() => getProperty(name)(props.row.original) ?? (listType === 'dictionary' ? {} : []), [props.row.original]);
+        const listArray = useMemo(() => (listType === 'dictionary' ? Object.entries(watchedValue as Record<string, TListOf>) : (watchedValue as TListOf[])), [watchedValue]);
+        const { getIsEmbedded } = useReflectionContext();
+        const ofTypeKind: DataTypeKind = is.realmType.primitive(listObjectType) ? 'primitive' : getIsEmbedded(listObjectType) ? 'embedded' : 'reference';
         const { setValue } = useFormContext();
         const { onSuccess } = useInvalidator(name);
         const onClearAllClick = useCallback(() => {
@@ -70,7 +78,7 @@ export function RHFM_ListControl<TParent, TName extends Path<TParent>, TListOf>(
             onSuccess();
         }, [onSuccess, setValue]);
         const onClearAllClickDebounced = useDebounceFunction(onClearAllClick, 400);
-        const onDeleteClick = deleteActions[deleteItemMode];
+        const onDeleteClick = deleteActions[listType === 'dictionary' ? 'key' : 'index'];
         const onDeleteClickDebounced = useDebounceFunction<[string | number | undefined], void>(onDeleteClick(name, setValue, listArray as any) as (item?: string | number) => void, 400, undefined);
         const type = useMemo(() => listObjectTypeToInputType(listObjectType), []);
 
@@ -119,13 +127,7 @@ export function RHFM_ListControl<TParent, TName extends Path<TParent>, TListOf>(
                                 }}
                             />
                         ) : (
-                            <RHFM_RealmObjectLookupControl<TListOf & EntityBase>
-                                name='value'
-                                objectType={listObjectType}
-                                labelPropertyName={labelPropertyName as any}
-                                ItemElement={({ data }) => <span>{labelPropertyName == null ? data : (data as any)[labelPropertyName as keyof typeof data]}</span>}
-                                header='Value'
-                            />
+                            <RHFM_RealmObjectLookupControl<TListOf> name='value' objectType={listObjectType} labelPropertyName={labelPropertyName as any} ItemElement={ItemElement} header='Value' />
                         )}
                         <SubmitResetButton ofTypeKind={ofTypeKind} listArray={listArray} listType={listType} name={name} setList={setValue} />
                     </Stack>

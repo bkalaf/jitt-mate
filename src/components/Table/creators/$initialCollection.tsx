@@ -2,6 +2,7 @@ import { BSON } from 'realm';
 import { dateFromNow } from '../../../common/date/dateFromNow';
 
 export const $initialCollection: Record<string, () => Promise<unknown>> = {
+    string: () => Promise.resolve(''),
     apparelDetails: () => Promise.resolve({
         backlineType: null,
         collarType: null,
@@ -144,7 +145,8 @@ export const $initialCollection: Record<string, () => Promise<unknown>> = {
     productLine: () => Promise.resolve({
         _id: new BSON.ObjectId(),
         name: null,
-        brand: null
+        brand: null,
+        hashTags: []
     }),
     rn: () => Promise.resolve({
         _id: new BSON.ObjectId(),
@@ -173,5 +175,19 @@ export const $initialCollection: Record<string, () => Promise<unknown>> = {
             bin: null,
             shelf: null
         });
+    },
+    sku: () => {
+        return Promise.resolve({
+            _id: new BSON.ObjectId(),
+            defects: [],
+            scans: [],
+            upcs: [],
+            hashTags: [],
+            shipWeightPercent: null,
+            price: null,
+            condition: 'good',
+            skuPrinted: false,
+            product: null
+        })
     }
 };

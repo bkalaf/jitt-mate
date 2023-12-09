@@ -15,13 +15,22 @@ export const flagsMeta = function <T extends MRT_RowData>() {
             const output = Array.from(values.values()).map(toProperFromCamel).join(', ');
             return <span>{output}</span>;
         },
+        id: 'flags',
         Edit: function (props: Parameters<Exclude<MRT_ColumnDef<T, DBSet<FlagsKeys>>['Edit'], undefined>>[0]) {
             const context = useFormContext();
             const onBlur = useOnBlurContext();
-            return <fieldset className='flex w-full'>
-                <legend>FLAGS</legend>
-                <CheckboxButtonGroup control={context.control} name={props.column.columnDef.accessorKey ?? props.column.columnDef.id ?? 'n/a'} options={FlagsOptions} onChange={onBlur} row />
-            </fieldset>;
+            return (
+                <fieldset className='flex w-full'>
+                    <legend>FLAGS</legend>
+                    <CheckboxButtonGroup
+                        control={context.control}
+                        name={props.column.columnDef.accessorKey ?? props.column.columnDef.id ?? 'n/a'}
+                        options={FlagsOptions}
+                        onChange={onBlur(props.column.columnDef.accessorKey ?? props.column.columnDef.id ?? 'n/a')}
+                        row
+                    />
+                </fieldset>
+            );
         }
     };
 };

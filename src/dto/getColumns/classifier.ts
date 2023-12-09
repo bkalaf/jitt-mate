@@ -1,10 +1,9 @@
 import { createMRTColumnHelper } from 'material-react-table';
 import { IClassifier, IHashTag, IMercariSubSubCategory } from '../../dal/types';
 import { boolMeta } from '../../components/Table/metas/boolMeta';
-import { dataStructureMeta } from '../../components/Table/dataStructureMeta';
 import { lookupMeta } from '../../components/Table/metas/lookupMeta';
-import { objectIdMeta } from '../../components/Table/objectIdMeta';
-import { percentageMeta } from '../../components/Table/percentageMeta';
+import { objectIdMeta } from '../../components/Table/metas/objectIdMeta';
+import { percentageMeta } from '../../components/Table/metas/percentageMeta';
 import { stringMeta } from '../../components/Table/metas/stringMeta';
 import { productTaxonomyColumns } from './productTaxonomy';
 
@@ -27,7 +26,7 @@ export const classifierColumns = {
                 ...stringMeta({ propertyName: 'shortname', header: 'Short Name', maxLength: 30 })
             }),
             classifierHelper.accessor('hashTags', {
-                ...dataStructureMeta<IClassifier, IHashTag, 'hashTags'>('hashTags', 'name', 'classifier', 'reference', 'hashTag', 'set', { header: 'Hash Tags' })
+                ...$metas.set<IClassifier, IHashTag, 'hashTags'>('hashTags', 'name', 'classifier', 'reference', 'hashTag', 'set', { header: 'Hash Tags' })
             }),
             classifierHelper.accessor('shipWeightPercent', {
                 ...percentageMeta('shipWeightPercent', { header: 'Ship Weight %' })

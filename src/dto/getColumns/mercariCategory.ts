@@ -1,10 +1,10 @@
 import { MRT_ColumnDef, createMRTColumnHelper } from 'material-react-table';
 import { IHashTag, IMercariCategory } from '../../dal/types';
-import { dataStructureMeta } from '../../components/Table/dataStructureMeta';
-import { objectIdMeta } from '../../components/Table/objectIdMeta';
-import { percentageMeta } from '../../components/Table/percentageMeta';
+import { objectIdMeta } from '../../components/Table/metas/objectIdMeta';
+import { percentageMeta } from '../../components/Table/metas/percentageMeta';
 import { stringMeta } from '../../components/Table/metas/stringMeta';
 import { productTaxonomyColumns } from './productTaxonomy';
+import { $metas } from '../../components/Table/metas';
 
 export const mercariCategoryHelper = createMRTColumnHelper<IMercariCategory>();
 
@@ -19,7 +19,7 @@ export const mercariCategoryColumns = {
                 ...stringMeta({ propertyName: 'id', header: 'ID', required: true, maxLength: 30 })
             }),
             mercariCategoryHelper.accessor('hashTags', {
-                ...dataStructureMeta<IMercariCategory, IHashTag, 'hashTags'>('hashTags', 'name', 'mercariCategory', 'reference', 'hashTag', 'set', { header: 'Hash Tags' })
+                ...$metas.set<IMercariCategory, IHashTag, 'hashTags'>('hashTags', 'name', 'mercariCategory', 'hashTag', { header: 'Hash Tags' })
             }),
             mercariCategoryHelper.accessor('shipWeightPercent', {
                 ...percentageMeta('shipWeightPercent', { header: 'Ship Weight %' })

@@ -1,6 +1,6 @@
 import { $db } from '../../dal/db';
 import Realm, { BSON } from 'realm';
-import { IBrand, IProductLine } from '../../dal/types';
+import { IBrand, IHashTag, IProductLine } from '../../dal/types';
 import { $$queryClient } from '../../components/App';
 
 export class ProductLine extends Realm.Object<IProductLine> implements IProductLine {
@@ -19,15 +19,19 @@ export class ProductLine extends Realm.Object<IProductLine> implements IProductL
             Promise.resolve(this.update()).then(() => {
                 $$queryClient
                     .invalidateQueries({
-                        queryKey: [ProductLine.schema.name]
+                        queryKey: [$db.productLine()]
                     })
                     .then(() => {
                         $$queryClient.refetchQueries({
-                            queryKey: [ProductLine.schema.name]
+                            queryKey: [$db.productLine()]
                         });
                     });
             })
         );
+    }
+    hashTags!: DBSet<Entity<IHashTag>>;
+    get allHashTags(): Entity<IHashTag>[] {
+        return [];
     }
     static schema: Realm.ObjectSchema = {
         name: 'productLine',

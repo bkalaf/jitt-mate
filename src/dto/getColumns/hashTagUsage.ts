@@ -1,7 +1,7 @@
 import { createMRTColumnHelper } from 'material-react-table';
 import { IHashTagUsage } from '../../dal/types';
 import { dateMeta } from '../../components/Table/dateMeta';
-import { intMeta } from '../../components/Table/intMeta';
+import { intMeta } from '../../components/Table/metas/intMeta';
 
 export const hashTagUsageHelper = createMRTColumnHelper<IHashTagUsage>();
 export const hashTagUsageColumns = {

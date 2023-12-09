@@ -59,4 +59,5 @@ export default {
     subCategory: subCategoryHelper,
     subSubCategory: subSubCategoryHelper,
     taxonomy: productTaxonomyHelper,
-};
+    skuHelper
+}

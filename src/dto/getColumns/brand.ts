@@ -1,9 +1,9 @@
 import { createMRTColumnHelper } from 'material-react-table';
-import { dataStructureMeta } from '../../components/Table/dataStructureMeta';
 import { lookupMeta } from '../../components/Table/metas/lookupMeta';
-import { objectIdMeta } from '../../components/Table/objectIdMeta';
+import { objectIdMeta } from '../../components/Table/metas/objectIdMeta';
 import { stringMeta } from '../../components/Table/metas/stringMeta';
 import { IBrand, IMercariBrand, IHashTag } from '../../dal/types';
+import { $metas } from '../../components/Table/metas';
 
 export const brandHelper = createMRTColumnHelper<IBrand>();
 export const brandColumns = {
@@ -26,7 +26,7 @@ export const brandColumns = {
                 ...lookupMeta<IBrand, IBrand>('parent', 'brand', 'name', { header: 'Parent' })
             }),
             brandHelper.accessor('hashTags', {
-                ...dataStructureMeta<IBrand, IHashTag, 'hashTags'>('hashTags', 'name', 'brand', 'reference', 'hashTag', 'set', { header: 'Hash Tags' })
+                ...$metas.set<IBrand, IHashTag, 'hashTags'>('hashTags', 'name', 'brand', 'reference', 'hashTag', 'set', { header: 'Hash Tags' })
             })
         ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns
 } as StaticTableDefinitions<IBrand>;

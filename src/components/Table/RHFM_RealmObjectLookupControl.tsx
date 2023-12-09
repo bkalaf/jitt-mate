@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useLocalRealm } from '../../routes/loaders/useLocalRealm';
 import { fromOID } from '../../dal/fromOID';
 
-export type RealmObjectLookupControlProps<T extends EntityBase> = {
+export type RealmObjectLookupControlProps<T> = {
     name: string;
     objectType: RealmObjects | RealmPrimitives;
     labelPropertyName: keyof T & string;
@@ -15,14 +15,14 @@ export type RealmObjectLookupControlProps<T extends EntityBase> = {
     required?: boolean;
 };
 
-export function RHFM_RealmObjectLookupControl<T extends EntityBase>({ objectType, labelPropertyName, ItemElement, header, name, required }: RealmObjectLookupControlProps<T>) {
+export function RHFM_RealmObjectLookupControl<T>({ objectType, labelPropertyName, ItemElement, header, name, required }: RealmObjectLookupControlProps<T>) {
     const db = useLocalRealm();
     const { data, isLoading } = useQuery({
         queryKey: [objectType],
         queryFn: () => Promise.resolve(Array.from(db.objects<T>(objectType).sorted([labelPropertyName])))
     });
     const getOptionLabel = useCallback((option: T) => (option[labelPropertyName] as object).toString(), [labelPropertyName]);
-    const isOptionEqualToValue = useCallback((option: T, value: T) => {
+    const isOptionEqualToValue = useCallback((option: T & EntityBase, value: T & EntityBase) => {
         return value == null || option == null ? false : fromOID(option._id) === fromOID(value._id);
     }, []);
     const filterOptions = useCallback(

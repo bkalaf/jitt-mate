@@ -1,4 +1,4 @@
-import { MRT_Row } from 'material-react-table';
+import { MRT_EditCellTextField, MRT_Row, createRow } from 'material-react-table';
 import { CircularProgress, DialogActions, DialogContent, DialogTitle, Divider, IconButton, Tooltip } from '@mui/material';
 import { toProperFromCamel } from '../../../common/text/toProperCase';
 import { UseMutateAsyncFunction, useMutation } from '@tanstack/react-query';
@@ -15,6 +15,7 @@ import { useClearCRUD } from '../../../hooks/useOnBlur';
 import { useLocalRealm } from '../../../routes/loaders/useLocalRealm';
 import { $initialCollection } from './$initialCollection';
 import { OnBlurContext } from './OnBlurContext';
+import { setProperty } from '../../../common/object/setProperty';
 
 export function toEditFormInitializer<T extends AnyObject>(row: MRT_Row<T>) {
     return () => Promise.resolve(row.original.toJSON() as T);
@@ -57,6 +58,12 @@ export function createRenderEditRowDialogContentRHF<T extends AnyObject>(collect
         const onBlur = useCallback(
             (name: string) => (ev: React.FocusEvent<HTMLInputElement>) => {
                 mutateAsync({ propertyNames: [name], row: props.row });
+                // const row = props.row;
+                // console.log('props.row', props.row, 'ev.target.value', ev.target.value);
+                // const value = formContext.watch(name as any);
+                // console.log('watchedvalue', value);
+                // row._valuesCache[name as keyof typeof row._valuesCache] = value;
+                // props.table.setEditingRow(row);
             },
             [mutateAsync, props.row]
         );

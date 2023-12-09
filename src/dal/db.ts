@@ -72,6 +72,7 @@ export const $db: DB = {
     auction: toType('auction'),
     auctionLot: toType('auctionLot'),
     barcode: toType('barcode'),
+    binaryFile: toType('binaryFile'),
     brand: toType('brand'),
     branding: toType('branding'),
     bundle: toType('bundle'),

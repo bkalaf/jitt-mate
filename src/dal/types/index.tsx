@@ -1,12 +1,12 @@
 import Realm, { BSON } from 'realm';
-import { LocationTypesKey, LocationTypesObj } from '../enums/locationTypes';
+import { LocationTypesObj } from '../enums/locationTypes';
 import { LocationLabelColorsKey } from '../enums/locationLabelColors';
 import { LocationKindsKey } from '../enums/locationKinds';
 import { BarcodeTypesKey } from '../enums/barcodeTypes';
 import { RnNumberTypesKey } from '../enums/rnNumberType';
 import { ProvincesKey } from '../enums/provinces';
 import { Countries } from '../enums/countries';
-import { MaterialTypes, MaterialTypesKey } from '../enums/materialTypes';
+import { MaterialTypes } from '../enums/materialTypes';
 import { Colors } from '../enums/colors';
 import { BacklineTypes } from '../enums/backlineTypes';
 import { NecklineTypes } from '../enums/necklineTypes';
@@ -16,6 +16,7 @@ import { TopAdornments } from '../enums/topAdornments';
 import { WaistTypes } from '../enums/waistTypes';
 import { SleeveTypes } from '../enums/sleeveTypes';
 import * as LaundryCare from '../../../laundry-care.json';
+import { ItemConditions } from '../enums/itemConditions';
 
 export type LaundryCareOptions = keyof typeof LaundryCare;
 export type AttributeObject = Record<string, any>;
@@ -186,7 +187,7 @@ export interface ILocationSegment extends IRealmEntity<ILocationSegment>, IUPC {
     notes: Optional<string>;
     kind: Optional<LocationKindsKey>;
 }
-export interface IProductLine extends IRealmEntity<IProductLine> {
+export interface IProductLine extends IRealmEntity<IProductLine>, IHashTagged {
     brand: OptionalEntity<IBrand>;
     name: string;
 }
@@ -297,12 +298,14 @@ export interface IMaterialComposition extends IRealmObject<IMaterialComposition>
     suede: Optional<number>;
     wool: Optional<number>;
     spandex: Optional<number>;
+    readonly toOutput: string;
     readonly isComplete: boolean;
     readonly remaining: number;
     readonly hasValues: boolean;
 }
 
 export interface IProduct extends IRealmEntity<IProduct>, IProductAttributes, IHashTagged {
+    readonly summaryName: string;
     _id: BSON.ObjectId;
 
     apparelDetails: OptionalEntity<IApparelDetails>;
@@ -323,11 +326,11 @@ export interface IProduct extends IRealmEntity<IProduct>, IProductAttributes, IH
     styleNo: Optional<string>;
     taxon: OptionalEntity<IProductTaxonomy>;
     upcs: DBList<Entity<IBarcode>>;
-
+    shipWeightPercent: Optional<number>;
     readonly isNoBrand: boolean;
 
     readonly effectiveShipWeightPercent: Optional<number>;
-    readonly effectiveBrand: Optional<IBrand>;
+    readonly effectiveBrand: OptionalEntity<IBrand>;
     readonly effectiveMercariBrandName: Optional<string>;
     readonly effectiveBrandName: Optional<string>;
     readonly effectiveBrandFolder: Optional<string>;
@@ -357,49 +360,75 @@ export interface ISku extends IRealmEntity<ISku>, IHashTagged, IUPC {
     _barcode: Optional<string>;
     product: OptionalEntity<IProduct>;
     price: number;
-    condition: ConditionKeys;
-    defects: string[];
+    condition: keyof typeof ItemConditions;
+    defects: DBList<string>;
     skuPrinted: boolean;
     scans: DBList<IScan>;
-    productImages: DBBacklink<IProductImage>;
-    markForPrinting(realm: Realm): Entity<ISku>;
-    unmarkForPrinting(realm: Realm): Entity<ISku>;
+    readonly productImages: DBBacklink<IProductImage>;
+    shipWeightPercent: Optional<number>;
+    // markForPrinting(realm: Realm): Entity<ISku>;
+    // unmarkForPrinting(realm: Realm): Entity<ISku>;
     appendScan(fixture?: ILocationSegment, shelf?: ILocationSegment, bin?: ILocationSegment): Entity<ISku>;
-    readonly mercariBrandName: Optional<string>;
-    readonly brandName: Optional<string>;
-    readonly brandFolder: Optional<string>;
-    readonly skuBarcode: Optional<string>;
-    readonly categoryID: Optional<string>;
-    readonly subCategoryID: Optional<string>;
-    readonly subSubCategoryID: Optional<string>;
-    readonly effectiveBrand: Optional<IBrand>;
+    readonly effective: {
+        brand: OptionalEntity<IBrand>;
+        mercariBrandName: Optional<string>;
+        isNoBrand: boolean;
+        brandName: Optional<string>;
+        brandFolder: Optional<string>;
+        productFolder: Optional<string>;
+        skuFolder: Optional<string>;
+        taxon: OptionalEntity<IProductTaxonomy>;
+        shipWeightPercent: Optional<number>;
+        hashTags: string[];
+        categoryID: Optional<string>;
+        subCategoryID: Optional<string>;
+        subSubCategoryID: Optional<string>;
+        colorID: Optional<string>;
+        conditionID: Optional<string>;
+        // productImages: string[];
+        productUPCS: string[];
+        sku: OptionalEntity<IBarcode>;
+        weightGrams: number;
+        // shipWeightGrams: number;
+        // shipWeightPounds: [number, number];
+    }
 
+}
+
+export interface IBinaryFile<T extends 'original' | 'remove-bg'> extends IRealmObject<IBinaryFile<T>> {
+    mimeType: string;
+    data: ArrayBuffer;
+    type: T;
 }
 
 export interface IProductImage extends IRealmEntity<IProductImage> {
     uploadedFrom: string;
     sku: OptionalEntity<ISku>;
     doNotRemoveBG: boolean;
-    originalData: Optional<ArrayBuffer>;
-    removeBGData: Optional<ArrayBuffer>;
+    original: OptionalEntity<IBinaryFile<'original'>>;
+    removeBg: OptionalEntity<IBinaryFile<'remove-bg'>>; 
+    updateAsync(db: Realm): Promise<this>;
 
-    originalMimeType: string;
-    removeBGMimeType: string;
+    // originalData: Optional<ArrayBuffer>;
+    // removeBGData: Optional<ArrayBuffer>;
 
-    readonly filename: string;
-    readonly removeBGFilename: string;
-    readonly removeBGUploadPath: string;
+    // originalMimeType: string;
+    // removeBGMimeType: string;
 
-    readonly brandFolder: string;
-    readonly productFolder: string;
-    readonly skuFolder: string;
-    readonly destinationOriginal: string;
-    readonly destinationRemoveBG: string;
+    // readonly filename: string;
+    // readonly removeBGFilename: string;
+    // readonly removeBGUploadPath: string;
 
-    moveOriginal(): Promise<void>;
-    hasRemoveBGUpload(): boolean;
-    moveRemoveBG(): Promise<void>;
-    hasRemoveBG(): boolean;
+    // readonly brandFolder: string;
+    // readonly productFolder: string;
+    // readonly skuFolder: string;
+    // readonly destinationOriginal: string;
+    // readonly destinationRemoveBG: string;
+
+    // moveOriginal(): Promise<void>;
+    // hasRemoveBGUpload(): boolean;
+    // moveRemoveBG(): Promise<void>;
+    // hasRemoveBG(): boolean;
 
     readonly effectivePath: string;
 }

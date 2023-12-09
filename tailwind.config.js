@@ -37,7 +37,8 @@ module.exports = {
             'is-fk': 'datatype="object"',
             'is-image': 'datatype="data"',
             'is-iframe': 'mimetype="application/pdf"',
-            'is-img': 'mimetype="image/png'
+            'is-img': 'mimetype="image/png',
+            'is-group-column': 'column-type="group"'
         },
         screens: {
             sm: '640px',

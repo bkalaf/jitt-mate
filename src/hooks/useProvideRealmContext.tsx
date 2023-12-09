@@ -1,15 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
-import Realm, { BSON, OpenRealmBehaviorType, OpenRealmTimeOutBehavior } from 'realm';
+import Realm, { OpenRealmBehaviorType, OpenRealmTimeOutBehavior } from 'realm';
 import Config from '../config.json';
 import { IRealmContext } from '../components/Contexts/RealmContext';
 import { useToasterContext } from './useToasterContext';
 import { toastCatchBlock } from '../util/toastCatchBlock';
-import $$schema from '../dal';
 import { catchError } from '../components/catchError';
-import { MongoClient } from 'mongodb';
-import { DBProperties } from '../components/Table/creators/createRenderCreateRowDialogContent';
-import { IProduct, IProductTaxonomy } from '../dal/types';
-import { Barcode } from '../dto/collections/Barcode';
+import $$schema from '../dto/collections';
 
 export function useProvideRealmContext(): IRealmContext {
     const app = useMemo(() => new Realm.App(Config.realm.appID), []);

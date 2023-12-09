@@ -1,6 +1,6 @@
-import { MRTIntegerControl } from './MRTPercentageControl';
-import { toProperFromCamel } from '../../common/text/toProperCase';
-import { IntCell } from './IntCell';
+import { MRTIntegerControl } from '../MRTIntegerControl';
+import { toProperFromCamel } from '../../../common/text/toProperCase';
+import { IntCell } from '../IntCell';
 
 export function intMeta(name: string, opts: { header?: string; min?: number; max?: number; } = {}) {
     return ({

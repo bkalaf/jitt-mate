@@ -39,15 +39,24 @@ export function useTableConstants<T extends MRT_RowData>() {
                     // Object.entries(params.table.getState().rowSelection).filter(([k, v]) => v).map(([k]) => k).includes(params.row.id)
                 }),
                 muiTableBodyCellProps: {
-                    className: 'bg-inherit'
+                    className: 'bg-inherit whitespace-pre'
                 },
                 muiTableHeadCellProps: (params: Parameters<Extract<Exclude<MRT_TableOptions<any>['muiTableHeadCellProps'], undefined>, (...args: any[]) => any>>[0]) => ({
                     'aria-sort': params.column.getIsSorted() ? params.column.getIsSorted() : undefined,
-                    className:
-                        'aria-required:text-red-500 aria-required:after:text-red-500 aria-required:text-lg aria-required:after:font-extrabold whitespace-nowrap aria-asc:bg-rose-300 aria-desc:bg-indigo-300'
+                    'data-column-type': params.column.columnDef.columnDefType,
+                    classes: {
+                        root: 'aria-required:text-red-500 aria-required:after:text-red-500 aria-required:text-lg aria-required:after:font-extrabold whitespace-nowrap aria-asc:bg-rose-300 aria-desc:bg-indigo-300 data-is-group-column:bg-sky-600 data-is-group-column:text-white'
+                    }
                 }),
                 positionToolbarAlertBanner: 'bottom' as MRT_TableOptions<T>['positionToolbarAlertBanner'],
-                columnFilterDisplayMode: 'subheader' as MRT_TableOptions<T>['columnFilterDisplayMode']
+                columnFilterDisplayMode: 'subheader' as MRT_TableOptions<T>['columnFilterDisplayMode'],
+                muiTopToolbarProps: {
+                    sx: {
+                        display: 'flex',
+                        justifyContent: 'start'
+                    }
+                } as MRT_TableOptions<T>['muiTopToolbarProps'],
+                
             } as any as MRT_TableOptions<T>),
         []
     );

@@ -4,7 +4,7 @@ import { barcodeMeta } from '../../components/Table/barcodeMeta';
 import { boolMeta } from '../../components/Table/metas/boolMeta';
 import { dbListMeta } from '../../components/Table/metas/dbListMeta';
 import { enumMeta } from '../../components/Table/metas/enumMeta';
-import { objectIdMeta } from '../../components/Table/objectIdMeta';
+import { objectIdMeta } from '../../components/Table/metas/objectIdMeta';
 import { stringMeta } from '../../components/Table/metas/stringMeta';
 import { LocationKinds } from '../../dal/enums/locationKinds';
 import { LocationLabelColors, LocationLabelColorsColors } from '../../dal/enums/locationLabelColors';

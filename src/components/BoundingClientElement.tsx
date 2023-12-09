@@ -1,6 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { process } from '@electron/remote';
-
 
 export function BoundingClientElement({ children }: { children: Children; }) {
     const [height, setHeight] = useState(0);

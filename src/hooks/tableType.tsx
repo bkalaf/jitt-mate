@@ -149,14 +149,14 @@ export const tableType: Record<string, (args: { parentRow: MRT_Row<EntityBase & 
             } as DefinedMRTColumn<any>,
             ...collections[objectType].getColumns('1')
         ],
-        getRowId: (row: { index: number }) => row.index.toFixed,
+        getRowId: (row: { index: number }) => row.index.toFixed(0),
         invalidator: {
             onSuccess: async () => {
                 console.error('INVALIDATING', [collection]);
 
                 await $$queryClient.invalidateQueries({ queryKey: [collection] });
                 await $$queryClient.refetchQueries({ queryKey: [collection] });
-            }
+            }   
         },
         insert: (args: { values: [number, T] }) => {
             return new Promise<DBList<T>>((resolve, reject) => {

@@ -3,7 +3,7 @@ import { DateCell } from '../../components/Table/Cells/DateCell';
 import { IntCell } from '../../components/Table/IntCell';
 import { stringMeta } from '../../components/Table/metas/stringMeta';
 import { IHashTag } from '../../dal/types';
-import { objectIdMeta } from '../../components/Table/objectIdMeta';
+import { objectIdMeta } from '../../components/Table/metas/objectIdMeta';
 
 export const hashTagHelper = createMRTColumnHelper<IHashTag>();
 

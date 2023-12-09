@@ -3,9 +3,8 @@ import { IApparelDetails } from '../../dal/types';
 import { RHFM_Depends } from '../../components/Table/Controls/RHFM_Depends';
 import { clothingCareMeta } from '../../components/Table/clothingCareMeta';
 import { enumMeta } from '../../components/Table/metas/enumMeta';
-import { intMeta } from '../../components/Table/intMeta';
+import { intMeta } from '../../components/Table/metas/intMeta';
 import { lookupMeta } from '../../components/Table/metas/lookupMeta';
-import { floatMeta } from '../../components/Table/percentageMeta';
 import { stringMeta } from '../../components/Table/metas/stringMeta';
 import { toDependency } from '../../components/Table/toDependency';
 import { BacklineTypes } from '../../dal/enums/backlineTypes';
@@ -15,7 +14,7 @@ import { NecklineTypes } from '../../dal/enums/necklineTypes';
 import { SleeveTypes } from '../../dal/enums/sleeveTypes';
 import { TopAdornments } from '../../dal/enums/topAdornments';
 import { WaistTypes } from '../../dal/enums/waistTypes';
-
+import { $metas } from './../../components/Table/metas';
 export const apparelDetailsHelper = createMRTColumnHelper<IApparelDetails>();
 
 export const apparelDetailsColumns = {
@@ -50,7 +49,7 @@ export const apparelDetailsColumns = {
                 'measurements.bustInches',
                 RHFM_Depends(
                     {
-                        ...floatMeta<IApparelDetails>('measurements.bustInches', { header: 'Bust Size', precision: 2, uom: 'in', min: 0 })
+                        ...$metas.float<IApparelDetails>('measurements.bustInches', { header: 'Bust Size', precision: 2, uom: 'in', min: 0 })
                     },
                     ['enable', 'taxon.klass', (x) => x === 'undergarment']
                 )
@@ -59,7 +58,7 @@ export const apparelDetailsColumns = {
                 'measurements.chestInches',
                 RHFM_Depends(
                     {
-                        ...floatMeta<IApparelDetails>('measurements.chestInches', { header: 'Chest Size', precision: 2, uom: 'in', min: 0 })
+                        ...$metas.float<IApparelDetails>('measurements.chestInches', { header: 'Chest Size', precision: 2, uom: 'in', min: 0 })
                     },
                     ['enable', 'taxon.klass', (x) => x === 'tops']
                 )
@@ -68,7 +67,7 @@ export const apparelDetailsColumns = {
                 'measurements.footInches',
                 RHFM_Depends(
                     {
-                        ...floatMeta<IApparelDetails>('measurements.footInches', { header: 'Foot Size', precision: 2, uom: 'in', min: 0 })
+                        ...$metas.float<IApparelDetails>('measurements.footInches', { header: 'Foot Size', precision: 2, uom: 'in', min: 0 })
                     },
                     ['enable', 'taxon.klass', (x) => x === 'footwear']
                 )
@@ -77,7 +76,7 @@ export const apparelDetailsColumns = {
                 'measurements.headInches',
                 RHFM_Depends(
                     {
-                        ...floatMeta<IApparelDetails>('measurements.headInches', { header: 'Head Size', precision: 2, uom: 'in', min: 0 })
+                        ...$metas.float<IApparelDetails>('measurements.headInches', { header: 'Head Size', precision: 2, uom: 'in', min: 0 })
                     },
                     ['enable', 'taxon.order', (x) => x === 'head']
                 )
@@ -86,7 +85,7 @@ export const apparelDetailsColumns = {
                 'measurements.heelInches',
                 RHFM_Depends(
                     {
-                        ...floatMeta<IApparelDetails>('measurements.heelInches', { header: 'Heel Size', precision: 2, uom: 'in', min: 0 })
+                        ...$metas.float<IApparelDetails>('measurements.heelInches', { header: 'Heel Size', precision: 2, uom: 'in', min: 0 })
                     },
                     ['enable', 'taxon.klass', (x) => x === 'footwear']
                 )
@@ -95,7 +94,7 @@ export const apparelDetailsColumns = {
                 'measurements.hipInches',
                 RHFM_Depends(
                     {
-                        ...floatMeta<IApparelDetails>('measurements.hipInches', { header: 'Hip Size', precision: 2, uom: 'in', min: 0 })
+                        ...$metas.float<IApparelDetails>('measurements.hipInches', { header: 'Hip Size', precision: 2, uom: 'in', min: 0 })
                     },
                     ['enable', 'taxon.klass', (x) => x === 'bottoms ']
                 )
@@ -104,7 +103,7 @@ export const apparelDetailsColumns = {
                 'measurements.inseamInches',
                 RHFM_Depends(
                     {
-                        ...floatMeta<IApparelDetails>('measurements.inseamInches', { header: 'Inseam Size', precision: 2, uom: 'in', min: 0 })
+                        ...$metas.float<IApparelDetails>('measurements.inseamInches', { header: 'Inseam Size', precision: 2, uom: 'in', min: 0 })
                     },
                     ['enable', 'taxon.klass', (x) => x === 'bottoms']
                 )
@@ -113,7 +112,7 @@ export const apparelDetailsColumns = {
                 'measurements.lengthInches',
                 RHFM_Depends(
                     {
-                        ...floatMeta<IApparelDetails>('measurements.lengthInches', { header: 'Leg Length', precision: 2, uom: 'in', min: 0 })
+                        ...$metas.float<IApparelDetails>('measurements.lengthInches', { header: 'Leg Length', precision: 2, uom: 'in', min: 0 })
                     },
                     ['enable', 'taxon.klass', (x) => x === 'bottoms']
                 )
@@ -122,7 +121,7 @@ export const apparelDetailsColumns = {
                 'measurements.neckInches',
                 RHFM_Depends(
                     {
-                        ...floatMeta<IApparelDetails>('measurements.neckInches', { header: 'Neck Size', precision: 2, uom: 'in', min: 0 })
+                        ...$metas.float<IApparelDetails>('measurements.neckInches', { header: 'Neck Size', precision: 2, uom: 'in', min: 0 })
                     },
                     ['enable', 'taxon.klass', (x) => x === 'tops']
                 )
@@ -131,7 +130,7 @@ export const apparelDetailsColumns = {
                 'measurements.sleeveInches',
                 RHFM_Depends(
                     {
-                        ...floatMeta<IApparelDetails>('measurements.sleeveInches', { header: 'Sleeve Size', precision: 2, uom: 'in', min: 0 })
+                        ...$metas.float<IApparelDetails>('measurements.sleeveInches', { header: 'Sleeve Size', precision: 2, uom: 'in', min: 0 })
                     },
                     ['enable', 'taxon.klass', (x) => x === 'tops']
                 )
@@ -140,7 +139,7 @@ export const apparelDetailsColumns = {
                 'measurements.torsoInches',
                 RHFM_Depends(
                     {
-                        ...floatMeta<IApparelDetails>('measurements.torsoInches', { header: 'Torso Size', precision: 2, uom: 'in', min: 0 })
+                        ...$metas.float<IApparelDetails>('measurements.torsoInches', { header: 'Torso Size', precision: 2, uom: 'in', min: 0 })
                     },
                     ['enable', 'taxon.klass', (x) => x === 'tops']
                 )
@@ -149,7 +148,7 @@ export const apparelDetailsColumns = {
                 'measurements.waistInches',
                 RHFM_Depends(
                     {
-                        ...floatMeta<IApparelDetails>('measurements.waistInches', { header: 'Waist Size', precision: 2, uom: 'in', min: 0 })
+                        ...$metas.float<IApparelDetails>('measurements.waistInches', { header: 'Waist Size', precision: 2, uom: 'in', min: 0 })
                     },
                     ['enable', 'taxon.klass', (x) => x === 'tops']
                 )
@@ -158,7 +157,7 @@ export const apparelDetailsColumns = {
                 'rn',
                 RHFM_Depends(
                     {
-                        ...lookupMeta('rn', 'rn', 'companyName', { header: 'RN' })
+                        ...$metas.lookup('rn', 'rn', 'companyName', { header: 'RN' })
                     },
                     toDependency('taxon.kingdom', 'apparel')
                 )

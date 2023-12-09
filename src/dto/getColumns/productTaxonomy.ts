@@ -39,8 +39,6 @@ export const productTaxonomyColumns = {
                 header: 'Species',
                 Edit: RHFM_TaxonSelect as any
             }),
-            productTaxonomyHelper.accessor('lock', {
-                ...boolMeta({ propertyName: 'lock', header: 'Is Locked' })
-            })
+            productTaxonomyHelper.accessor('lock', boolMeta<IProductTaxonomy>({ propertyName: 'lock', header: 'Is Locked' }))
         ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as MRT_ColumnDef<IProductTaxonomy>[]
 } as StaticTableDefinitions<IProductTaxonomy>;

@@ -5,7 +5,6 @@ import Realm from 'realm';
 import { useLocalRealm } from '../routes/loaders/useLocalRealm';
 import { useInvalidator } from './useInvalidator';
 import { fromOID } from '../dal/fromOID';
-import { process } from '@electron/remote';
 
 export function useUpdateRecord<T extends EntityBase>(objectType?: string) {
     const db = useLocalRealm();

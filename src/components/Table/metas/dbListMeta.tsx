@@ -1,6 +1,6 @@
 import { RHFMListControl } from '../MRTListControl';
 import { toProperFromCamel } from '../../../common/text/toProperCase';
-import { FieldValues, UseFormReturn } from 'react-hook-form-mui';
+import { FieldValues } from 'react-hook-form-mui';
 import React from 'react';
 import { DBListDetailCell } from '../DBListDetailCell';
 

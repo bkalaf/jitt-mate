@@ -3,7 +3,54 @@ import { sum } from '../../common/math/sum';
 import { IMaterialComposition } from '../../dal/types';
 import { $db } from '../../dal/db';
 
+export function zip<T, U>(array1: T[], array2: U[]): [T, U][] {
+    if (array1.length !== array2.length) throw new Error('mismatched arrays in zip');
+    if (array1.length === 0) return [];
+    const [head1, ...tail1] = array1;
+    const [head2, ...tail2] = array2;
+    return [[head1, head2], ...zip(tail1, tail2)]
+}
 export class MaterialComposition extends Realm.Object<IMaterialComposition> implements IMaterialComposition {
+    get toOutput(): string {
+        const keys = [
+            'acrylic',
+            'cashmere',
+            'cotton',
+            'denim',
+            'polyurethane',
+            'leather',
+            'silk',
+            'linen',
+            'modal',
+            'nylon',
+            'organicCotton',
+            'polyester',
+            'rayon',
+            'suede',
+            'wool',
+            'spandex'
+        ]
+        const values = [
+            this.acrylic,
+            this.cashmere,
+            this.cotton,
+            this.denim,
+            this.polyurethane,
+            this.leather,
+            this.silk,
+            this.linen,
+            this.modal,
+            this.nylon,
+            this.organicCotton,
+            this.polyester,
+            this.rayon,
+            this.suede,
+            this.wool,
+            this.spandex
+        ];
+        const zipped = zip(keys, values).filter((x) => x[1] != null && x[1] !== 0).map(([k, v]) => [k, ((v ?? 0) * 100).toFixed(2).concat('%')].join(': ')).join('\n');
+        return zipped;
+    }
     static schema: ObjectSchema = {
         name: $db.materialComposition(),
         embedded: true,

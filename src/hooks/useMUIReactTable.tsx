@@ -64,8 +64,8 @@ export function useMUIReactTable<T extends MRT_RowData>({
     } = useMemo(
         () =>
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            isLink ?? false ? tableType.collection({ collection: objectType ?? ('' as any), objectType: '', parentRow: undefined as any, propertyName: '' }) : { columns, queryFn, queryKey, getRowId },
-        [columns, getRowId, isLink, objectType, queryFn, queryKey]
+            isLink ?? false ? tableType.collection({ collection: collection ?? ('' as any), objectType: '', parentRow: undefined as any, propertyName: '' }) : { columns, queryFn, queryKey, getRowId },
+        [collection, columns, getRowId, isLink, queryFn, queryKey]
     );
     const {
         data,

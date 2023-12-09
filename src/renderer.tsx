@@ -40,6 +40,7 @@ import Realm from 'realm';
 import { createRoot } from 'react-dom/client';
 import './assets/css/app.css';
 import { App } from './components/App';
+// import './dal/index6';
 
 console.log('👋 This message is being logged by "renderer.js", included via webpack');
 

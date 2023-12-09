@@ -1,4 +1,4 @@
-import { BarcodeCell } from './Cells/PercentCell';
+import { BarcodeCell } from './Cells/BarcodeCell';
 import { toProperFromCamel } from '../../common/text/toProperCase';
 
 export function barcodeMeta(name: string, opts: { header?: string; } = {}) {

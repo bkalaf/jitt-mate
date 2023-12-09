@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { process } from '@electron/remote';
 import * as fs from 'graceful-fs';
 
 export type LogTypes = 'db' | 'error' | 'schema' | 'data' | 'defs' | 'view'

@@ -19,7 +19,7 @@ import { apparelDetailsColumns } from '../../dto/getColumns/apparelDetails';
 import { productImageColumns } from '../../dto/getColumns/productImage';
 import { rnColumns } from '../../dto/getColumns/rn';
 import { productColumns } from '../../dto/getColumns/product';
-
+import { skuColumns } from '../../dto/getColumns/sku';
 export const collections: Record<string, StaticTableDefinitions<any>> = {
     string: {
         getColumns: (): DefinedMRTColumns => [
@@ -47,5 +47,6 @@ export const collections: Record<string, StaticTableDefinitions<any>> = {
     productImage: productImageColumns,
     apparelDetails: apparelDetailsColumns,
     rn: rnColumns,
-    product: productColumns
+    product: productColumns,
+    sku: skuColumns
 };

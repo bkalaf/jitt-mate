@@ -59,6 +59,16 @@ app.whenReady()
         console.log(JSON.stringify(extId));
     })
     .then(() => {
+        ipcMain.handle('get-files', async(event, dir) => {
+            if (browserWindow == null) throw new Error('no window');
+            const response = await dialog.showOpenDialog(browserWindow, {
+                title: 'Choose files...',
+                message: 'Pick files to upload',
+                defaultPath: dir,
+                properties: ['multiSelections']
+            });
+            return response.canceled ? [] : response.filePaths;
+        });
         ipcMain.handle('confirm-cancel', async (event): Promise<number> => {
             if (browserWindow == null) throw new Error('no window');
             const response = await dialog.showMessageBox(browserWindow, {
@@ -73,7 +83,11 @@ app.whenReady()
             return response.response;
         });
     })
-    .then(async () => browserWindow = await createWindow());
+    .then(async () => browserWindow = await createWindow())
+    .catch(err => {
+        console.error((err as Error).message);
+        process.stdout.write((err as Error).message);
+    });
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

@@ -29,6 +29,9 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
             })
         );
     }
+    get summaryName(): string {
+        return [this.effectiveBrandName, this.effectiveTaxon?.name, this.descriptiveText].filter(x => x != null).join('-');
+    }
     _id!: BSON.ObjectId;
     apparelDetails: OptionalEntity<IApparelDetails>;
     brand: OptionalEntity<IBrand>;
@@ -66,7 +69,7 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
             notes: $db.string.opt,
             origin: $db.string.opt,
             productLine: $db.productLine.opt,
-            shipWeightPercent: $db.float.opt, 
+            shipWeightPercent: $db.float.opt,
             styleNo: $db.string.opt,
             taxon: $db.productTaxonomy.opt,
             upcs: $db.barcode.list
@@ -87,7 +90,7 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
     get effectiveShipWeightPercent(): Optional<number> {
         return this.shipWeightPercent ?? this.classifier?.effectiveShipWeightPercent;
     }
-    get effectiveBrand(): Optional<IBrand> {
+    get effectiveBrand(): OptionalEntity<IBrand> {
         if (this.productLine) {
             return this.productLine.brand;
         }
@@ -124,7 +127,7 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
         if (this.features == null) this.features = [] as any;
         if (this.flags == null) this.flags = [] as any;
         if (this.materials == null) {
-            $initialCollection['materialComposition']().then(mc => (this.materials = mc as any))
+            $initialCollection['materialComposition']().then((mc) => (this.materials = mc as any));
         }
         if (this.upcs == null) this.upcs = [] as any;
         if (this.upcs) this.upcs.forEach((x) => x.update());

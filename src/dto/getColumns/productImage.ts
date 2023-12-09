@@ -1,6 +1,6 @@
 import { createMRTColumnHelper } from 'material-react-table';
 import { IProductImage } from '../../dal/types';
-import { objectIdMeta } from '../../components/Table/objectIdMeta';
+import { objectIdMeta } from '../../components/Table/metas/objectIdMeta';
 import { boolMeta } from '../../components/Table/metas/boolMeta';
 import { lookupMeta } from '../../components/Table/metas/lookupMeta';
 import { stringMeta } from '../../components/Table/metas/stringMeta';

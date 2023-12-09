@@ -1,6 +1,6 @@
 import { createMRTColumnHelper } from 'material-react-table';
 import { IMaterialComposition } from '../../dal/types';
-import { percentageMeta } from '../../components/Table/percentageMeta';
+import { percentageMeta } from '../../components/Table/metas/percentageMeta';
 
 const materialCompositionHelper = createMRTColumnHelper<IMaterialComposition>();
 export const materialCompositionColumns = {

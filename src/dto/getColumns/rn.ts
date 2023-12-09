@@ -1,13 +1,13 @@
 import { MRT_ColumnDef, createMRTColumnHelper } from 'material-react-table';
 import { IAddress, IRn } from '../../dal/types';
-import { objectIdMeta } from '../../components/Table/objectIdMeta';
+import { objectIdMeta } from '../../components/Table/metas/objectIdMeta';
 import { key } from 'localforage';
 import { boolMeta } from '../../components/Table/metas/boolMeta';
 import { toAddress } from '../../components/Table/creators/$convertToRealm';
 import { $initialCollection } from '../../components/Table/creators/$initialCollection';
 import { dbListMeta } from '../../components/Table/metas/dbListMeta';
 import { enumMeta } from '../../components/Table/metas/enumMeta';
-import { intMeta } from '../../components/Table/intMeta';
+import { intMeta } from '../../components/Table/metas/intMeta';
 import { lookupMeta } from '../../components/Table/metas/lookupMeta';
 import { stringMeta } from '../../components/Table/metas/stringMeta';
 import { $db } from '../../dal/db';
