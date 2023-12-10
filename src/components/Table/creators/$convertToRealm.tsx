@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BSON } from 'realm';
 import { dateFromNow } from '../../../common/date/dateFromNow';
 import { BacklineTypes } from '../../../dal/enums/backlineTypes';
@@ -39,7 +40,6 @@ import {
     IMaterialComposition,
 } from '../../../dal/types';
 import { Barcode } from '../../../dto/collections/Barcode';
-import { ConvertToRealmFunction, Serialized } from './createRenderCreateRowDialogContent';
 import { Colors } from '../../../dal/enums/colors';
 import { ItemConditions } from '../../../dal/enums/itemConditions';
 
@@ -165,15 +165,13 @@ const toProductLine: ConvertToRealmFunction<IProductLine> = ({ _id, name, brand,
     brand: unserializedLookup<IBrand>('brand')(brand),
     hashTags: hashTags.map((x) => window.$$store?.objectForPrimaryKey<IHashTag>('hashTag', toOID(x))) as Entity<IHashTag>[]
 });
-const toProductImage: ConvertToRealmFunction<IProductImage> = ({ _id, doNotRemoveBG, originalData, originalMimeType, removeBGData, removeBGMimeType, sku, uploadedFrom }) => ({
+const toProductImage: ConvertToRealmFunction<IProductImage> = ({ _id, doNotRemoveBG, sku, uploadedFrom }) => ({
     _id: toNotNullOID(_id),
     doNotRemoveBG: unserializeBool(doNotRemoveBG) ?? false,
     sku: unserializedLookup<ISku>('sku')(sku),
     uploadedFrom,
-    originalMimeType,
-    removeBGMimeType,
-    originalData: originalData == null ? undefined : originalData instanceof ArrayBuffer ? originalData : new TextEncoder().encode(originalData).buffer,
-    removeBGData: removeBGData == null ? undefined : removeBGData instanceof ArrayBuffer ? removeBGData : new TextEncoder().encode(removeBGData).buffer
+    original: undefined,
+    removeBg: undefined
 });
 
 const toApparelDetails: ConvertToRealmFunction<IApparelDetails> = ({
@@ -327,6 +325,13 @@ const toSku: ConvertToRealmFunction<ISku> = ({ _barcode, _id, condition, defects
     scans: (scans ?? []).map(toScan) as Entity<IScan>[]
 });
 export const $convertToRealm = {
+    string: (({ value }: { value?: string }) => value) as ConvertToRealmFunction<any>,
+    int: (({ value }: { value?: number | string }) => $unserialize.int(value))as ConvertToRealmFunction<any>,
+    float: (({ value }: { value?: number | string }) => $unserialize.float(value))as ConvertToRealmFunction<any>,
+    data: (({ value }: { value?: Date | string }) => $unserialize.date(value))as ConvertToRealmFunction<any>,
+    bool: (({ value }: { value?: boolean | string }) => $unserialize.bool(value ?? false))as ConvertToRealmFunction<any>,
+    objectid: (({ value }: { value?: BSON.ObjectId | string }) => $unserialize.oid(value ?? new BSON.ObjectId()))as ConvertToRealmFunction<any>,
+    uuid: (({ value }: { value?: BSON.UUID | string }) => $unserialize.uuid(value))as ConvertToRealmFunction<any>,
     address: toAddress,
     apparelDetails: toApparelDetails,
     barcode: toBarcode,

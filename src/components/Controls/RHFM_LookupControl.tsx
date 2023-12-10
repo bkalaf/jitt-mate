@@ -5,7 +5,7 @@ import { useLocalRealm } from '../../routes/loaders/useLocalRealm';
 import { toOID } from '../../dal/toOID';
 import { useOnBlurContext } from '../Table/creators/useOnBlurContext';
 import { IDependency } from '../Table/Controls/RHFM_Depends';
-import { useDependencies } from './RHFM_FloatControl';
+import { useDependencies } from './useDependencies';
 
 export function RHFM_LookupControl<T extends AnyObject>(objectType: string, name: string, label: string, itemValue: string, ...dependencies: IDependency[]) {
     return function MRT_LookupControl(props: any) {

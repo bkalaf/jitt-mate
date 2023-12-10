@@ -1,5 +1,5 @@
-///<reference path="./../global.d.ts" />
-import { MongoClient, BSON, ObjectId } from 'mongodb';
+// ///<reference path="./../global.d.ts" />
+import { MongoClient } from 'mongodb';
 
 const client = new MongoClient('mongodb+srv://admin:Nv0DN8uRo9Otwb8i@jitt-core.p62mz.mongodb.net/test');
 const collection = client.db('jitt-mate').collection('product');

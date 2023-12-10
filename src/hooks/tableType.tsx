@@ -149,7 +149,7 @@ export const tableType: Record<string, (args: { parentRow: MRT_Row<EntityBase & 
             } as DefinedMRTColumn<any>,
             ...collections[objectType].getColumns('1')
         ],
-        getRowId: (row: { index: number }) => row.index.toFixed(0),
+        getRowId: ((row: { index: number }) => row.index.toFixed(0)) as any,
         invalidator: {
             onSuccess: async () => {
                 console.error('INVALIDATING', [collection]);

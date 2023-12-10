@@ -1,10 +1,11 @@
-///<reference path="./../global.d.ts" />
-import { MongoClient, BSON, ObjectId } from 'mongodb';
+// ///<reference path="./../global.d.ts" />
+import { MongoClient, ObjectId } from 'mongodb';
 
 const client = new MongoClient('mongodb+srv://admin:Nv0DN8uRo9Otwb8i@jitt-core.p62mz.mongodb.net/test');
 const collection = client.db('jitt-mate').collection('sku');
 
 async function run() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const docs = await collection.find<{ _id: ObjectId, sku: Record<string, any> }>({}).toArray();
     for (const doc of docs) {
         await collection.updateOne({ _id: new ObjectId(doc._id.toHexString()) }, {

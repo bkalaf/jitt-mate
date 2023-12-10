@@ -1,5 +1,4 @@
 import React, { createContext } from 'react';
-import { compR } from '../../common/functions/composeR';
 
 export type IFormContext<T = AnyObject, TResultant = void> = {
     data: T;

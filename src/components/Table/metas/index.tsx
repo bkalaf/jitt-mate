@@ -1,6 +1,5 @@
 import { intMeta } from './intMeta';
 import { boolMeta } from './boolMeta';
-import { dbListMeta } from './dbListMeta';
 import { enumMeta } from './enumMeta';
 import { flagsMeta } from './flagsMeta';
 import { lookupMeta } from './lookupMeta';
@@ -12,10 +11,11 @@ import { dollarMeta } from './dollarMeta';
 import { dictionaryMeta } from '../dictionaryMeta';
 import { setMeta } from '../setMeta';
 import { listMeta } from '../listMeta';
+import { dateMeta } from './dateMeta';
 
 export const $metas = {
     bool: boolMeta,
-    dbList: dbListMeta,
+    // dbList: dbListMeta,
     enum: enumMeta,
     flags: flagsMeta,
     lookup: lookupMeta,
@@ -27,5 +27,6 @@ export const $metas = {
     dollar: dollarMeta,
     list: listMeta,
     dictionary: dictionaryMeta,
-    set: setMeta
+    set: setMeta,
+    date: dateMeta
 };

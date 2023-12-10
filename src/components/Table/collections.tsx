@@ -20,12 +20,53 @@ import { productImageColumns } from '../../dto/getColumns/productImage';
 import { rnColumns } from '../../dto/getColumns/rn';
 import { productColumns } from '../../dto/getColumns/product';
 import { skuColumns } from '../../dto/getColumns/sku';
+import { $metas } from './metas';
 export const collections: Record<string, StaticTableDefinitions<any>> = {
     string: {
         getColumns: (): DefinedMRTColumns => [
             {
-                accessorKey: '1',
-                ...stringMeta({ propertyName: '1', header: 'Value', required: true, maxLength: 150 })
+                accessorKey: 'value',
+                ...$metas.string({ propertyName: 'value', header: 'Value', required: true, maxLength: 150 })
+            }
+        ]
+    },
+    int: {
+        getColumns: (): DefinedMRTColumns => [
+            {
+                accessorKey: 'value',
+                ...$metas.int('value', { header: 'Value' })
+            }
+        ]
+    },
+    float: {
+        getColumns: (): DefinedMRTColumns => [
+            {
+                accessorKey: 'value',
+                ...$metas.float('value', { header: 'Value', required: true })
+            }
+        ]
+    },
+    objectId: {
+        getColumns: (): DefinedMRTColumns => [
+            {
+                accessorKey: 'value',
+                ...stringMeta({ propertyName: 'value', header: 'Value', required: true })
+            }
+        ]
+    },
+    uuid: {
+        getColumns: (): DefinedMRTColumns => [
+            {
+                accessorKey: 'value',
+                ...stringMeta({ propertyName: 'value', header: 'Value', required: true })
+            }
+        ]
+    },
+    date: {
+        getColumns: (): DefinedMRTColumns => [
+            {
+                accessorKey: 'value',
+                ...$metas.date('value', { header: 'Value' })
             }
         ]
     },

@@ -1,6 +1,6 @@
 import { toProperFromCamel } from '../../../common/text/toProperCase';
 import { RHFM_FloatCell } from '../Cells/RHFM_FloatCell';
-import { RHFM_FloatControl } from '../../Controls/RHFM_FloatControl';
+import { RHFM_FloatControl } from '../Controls/RHFM_FloatControl';
 import { MRT_ColumnDef, MRT_RowData } from 'material-react-table';
 import { IDependency } from '../Controls/RHFM_Depends';
 

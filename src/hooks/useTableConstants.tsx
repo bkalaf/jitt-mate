@@ -1,8 +1,6 @@
-import { MRT_ColumnDef, MRT_RowData, MRT_TableOptions } from 'material-react-table';
+import { MRT_RowData, MRT_TableOptions } from 'material-react-table';
 import { useMemo } from 'react';
 import { ColumnResizeMode } from '@tanstack/react-table';
-
-type T = MRT_TableOptions<any>['muiPaginationProps'];
 
 export function useTableConstants<T extends MRT_RowData>() {
     return useMemo(

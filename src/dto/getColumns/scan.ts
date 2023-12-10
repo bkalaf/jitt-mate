@@ -1,5 +1,5 @@
 import { createMRTColumnHelper } from 'material-react-table';
-import { dateMeta } from '../../components/Table/dateMeta';
+import { dateMeta } from '../../components/Table/metas/dateMeta';
 import { lookupMeta } from '../../components/Table/metas/lookupMeta';
 import { IScan } from '../../dal/types';
 

@@ -1,4 +1,4 @@
-///<reference path="./../global.d.ts" />
+// ///<reference path="./../global.d.ts" />
 import { MongoClient } from 'mongodb';
 import { IProductImage } from './../dal/types';
 import * as Config from '../config.json';
@@ -85,7 +85,7 @@ async function run() {
     //     );
     // return promises2().finally(() => console.log('promises done'));
 }
-run();
+// run();
 // run()
 //     .then(() => {
 //         return window.$$store?.syncSession?.uploadAllLocalChanges();

@@ -1,4 +1,4 @@
-import { IFlagDictionary, IMeasurementDictionary, IRn } from '.';
+import { IMeasurementDictionary, IRn } from '.';
 import { BacklineTypes } from '../enums/backlineTypes';
 import { CollarTypes } from '../enums/collarTypes';
 import { CuffTypes } from '../enums/cuffTypes';
@@ -29,14 +29,4 @@ export interface IApparelDetails {
     pocketCount: Optional<number>;
     size: Optional<keyof typeof Sizes>;
     legType: Optional<keyof LegTypes>;
-    flags: IFlagDictionary;
-}
-
-export function setMetaData(value: boolean) {
-    return ()
-}
-export class Phylum {
-    method1(test: string) {
-        return;
-    }
 }

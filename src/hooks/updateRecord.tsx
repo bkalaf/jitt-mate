@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { checkTransaction } from '../util/checkTransaction';
 import { $$queryClient } from '../components/App';
 import * as Realm from 'realm';
@@ -40,6 +41,23 @@ export function updateRecordProperty<T extends MRT_RowData>(db: Realm, collectio
         );
         checkTransaction(db)(f);
     };
+}
+export function updateRecordProp(collection: string, db: Realm) {
+    return async function({ propertyName, value, _id }: { propertyName: string, value: any; _id: OID }) {
+        const func = () => {
+            const obj = db.objectForPrimaryKey(collection, _id);
+            if (obj == null) throw new Error('no obj');
+            obj[propertyName] = value;
+        }
+        try {
+            checkTransaction(db)(func);
+            await $$queryClient.invalidateQueries({ queryKey: [collection] });
+            await $$queryClient.refetchQueries({ queryKey: [collection] });
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
 }
 export function updateRecord(collection: string, db: Realm) {
     return async function (values: any) {

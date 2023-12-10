@@ -1,5 +1,3 @@
-import { compR, composeR } from '../../common/functions/composeR';
-
 export type Func<T, U> = (x: T) => U;
 export type Async<T> = Promise<T>;
 export type LiftFunction<T> = (x: T) => Async<T>;

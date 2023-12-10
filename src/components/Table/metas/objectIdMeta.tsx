@@ -2,7 +2,7 @@ import { MRT_OIDCell } from '../Cells/MRT_OIDCell';
 import { fromOID } from '../../../dal/fromOID';
 import { toOID } from '../../../dal/toOID';
 import { BSON } from 'realm';
-import { RHFM_TextControl } from '../../Controls/RHFM_TextControl';
+import { RHFM_TextControl } from '../Controls/RHFM_TextControl';
 
 export const objectIdMeta = {
     id: '_id',

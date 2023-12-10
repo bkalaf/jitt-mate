@@ -1,13 +1,12 @@
-import { useNavigate } from 'react-router-dom';
 import { useRealmContext } from '../../hooks/useRealmContext';
-import { FormContainer, FormErrorProvider, TextFieldElement, useController } from 'react-hook-form-mui';
+import { FormContainer, FormErrorProvider } from 'react-hook-form-mui';
 import Dialog from '@mui/material/Dialog';
 import { DialogActions, DialogContent, DialogTitle, Divider, Button as MUIButton } from '@mui/material';
 import { charRange } from '../../common/array/charRange';
 import { catchError } from '../catchError';
 import { useCallback } from 'react';
 import { SubmitReactHookFormLoadingButton } from '../ReactHookForm/SubmitReactHookFormLoadingButton';
-import { RHFM_TextFieldElement } from './RHFM_TextFieldElement';
+import { RHFM_TextFieldElement } from '../Table/Controls/RHFM_TextFieldElement';
 
 export function LogInDialog({ open, toggler }: { open: boolean; toggler: () => void }) {
     const { logIn } = useRealmContext();

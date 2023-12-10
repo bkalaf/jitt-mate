@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 export function BoundingClientElement({ children }: { children: Children; }) {
     const [height, setHeight] = useState(0);
@@ -21,7 +21,7 @@ export function BoundingClientElement({ children }: { children: Children; }) {
         [height]
     );
     useEffect(() => {
-        const listener = (ev: Event) => {
+        const listener = () => {
             const h = ref.current?.getBoundingClientRect().height;
             setHeight(prev => prev === h ? prev : h ?? 0)
         }

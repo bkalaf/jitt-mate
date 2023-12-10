@@ -5,7 +5,7 @@ export class Listing extends Realm.Object<IListing> implements IListing {
     _id: BSON.ObjectId = new BSON.ObjectId();
     draft: OptObj<IDraft>;
     auctionSite: 'mercari' | 'ebay' = 'mercari';
-    listingId: string = '';
+    listingId = '';
     createdOn: Date = new Date(Date.now());
 
     static schema: Realm.ObjectSchema = {

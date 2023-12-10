@@ -3,13 +3,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { checkTransaction } from '../util/checkTransaction';
 import Realm from 'realm';
 import { useLocalRealm } from '../routes/loaders/useLocalRealm';
-import { useInvalidator } from './useInvalidator';
 import { fromOID } from '../dal/fromOID';
 
 export function useUpdateRecord<T extends EntityBase>(objectType?: string) {
     const db = useLocalRealm();
     const client = useQueryClient();
-    const { onSuccess } = useInvalidator(objectType ?? '');
     const submitter = useCallback(
         (db: Realm) => (args: { payload: Partial<T> & AnyObject; id: OID }) => {
             let result;

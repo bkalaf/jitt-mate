@@ -6,6 +6,8 @@ import { RankingInfo } from '@tanstack/match-sorter-utils';
 import { MRT_ColumnDef, MRT_Row, MRT_RowData, MRT_TableOptions } from 'material-react-table';
 
 declare global {
+    export type IDependency = [action: 'enable' | 'disable', property: string, predicate: (value: any) => boolean];
+
     export type DataTypeKind = 'primitive' | 'embedded' | 'reference';
     export type ListTypeKind = 'set' | 'list' | 'dictionary';
     export type Equals<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? true : false;
@@ -287,6 +289,42 @@ declare global {
         title: string;
         register: (n: string) => void;
     };
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    export type FunctionProperties2<T extends AnyObject> = { [P in keyof T]: T[P] extends AnyFunction ? P : T[P] extends AnyFunction | undefined ? P : T[P] extends Function ? P : never }[keyof T];
+    export type BacklinkProperties<T extends AnyObject> = { [P in keyof T]: T[P] extends DBBacklink<infer R> ? P : never }[keyof T];
+    export type DBProperties<T extends AnyObject> = Exclude<GetNonReadOnlyProperties<T>, FunctionProperties2<T> | BacklinkProperties<T>>;
+    export type _Serialized<T, TRoot = true> = T extends BSON.ObjectId
+        ? OID
+        : T extends BSON.UUID
+        ? BSON.UUID | string
+        : T extends ArrayBuffer
+        ? string | ArrayBuffer
+        : T extends Date
+        ? Date | string
+        : T extends number
+        ? number | string
+        : T extends boolean
+        ? boolean | string
+        : T extends string
+        ? string
+        : T extends DBList<infer R>
+        ? _Serialized<R, false>[]
+        : T extends DBSet<infer R>
+        ? _Serialized<R, false>[]
+        : T extends DBDictionary<infer R>
+        ? Record<string, _Serialized<R, false>>
+        : T extends Record<string, any>
+        ? T extends { _id: OID }
+            ? TRoot extends false
+                ? OID
+                : { [P in DBProperties<T> as `${P}`]: Serialized<T[P], false> }
+            : { [P in DBProperties<T> as `${P}`]: Serialized<T[P], false> }
+        : never;
+    export type Serialized<T, TRoot = true> = undefined extends T ? _Serialized<T, TRoot> | null : _Serialized<T, TRoot>;
+    export type Unserialized<T extends AnyObject> = {
+        [P in DBProperties<T>]: T[P] extends DBList<infer R> ? R[] : T[P] extends DBSet<infer R> ? R[] : T[P] extends DBDictionary<infer R> ? Record<string, R> : T[P];
+    };
+    export type ConvertToRealmFunction<T extends AnyObject> = (payload: _Serialized<T, true>) => Unserialized<T>;
     export interface SymbolConstructor {
         readonly convertToRealm: unique symbol;
         readonly convertFromRealm: unique symbol;
@@ -302,7 +340,7 @@ declare global {
 
 declare module '@tanstack/table-core' {
     // interface ColumnMeta<TData extends RowData, TValue> {
-        
+
     // }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     interface TableMeta<TData extends RowData> {

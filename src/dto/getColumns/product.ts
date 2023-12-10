@@ -9,7 +9,7 @@ import { lookupMeta } from '../../components/Table/metas/lookupMeta';
 import { stringMeta } from '../../components/Table/metas/stringMeta';
 import { colorToName, colorToClasses } from '../../dal/enums/colors';
 import { objectIdMeta } from '../../components/Table/metas/objectIdMeta';
-import { RHFM_TextControl } from '../../components/Controls/RHFM_TextControl';
+import { RHFM_TextControl } from '../../components/Table/Controls/RHFM_TextControl';
 import { materialCompositionColumns } from './materialComposition';
 import { productTaxonomyColumns } from './productTaxonomy';
 import { Countries } from '../../dal/enums/countries';
@@ -143,11 +143,12 @@ export const productColumns = {
             //     id: 'dimensions.volumeFlOz'
             // }),
             productHelper.accessor('features', {
-                ...dbListMeta<Record<'value', string>>('features', 'string', {
-                    header: 'Features',
-                    ItemComponent: ({ payload }) => payload?.value ?? '',
-                    parentObjectType: 'product'
-                })
+                ...$metas.list('features', undefined, 'product', 'string', { header: 'Features' })
+                // ...dbListMeta<Record<'value', string>>('features', 'string', {
+                //     header: 'Features',
+                //     ItemComponent: ({ payload }) => payload?.value ?? '',
+                //     parentObjectType: 'product'
+                // })
             }),
             productHelper.accessor('flags', {
                 ...flagsMeta()
@@ -173,7 +174,10 @@ export const productColumns = {
             }),
             // ...materialCompositionColumns.getColumns('materials'),
             productHelper.accessor('materials', {
-                ...$metas.dictionary<IProduct, IMaterialComposition, 'materials', 'toOutput'>('materials', 'toOutput', 'product', 'materialComposition', { header: 'Made Of' })
+                ...$metas.dictionary<IProduct, IMaterialComposition, 'materials', 'toOutput'>('materials', ({ data }) => {
+                    console.log('data.materialComposition', data);
+                    return data.toOutput;
+                }, 'product', 'materialComposition', { header: 'Made Of' })
             }),
             productHelper.accessor('modelNo', {
                 ...stringMeta({ propertyName: 'modelNo', header: 'Model #' })

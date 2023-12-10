@@ -1,6 +1,5 @@
 import { MRT_ColumnDef, MRT_RowData } from 'material-react-table';
 import * as React from 'react';
-import { FieldValues } from 'react-hook-form-mui';
 import { useCallback } from 'react';
 
 export function useEditControls<T>(columns: DefinedMRTColumns<T & MRT_RowData>) {

@@ -1,14 +1,15 @@
 import { BSON } from 'realm';
-import { IListing2, OptObj, ISku, Optional, $db } from './db';
+import { IListing2, OptObj, $db } from './db';
+import { ISku } from './types';
 
 export class Listing extends Realm.Object<IListing2> implements IListing2 {
     _id: BSON.ObjectId = new BSON.ObjectId();
     sku: OptObj<ISku>;
     listingId: Optional<string>;
-    title: string = '';
-    description: string = '';
+    title = '';
+    description = '';
     hashes: string[] = [];
-    shippingPrice: number = 0;
+    shippingPrice = 0;
     itemFolder: Optional<string>;
 
     static schema: Realm.ObjectSchema = {
@@ -25,61 +26,61 @@ export class Listing extends Realm.Object<IListing2> implements IListing2 {
             itemFolder: $db.string.opt
         }
     };
-    isNoBrand(): boolean {
-        return this.sku?.isNoBrand() ?? true;
-    }
-    brandName(): string | undefined {
-        return this.sku?.brandName();
-    }
-    categoryId(): string {
-        return this.sku?.categoryId() ?? '';
-    }
-    subCategoryId(): string {
-        return this.sku?.subCategoryId() ?? '';
-    }
-    subSubCategoryId(): string {
-        return this.sku?.subSubCategoryId() ?? '';
-    }
-    condition(): 1 | 2 | 3 | 4 | 5 {
-        return this.sku?.condition ?? 2;
-    }
-    color(): string | undefined {
-        return this.sku?.color() ?? undefined;
-    }
-    weight(): { lb?: number; oz?: number } {
-        return this.sku?.weight()!;
-    }
-    dims(): { length?: number; width?: number; height?: number } | undefined {
-        return this.sku?.dims();
-    }
-    hasDims(): boolean {
-        return this.sku?.dims() != null;
-    }
-    shippingService(): 'standard' | 'media-mail' {
-        return this.sku?.shippingService() ?? 'standard';
-    }
-    price(): number {
-        return this.sku?.price ?? 0;
-    }
-    carrier(): string {
-        const shipping = this.sku?.carrier();
-        if (shipping == null) throw new Error('no shipping');
-        const [shippingPrice, carrier, carrierId] = shipping;
-        return carrier;
-    }
-    carrierId(): number {
-        const shipping = this.sku?.carrier();
-        if (shipping == null) throw new Error('no shipping');
-        const [shippingPrice, carrier, carrierId] = shipping;
-        return carrierId;
-    }
-    smartPricingOn(): boolean {
-        return true;
-    }
-    smartOffersOn(): boolean {
-        return false;
-    }
-    brandFolder(): string {
-        return this.sku?.product?.brand?.folder ?? 'no-brand';
-    }
+    // isNoBrand(): boolean {
+    //     return this.sku?.isNoBrand() ?? true;
+    // }
+    // brandName(): string | undefined {
+    //     return this.sku?.brandName();
+    // }
+    // categoryId(): string {
+    //     return this.sku?.categoryId() ?? '';
+    // }
+    // subCategoryId(): string {
+    //     return this.sku?.subCategoryId() ?? '';
+    // }
+    // subSubCategoryId(): string {
+    //     return this.sku?.subSubCategoryId() ?? '';
+    // }
+    // condition(): 1 | 2 | 3 | 4 | 5 {
+    //     return this.sku?.condition ?? 2;
+    // }
+    // color(): string | undefined {
+    //     return this.sku?.color() ?? undefined;
+    // }
+    // weight(): { lb?: number; oz?: number } {
+    //     return this.sku?.weight()!;
+    // }
+    // dims(): { length?: number; width?: number; height?: number } | undefined {
+    //     return this.sku?.dims();
+    // }
+    // hasDims(): boolean {
+    //     return this.sku?.dims() != null;
+    // }
+    // shippingService(): 'standard' | 'media-mail' {
+    //     return this.sku?.shippingService() ?? 'standard';
+    // }
+    // price(): number {
+    //     return this.sku?.price ?? 0;
+    // }
+    // carrier(): string {
+    //     const shipping = this.sku?.carrier();
+    //     if (shipping == null) throw new Error('no shipping');
+    //     const [shippingPrice, carrier, carrierId] = shipping;
+    //     return carrier;
+    // }
+    // carrierId(): number {
+    //     const shipping = this.sku?.carrier();
+    //     if (shipping == null) throw new Error('no shipping');
+    //     const [shippingPrice, carrier, carrierId] = shipping;
+    //     return carrierId;
+    // }
+    // smartPricingOn(): boolean {
+    //     return true;
+    // }
+    // smartOffersOn(): boolean {
+    //     return false;
+    // }
+    // brandFolder(): string {
+    //     return this.sku?.product?.brand?.folder ?? 'no-brand';
+    // }
 }

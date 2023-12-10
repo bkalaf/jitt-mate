@@ -69,7 +69,7 @@ app.whenReady()
             });
             return response.canceled ? [] : response.filePaths;
         });
-        ipcMain.handle('confirm-cancel', async (event): Promise<number> => {
+        ipcMain.handle('confirm-cancel', async (): Promise<number> => {
             if (browserWindow == null) throw new Error('no window');
             const response = await dialog.showMessageBox(browserWindow, {
                 message: 'Are you sure you want to lose any unsaved work?',

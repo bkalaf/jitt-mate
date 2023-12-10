@@ -1,5 +1,5 @@
 import { MRT_Row, MRT_RowData, MRT_TableInstance } from 'material-react-table';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { IRealmEntity } from '../dal/types';
 import { usePersistedState } from './usePersistedState';
@@ -13,13 +13,10 @@ import { useDefaultColumn } from './useDefaultColumn';
 import { TableTypeObject, tableType } from './tableType';
 import { AlertColor } from '@mui/material';
 import { useParams } from 'react-router-dom';
-import { ConvertToRealmFunction, createRenderCreateRowDialogContentRHF } from '../components/Table/creators/createRenderCreateRowDialogContent';
+import { createRenderCreateRowDialogContentRHF } from '../components/Table/creators/createRenderCreateRowDialogContent';
 import { useLocalRealm } from '../routes/loaders/useLocalRealm';
-import { ipcRenderer } from 'electron';
 import { updateRecord } from './updateRecord';
 import { createDetailSubComponent } from '../components/Table/creators/createDetailSubComponent';
-import { $convertToRealm } from '../components/Table/creators/$convertToRealm';
-import { useOnSave } from './useOnBlur';
 
 export function useMUIReactTable<T extends MRT_RowData>({
     type,
@@ -37,7 +34,6 @@ export function useMUIReactTable<T extends MRT_RowData>({
 }) {
     const collectionRoute = useParams<{ collection: string }>().collection;
     const collection = objectType ?? collectionRoute ?? 'n/a';
-    const convertTo = useMemo(() => $convertToRealm[collection as keyof typeof $convertToRealm] as any as ConvertToRealmFunction<T>, [collection]);
     const db = useLocalRealm;
     const {
         deleteOne,
@@ -85,7 +81,6 @@ export function useMUIReactTable<T extends MRT_RowData>({
         ...invalidator
     });
     const {
-        mutateAsync: editAsync,
         isPending: isEditPending,
         isError: isEditError
     } = useMutation({
@@ -122,41 +117,6 @@ export function useMUIReactTable<T extends MRT_RowData>({
     const renderDetailPanel = (createDetailSubComponent ?? konst(konst(<></>)))(fieldInfos);
     const renderToolbarInternalActions = createRenderToolbarInternalActions({ onClickDumpsterFire, resetState, onClickLightning, getCanInsertDelete, objectType, propertyName, parentRow, type, state, handlers });
     const renderRowActions = createRenderRowActions({ getCanInsertDelete, deleteOne: deleteSync });
-    const onCreatingRowSave = (props: MRT_TableOptionFunctionParams<T, 'onCreatingRowSave'>) => {
-        insertAsync(
-            { values: convertTo(props.values as any) as T },
-            {
-                onSuccess: props.exitCreatingMode
-            }
-        );
-    };
-    // const onEditingRowSave = (props: MRT_TableOptionFunctionParams<T, 'onEditingRowSave'>) => {
-    //     console.group('onEditingRowSave');
-    //     console.log(`props.values`, props.values);
-    //     const result = convertTo(props.values as any) as T;
-    //     console.log(`result`, result);
-    //     editAsync(convertTo(props.values as any) as T, {
-    //         onSuccess: props.exitEditingMode
-    //     });
-    //     console.groupEnd();
-    // };
-    // const onCreatingRowCancel = (props: MRT_TableOptionFunctionParams<T, 'onCreatingRowCancel'>) => {
-    //     const func = async () => {
-    //         const token = await (ipcRenderer.invoke('confirm-cancel') as Promise<number>);
-    //         if (token === 0) {
-    //             return 
-    //         }
-    //     }
-    //     ipcRenderer.invoke('confirm-cancel').then((response) => {
-    //         console.log(`ipcRenderer.invoke`, response);
-    //         if (response === 0) props.table.setCreatingRow(null);
-    //     });
-    // };
-    // const onEditingRowCancel = (props: MRT_TableOptionFunctionParams<T, 'onEditingRowCancel'>) => {
-    //     ipcRenderer.invoke('confirm-cancel').then((response) => {
-    //         if (response === 0) props.table.setEditingRow(null);
-    //     });
-    // };
     const constants = useTableConstants();
     const defaultColumn = useDefaultColumn<T>();
     return {

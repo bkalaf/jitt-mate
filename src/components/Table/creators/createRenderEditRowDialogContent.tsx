@@ -11,7 +11,7 @@ import { ignore } from '../../../common/functions/ignore';
 import { $convertToRealm } from './$convertToRealm';
 import { updateRecordProperty } from '../../../hooks/updateRecord';
 import { useInvalidator } from '../../../hooks/useInvalidator';
-import { useClearCRUD } from '../../../hooks/useOnBlur';
+import { useClearCRUD } from 'src/hooks/useClearCRUD';
 import { useLocalRealm } from '../../../routes/loaders/useLocalRealm';
 import { $initialCollection } from './$initialCollection';
 import { OnBlurContext } from './OnBlurContext';

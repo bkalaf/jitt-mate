@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import * as Config from './config.json';
 import Realm from 'realm';
-const BSON = Realm.BSON;
-import * as fs from 'graceful-fs';
-import $$schema from './dal';
-import { IClassifier, ILocationSegment, IProduct, ISku } from './dal/types';
+import { IClassifier } from './dal/types';
 import { toClassifierName } from './dal/toClassifierName';
+import $$schema from './dto/collections';
 
 const app = new Realm.App({ id: Config.realm.appID });
 console.log(app);

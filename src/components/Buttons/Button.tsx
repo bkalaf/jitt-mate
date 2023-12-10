@@ -27,7 +27,7 @@ export function Button(
     const baseClasses =
         'flex items-center justify-center px-1 py-0.5 transition-all duration-700 ease-in-out delay-75 border-2 border-black rounded-md hover:bg-yellow-400 hover:text-black disabled:blur font-open-sans text-xl font-bold text-white no-underline mx-auto';
     const { children, onClick, disabledCondition, disabled, renderCondition, route, type, icon, className, ...remain } = props;
-    const $className = useMemo(() => createActiveClassFunction({ className: '', baseClasses }), [className]);
+    const $className = useMemo(() => createActiveClassFunction({ className: '', baseClasses }), []);
     const $onClick = useMemo(() => (onClick != null ? onClick : ignore), [onClick]);
     const $disabled: boolean = useMemo(() => disabled ?? handleCondition(disabledCondition), [disabled, disabledCondition]);
     const $canRender: boolean = useMemo(() => handleCondition(renderCondition, TRUE), [renderCondition]);

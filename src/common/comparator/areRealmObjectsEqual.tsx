@@ -4,11 +4,6 @@ import { comparableToEquatable } from './comparableToEquatable';
 import { createMonads } from './createMonads';
 import { distinctBy } from '../array/distinctBy';
 
-// export function areRealmObjectsEqual<T extends EntityBase>(left: T) {
-//     return function (right: T) {
-//         return left._id.toHexString() === right._id.toHexString();
-//     };
-// }
 
 export const createComparable = function <T, U>(extractor: (x: T) => U, comp: (x: U, y: U) => CompareResult = (x: any, y: any) => x < y ? -1 : x > y ? 1 : 0): IComparable<T> {
     return (left: T) =>

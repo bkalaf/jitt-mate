@@ -33,6 +33,7 @@ interface NumberType extends IRealmType {
 const $bool = (() => 'bool?') as BoolType;
 $bool.true = { type: 'bool', default: true };
 $bool.false = { type: 'bool', default: false };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const $string: StringType = toType('string') as any;
 $string.empty = { type: 'string', default: '' };
 const $number = (n: PropertyTypeName): NumberType => {
@@ -111,6 +112,7 @@ export const $db: DB = {
     storageFacility: toType('storageFacility'),
     task: toType('task'),
     operation: toType('operation')
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 } as any;
 
 $db.backlink = (name: keyof typeof $db, property: string) =>
@@ -185,21 +187,21 @@ export interface IListing2 {
     shippingPrice: number;
     itemFolder: Optional<string>;
 
-    isNoBrand(): boolean;
-    brandName(): string | undefined;
-    categoryId(): string;
-    subCategoryId(): string;
-    subSubCategoryId(): string;
-    condition(): ConditionKeys;
-    color(): string | undefined;
-    weight(): EnglishWeight;
-    dims(): LWH | undefined;
-    hasDims(): boolean;
-    shippingService(): ShippingServiceKeys;
-    price(): number;
-    carrier(): string;
-    carrierId(): number;
-    smartPricingOn(): boolean;
-    smartOffersOn(): boolean;
-    brandFolder(): string;
+    // isNoBrand(): boolean;
+    // brandName(): string | undefined;
+    // categoryId(): string;
+    // subCategoryId(): string;
+    // subSubCategoryId(): string;
+    // condition(): ConditionKeys;
+    // color(): string | undefined;
+    // weight(): EnglishWeight;
+    // dims(): LWH | undefined;
+    // hasDims(): boolean;
+    // shippingService(): ShippingServiceKeys;
+    // price(): number;
+    // carrier(): string;
+    // carrierId(): number;
+    // smartPricingOn(): boolean;
+    // smartOffersOn(): boolean;
+    // brandFolder(): string;
 }

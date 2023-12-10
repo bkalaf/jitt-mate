@@ -1,7 +1,7 @@
 import { TextFieldElement, useFormContext } from 'react-hook-form-mui';
 import { useMemo } from 'react';
-import { toProperFromCamel } from '../../common/text/toProperCase';
-import { $cn } from '../../util/$cn';
+import { toProperFromCamel } from '../../../common/text/toProperCase';
+import { $cn } from '../../../util/$cn';
 
 export type RHFM_TextFieldElementProps<T extends EntityBase> = {
     header?: string;

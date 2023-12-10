@@ -1,17 +1,7 @@
 import { createContext } from 'react';
 import { Row } from '@tanstack/react-table';
 
-export type CollectionViewState = {
-    pageSize: number;
-    pages: number;
-    page: number;
-    visibility: string[]; // Record<string, boolean>
-    rowsSelected: OID[]; // Record<string, boolean>
-    sort: ([column: string] | [column: string, isDesc: boolean])[];
-    filter: [id: string, value: unknown][];
-    globalFilter: any;
-    edittingRow: OID | undefined;
-};
+
 export interface ICollectionViewContext<T> {
     depth: number;
     params: string[];

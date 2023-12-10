@@ -1,4 +1,5 @@
-import { MRT_Row, MRT_RowData, MRT_TableInstance } from 'material-react-table';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { MRT_Row, MRT_TableInstance } from 'material-react-table';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { $$queryClient } from '../../App';
 import TabContext from '@mui/lab/TabContext';
@@ -11,6 +12,7 @@ import { toProperFromCamel } from '../../../common/text/toProperCase';
 import { CollectionTableMRT } from '../CollectionTableMRT';
 
 export function createDetailSubComponent(infos: FieldInfo[]) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     function DetailSubComponent<T extends EntityBase>({ row, table }: { table: MRT_TableInstance<T>; row: MRT_Row<T>; }) {
         const [value, setValue] = useState<string>(infos[0][0])
         const handleChange = useCallback((ev: React.SyntheticEvent, newValue: string) => {

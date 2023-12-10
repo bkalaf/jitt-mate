@@ -1,19 +1,86 @@
-///<reference path="./../global.d.ts" />
-import { MongoClient, BSON, ObjectId } from 'mongodb';
-import { IProductImage } from './../dal/types';
+// ///<reference path="./../global.d.ts" />
+import { MongoClient, ObjectId } from 'mongodb';
 import * as fs from 'graceful-fs';
-import * as path from 'path';
-import * as Config from '../config.json';
 
 const client = new MongoClient('mongodb+srv://admin:Nv0DN8uRo9Otwb8i@jitt-core.p62mz.mongodb.net/test');
 const collection = client.db('jitt-mate').collection('product');
-collection.updateMany({ materials: { $exists: false }}, {
-    $set: {
-        materials: {}
+// collection.updateMany({ materials: { $exists: false }}, {
+//     $set: {
+//         materials: {}
+//     }
+// }).then(d => {
+//     console.log(`${d.modifiedCount}`)
+// })
+import * as Data from '../../../../../../../media/bobby/1TB/mongo-backup/product.json';
+
+const data = JSON.parse(fs.readFileSync('../../../../../../../media/bobby/1TB/mongo-backup/product.json').toString()) as typeof Data;
+console.log(`data.length: ${data.length}`)
+data.filter((x) => x.madeOf != null).forEach((x) => console.log(JSON.stringify(x, null, '\t')));
+console.log(
+    Array.from(
+        new Set(
+            data
+                .filter((x) => x.madeOf != null)
+                .map((x) => Object.keys(x.madeOf ?? {}))
+                .reduce((pv, cv) => [...pv, ...cv], [])
+        ).values()
+    )
+);
+function convert(value: 'R' | 'C' | 'M' | 'X' | 'P' | 'A' |  'E' | 'N') {
+    switch (value) {
+        case 'M':
+            return 'modal';
+        case 'C':
+            return 'cotton';
+        case 'P':
+            return 'polyester'
+        case 'N':
+            return 'nylon';
+        case 'X':
+            return 'spandex';
+        case 'R':
+            return 'rayon';
+        case 'A':
+            return 'acrylic';
+        case 'E':
+            return 'polyurethane'
     }
-}).then(d => {
-    console.log(`${d.modifiedCount}`)
-})
+}
+async function run() {
+    const docs = data.filter((x) => x.madeOf != null);
+    for (const doc of docs) {
+        const result = await collection.updateOne(
+            { _id: new ObjectId(doc._id.$oid) },
+            {
+                $set: {
+                    materials: {
+                        all: Object.fromEntries(Object.entries(doc.madeOf ?? {}).map(([k, v]) => [convert(k as any), parseFloat((v as number).toFixed(4))]))
+                    }
+                }
+            }
+        );
+        console.log(`${result.modifiedCount}`)
+    }
+    // const funcs = docs.map(doc => () => {
+    //     console.log(JSON.stringify(doc.materials, null, '\t'));
+    //     const entries = Object.entries(doc.materials);
+    //     if (entries.length === 1) {
+    //         return collection.updateOne({ _id: new ObjectId(doc._id.toHexString()) }, {
+    //             $set: {
+    //                 materials: {
+    //                     all: entries[0][1]
+    //                 }
+    //             }
+    //         }).then((d) => console.log(`${d.modifiedCount}`)).finally(() => console.log('done!'));
+    //     }
+    //     return Promise.resolve()
+    // });
+    // return funcs.reduce((pv, cv) => async () => {
+    //     await pv();
+    //     await cv();
+    // }, () => Promise.resolve())()
+}
+run()
 // collection.updateMany({}, [{ $unset: 'cutNo' }]).then((D) => console.log(`${D.acknowledged} acknowledged, ${D.matchedCount} matched, ${D.modifiedCount} modified.`));
 
 // const dir = '/media/bobby';

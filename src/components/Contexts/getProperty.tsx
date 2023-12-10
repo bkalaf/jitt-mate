@@ -1,4 +1,3 @@
-
 export function getProperty(name: string) {
     return function (obj?: Record<string, any>): any {
         if (!name.split('').includes('.')) {

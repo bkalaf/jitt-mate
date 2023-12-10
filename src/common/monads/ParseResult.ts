@@ -3,6 +3,7 @@ export const ParseResult = {
         success<T>(value: T): ParseResult<T> {
             return { kind:'success', value }
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         failure(value: string, dataType: string): ParseResult<any> {
             return { kind: 'failure', value, message: `Could not parse a ${dataType} from this value.`}
         }
@@ -11,6 +12,7 @@ export const ParseResult = {
         success<T>(pr: ParseResult<T>): pr is IParseSuccess<T> {
             return pr.kind === 'success';
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         failure(pr: ParseResult<any>): pr is IParseFailure {
             return pr.kind === 'failure';
         }

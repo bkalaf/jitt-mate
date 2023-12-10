@@ -7,11 +7,3 @@ export const convertInches = (value?: number, endingDefaultPrecision = 4) => {
     return convertFraction(value, endingDefaultPrecision);
 };
 
-console.log(convertInches(7.5));
-console.log(convertInches(7.6666));
-console.log(convertInches(7.125));
-console.log(convertInches(7.9286));
-console.log(convertInches(7.8750));
-console.log(convertInches(7.1666));
-console.log(convertInches(7.1666));
-console.log(convertInches(7.196, 4));

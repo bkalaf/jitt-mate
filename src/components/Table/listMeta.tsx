@@ -1,36 +1,36 @@
-import { RHFM_ListControl } from './Controls/RHFM_ListControl';
 import { DBSetDetailCell } from './DBSetDetailCell';
 import { Path } from 'react-hook-form-mui';
 import { MRT_ColumnDef } from 'material-react-table';
 import { IRealmObject } from '../../dal/types';
-import { is } from '../../dal/is';
 import { toHeader } from './toHeader';
-
+import { JITTMultiControl } from './Controls/JITTDataStructureControl';
+import { getProperty } from '../Contexts/getProperty';
 
 export const listMeta = function <T extends IRealmObject<T>, TListOf, TName extends Path<T>>(
     name: TName,
-    labelProperty: (keyof TListOf & string) | undefined,
-    objectType: string,
-    listObjectType: RealmObjects | RealmPrimitives,
-    opts: { header?: string; }
+    labelProperty: Path<TListOf> | React.FunctionComponent<{ data: Entity<TListOf> }>,
+    objectType: RealmObjects,
+    ofObjectType: RealmObjects | RealmPrimitives,
+    opts: { header?: string }
 ) {
+    const ItemComponent: React.FunctionComponent<{ data: Entity<TListOf> }> =
+        typeof labelProperty === 'string'
+            ? ({ data }: { data: TListOf }) => <span className='whitespace-pre'>{data ? (getProperty(labelProperty)(data) as string).toString() : null}</span>
+            : typeof labelProperty === 'function'
+            ? labelProperty
+            : () => null;
     return {
         header: toHeader(opts, name),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        Cell: DBSetDetailCell<Entity<TListOf>, T>(({ payload }) => is.realmType.primitive(listObjectType) ? (payload?.toString() as any) : (payload[labelProperty as keyof Entity<TListOf>] as string)
-        ),
-        Edit: RHFM_ListControl<T, TName, Entity<TListOf>>({
-            name: name,
-            objectType: objectType,
-            listObjectType: listObjectType,
-            header: toHeader(opts, name),
-            labelPropertyName: labelProperty,
+        Cell: DBSetDetailCell<Entity<TListOf>, T>(ItemComponent),
+        Edit: JITTMultiControl<T, TName, TListOf, Path<TListOf> | undefined>({
             listType: 'list',
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            ItemElement: (props: { data: Entity<TListOf>; }) => (
-                <span>{is.realmType.primitive(listObjectType) ? (props.data as any) : (props.data[labelProperty as keyof Entity<TListOf>] as string)}</span>
-            )
+            name: name,
+            header: toHeader(opts, name),
+            objectType: objectType,
+            ofObjectType: ofObjectType,
+            labelPropertyName: labelProperty != null && typeof labelProperty === 'string' ? labelProperty : undefined,
+            ItemElement: labelProperty != null && typeof labelProperty === 'function' ? labelProperty as any : undefined
         })
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as MRT_ColumnDef<T, any>;
 };

@@ -1,6 +1,5 @@
 import { TextFieldElement, useFormContext } from 'react-hook-form-mui';
-import { RHFM_Depends } from '../Table/Controls/RHFM_Depends';
-import { useOnBlurContext } from '../Table/creators/useOnBlurContext';
+import { useOnBlurContext } from '../creators/useOnBlurContext';
 
 export const RHFM_TextControl = (
     name: string,
