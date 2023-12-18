@@ -11,7 +11,8 @@ import { RHFM_TextFieldElement } from '../Table/Controls/RHFM_TextFieldElement';
 export function LogInDialog({ open, toggler }: { open: boolean; toggler: () => void }) {
     const { logIn } = useRealmContext();
     const onSuccess = useCallback(
-        async (data: any, event: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        async (data: any) => {
             try {
                 await logIn(data);
                 // navigate('/');

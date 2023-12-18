@@ -10,6 +10,9 @@ export class Address extends Realm.Object<Address> implements IAddress {
     province: Optional<keyof Provinces>;
     postalCode: Optional<string>;
     country?: Optional<keyof Countries>;
+    get output(): string {
+        return [[this.line1, this.line2].filter(x => x != null).join('\n'), [this.cityState, this.country, this.postalCode].filter(x => x!= null).join(',')].join('\n');
+    }
     get streetOnly(): Optional<string> {
         return this.line1 == null ? undefined : this.line1.split(' ').slice(1).join(' ');
     }

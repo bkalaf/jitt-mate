@@ -13,6 +13,7 @@ export class ProductLine extends Realm.Object<IProductLine> implements IProductL
         return this;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(realm: Realm, args: any) {
         super(realm, args);
         setImmediate(() =>

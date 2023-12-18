@@ -287,7 +287,7 @@ export const taxonomy = {
                     dress: toNode('dress')
                 })
             }),
-            undergarment: toNode('undergarment', {
+            undergarments: toNode('undergarments', {
                 socks: toNode('socks', {
                     athletic: toNode('athletic'),
                     crew: toNode('crew'),
@@ -532,7 +532,7 @@ export const taxonomy = {
                     dress: toNode('dress')
                 })
             }),
-            undergarment: toNode('undergarment', {
+            undergarments: toNode('undergarments', {
                 socks: toNode('socks', {
                     athletic: toNode('athletic'),
                     crew: toNode('crew'),

@@ -1,17 +1,14 @@
-import { createMRTColumnHelper } from 'material-react-table';
 import { IHashTagUsage } from '../../dal/types';
-import { dateMeta } from '../../components/Table/metas/dateMeta';
-import { intMeta } from '../../components/Table/metas/intMeta';
+import { $metas } from '../../components/Table/metas';
 
-export const hashTagUsageHelper = createMRTColumnHelper<IHashTagUsage>();
 export const hashTagUsageColumns = {
-    getColumns: (...pre: string[]): DefinedMRTColumns =>
-        [
-            hashTagUsageHelper.accessor('count', {
-                ...intMeta('count', { min: 0 })
-            }),
-            hashTagUsageHelper.accessor('from', {
-                ...dateMeta('from', { header: 'Timestamp' })
-            })
-        ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns
+    getColumns: (...pre: string[]): DefinedMRTColumns<IHashTagUsage> =>
+        (
+            [
+                $metas.int('count', { min: 0 }, false),
+                $metas.date('from', { type: 'datetime-local' }, false)
+            ] as DefinedMRTColumns<IHashTagUsage>
+        ).map((x) =>
+            x.columnDefType === 'group' ? x : x.accessorKey != null ? { ...x, accessorKey: [...pre, x.accessorKey].join('.') } : x.id != null ? { ...x, id: [...pre, x.id].join('.') } : x
+        ) as DefinedMRTColumns<IHashTagUsage>
 } as StaticTableDefinitions<IHashTagUsage>;

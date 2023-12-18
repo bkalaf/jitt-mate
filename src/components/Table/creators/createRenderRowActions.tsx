@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSquarePen, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Box, IconButton } from '@mui/material';

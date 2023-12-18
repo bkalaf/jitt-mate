@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MRT_Row } from 'material-react-table';
 import { CircularProgress, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip } from '@mui/material';
 import { toProperFromCamel } from '../../../common/text/toProperCase';
-import { UseMutateAsyncFunction, useMutation } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { Barcode } from '../../../dto/collections/Barcode';
-import { IAddress, IBrand, IHashTag, IHashTagUsage, ILocationSegment, IMercariBrand } from '../../../dal/types';
-import { BSON } from 'realm';
+import { ILocationSegment } from '../../../dal/types';
 import { $initialCollection } from './$initialCollection';
 import { $convertToRealm } from './$convertToRealm';
 import { faCancel, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
@@ -23,7 +23,7 @@ const insertAction = {
     barcode: (payload: { rawValue: string }) => Barcode.ctor(payload.rawValue, false)
 };
 
-export function createRenderCreateRowDialogContentRHF<T extends AnyObject>(collection: string, insertAsync: UseMutateAsyncFunction<AnyObject, Error, { values: T }>) {
+export function createRenderCreateRowDialogContentRHF<T extends AnyObject>(collection: string) {
     const initial = $initialCollection[collection];
     const convertTo = $convertToRealm[collection as keyof typeof $convertToRealm] as any as ConvertToRealmFunction<T>;
     function RenderCreateRowDialogContent(props: MRT_TableOptionFunctionParams<T, 'renderEditRowDialogContent'>) {
@@ -72,10 +72,10 @@ export function createRenderCreateRowDialogContentRHF<T extends AnyObject>(colle
         });
         const onBlur = useCallback(
             (name: string) => (ev: React.FocusEvent<HTMLInputElement>) => {
-                if (ev.target.name == null) {
-                    console.log(`no onBlur name`);
-                    return;
-                }
+                // if (ev.target.name == null) {
+                //     console.log(`no onBlur name`);
+                //     return;
+                // }
                 formContext.setValue(name, typeof ev === 'object' ? ev.target.value : ev as any);
             },
             [formContext]
@@ -94,13 +94,13 @@ export function createRenderCreateRowDialogContentRHF<T extends AnyObject>(colle
                         </DialogContent>
                         <DialogActions>
                             <Tooltip title='Cancel'>
-                                <IconButton aria-label='Cancel' onClick={() => (props.table.options.onCreatingRowCancel ?? ignore)(props)}>
-                                    <FontAwesomeIcon icon={faCancel} className='block object-contain w-8 h-8' />
+                                <IconButton aria-label='Cancel' onClick={() => props.table.setCreatingRow(null)}>
+                                    <FontAwesomeIcon icon={faCancel} className='block object-contain w-6 h-6' />
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title='Save'>
                                 <IconButton aria-label='Save' color='info' type='submit'>
-                                    {isSaving ? <CircularProgress size={18} /> : <FontAwesomeIcon icon={faFloppyDisk} className='block object-contain w-8 h-8' />}
+                                    {isSaving ? <CircularProgress size={18} /> : <FontAwesomeIcon icon={faFloppyDisk} className='block object-contain w-6 h-6' />}
                                 </IconButton>
                             </Tooltip>
                         </DialogActions>

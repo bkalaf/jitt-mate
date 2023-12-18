@@ -39,6 +39,9 @@ export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implem
     get categoryID(): Optional<string> {
         return this.parent?.id;
     }
+    get fullname(): string {
+        return [this.parent?.name, this.name].filter(x => x != null).join('::');
+    }
     @wrapInTransactionDecorator()
     update() {
         const pu = parentedUpdate<'parent', IMercariCategory, IMercariSubCategory>;

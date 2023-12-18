@@ -1,5 +1,7 @@
-import { IDependency } from './Controls/RHFM_Depends';
+export function toEnableDependency<T>(key: string, predicate: Predicate<T>): IDependency {
+    return ['enable', key, predicate];
+}
 
-export function toDependency(key: string, value: string): IDependency {
-    return ['enable', key, (x) => x === value];
+export function toDisableDependency(key: string, predicate: Predicate<T>): IDependency {
+    return ['disable', key, predicate];
 }

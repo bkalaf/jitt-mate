@@ -1,28 +1,41 @@
 import { BSON } from 'realm';
 import { dateFromNow } from '../../../common/date/dateFromNow';
+import { IProduct, IProductTaxonomy } from '../../../dal/types';
 
+const apparelDetailsInit = async () => ({
+    backlineType: null,
+    collarType: null,
+    cuffType: null,
+    necklineType: null,
+    sleeveType: null,
+    topAdornment: null,
+    waistType: null,
+    size: null,
+    styleNo: null,
+    cutNo: null,
+    pocketCount: 0,
+    measurements: {} as any,
+    rn: null,
+    clothingCare: []
+});
+const productTaxonomyInit = async (): Promise<Serialized<IProductTaxonomy>> => ({
+    lock: false,
+    kingdom: null,
+    phylum: null,
+    family: null,
+    klass: null,
+    order: null,
+    genus: null,
+    species: null,
+    name: ''
+})
 export const $initialCollection: Record<string, () => Promise<unknown>> = {
     string: () => Promise.resolve(''),
     int: () => Promise.resolve(null),
     float: () => Promise.resolve(null),
     date: () => Promise.resolve(null),
     bool: () => Promise.resolve(false),
-    apparelDetails: () =>
-        Promise.resolve({
-            backlineType: null,
-            collarType: null,
-            cuffType: null,
-            necklineType: null,
-            sleeveType: null,
-            topAdornment: null,
-            waistType: null,
-            size: null,
-            cutNo: null,
-            pocketCount: 0,
-            measurements: {},
-            rn: null,
-            clothingCare: []
-        }),
+    apparelDetails: apparelDetailsInit,
     barcode: () =>
         Promise.resolve({
             rawValue: ''
@@ -128,27 +141,29 @@ export const $initialCollection: Record<string, () => Promise<unknown>> = {
                 lock: false
             }
         }),
-    product: () =>
-        Promise.resolve({
-            _id: new BSON.ObjectId(),
-            folder: new BSON.UUID(),
-            brand: null,
-            circa: null,
-            classifier: null,
-            color: null,
-            descriptiveText: null,
-            dimensions: {},
-            features: [],
-            flags: [],
-            materials: {},
-            modelNo: null,
-            notes: null,
-            origin: null,
-            productLine: null,
-            styleNo: null,
-            taxon: { lock: false },
-            upcs: []
-        }),
+    product: async (): Promise<Serialized<IProduct>> => ({
+        _id: new BSON.ObjectId(),
+        folder: new BSON.UUID(),
+        apparelDetails: await apparelDetailsInit(),
+        brand: null,
+        circa: null,
+        classifier: null,
+        color: null,
+        descriptiveText: null,
+        dimensions: {},
+        features: [],
+        flags: [],
+        materials: {},
+        modelNo: null,
+        notes: null,
+        origin: null,
+        productLine: null,
+        styleNo: null,
+        taxon: await productTaxonomyInit(),
+        hashTags: [],
+        shipWeightPercent: null,
+        upcs: []
+    }),
     productImage: () =>
         Promise.resolve({
             _id: new BSON.ObjectId(),

@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { toProperFromCamel } from '../../../common/text/toProperCase';
 import { $cn } from '../../../util/$cn';
 
-export type RHFM_TextFieldElementProps<T extends EntityBase> = {
+export type RHFM_TextFieldElementProps = {
     header?: string;
     name: string;
     type?: React.HTMLInputTypeAttribute;
@@ -31,7 +31,7 @@ export function RHFM_TextFieldElement<T extends EntityBase>({
     maxMessage,
     validators,
     ...rest
-}: RHFM_TextFieldElementProps<T>) {
+}: RHFM_TextFieldElementProps) {
     function Inner_TextFieldElement() {
         const context = useFormContext();
         const { invalid, isDirty } = useMemo(() => context.getFieldState(rest.name), [context]);

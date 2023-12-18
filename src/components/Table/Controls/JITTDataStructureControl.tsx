@@ -1,27 +1,25 @@
-import { MRT_ColumnDef, MRT_Row, MRT_RowData, MRT_TableInstance } from 'material-react-table';
-import { FieldValues, FormProvider, Path, UseFormReturn, useForm } from 'react-hook-form-mui';
+import { MRT_ColumnDef, MRT_TableOptions, MaterialReactTable, useMaterialReactTable } from 'material-react-table';
+import { Path, useFormContext } from 'react-hook-form-mui';
 import { BSON } from 'realm';
-import { $tagIs, is } from '../../../dal/is';
+import { is } from '../../../dal/is';
 import { getProperty } from '../../Contexts/getProperty';
 import { useCallback, useMemo } from 'react';
-import { toHeader } from '../toHeader';
-import { Box, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, List, ListItem, ListItemText, Modal, Tooltip } from '@mui/material';
+import { IconButton, List, ListItem, ListItemText, PaperProps, TableContainerProps, TableProps, Tooltip } from '@mui/material';
 import { collections } from '../collections';
-import { useToggler } from '../../../hooks/useToggler';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCancel, faFloppyDisk, faPlusSquare, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
-import { ignore } from '../../../common/functions/ignore';
-import { toProperFromCamel } from '../../../common/text/toProperCase';
+import { faPlusSquare, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { useLocalRealm } from '../../../routes/loaders/useLocalRealm';
-import { toEditFormInitializer } from '../creators/createRenderEditRowDialogContent';
 import { $initialCollection } from '../creators/$initialCollection';
-import { useMutation } from '@tanstack/react-query';
-import { updateRecordProp, updateRecordProperty } from '../../../hooks/updateRecord';
 import { useInvalidator } from '../../../hooks/useInvalidator';
-import { OnBlurContext } from '../creators/OnBlurContext';
 import { $convertToRealm } from '../creators/$convertToRealm';
 import { $metas } from '../metas';
 import { checkTransaction } from '../../../util/checkTransaction';
+import { useDependencies } from '../../../hooks/useDependencies';
+import { useReflectionContext } from '../../Contexts/useReflectionContext';
+import { removeProperty } from './removeProperty';
+import { identity } from '../../../common/functions/identity';
+import { createRenderCreateRowDialogContentRHF } from '../creators/createRenderCreateRowDialogContent';
+import { renderCreateModal } from './renderCreateModal';
 
 export type JITTMultiControlObjectComponentProps<TParent, TName extends Path<TParent>, TListOf> = {
     name: TName;
@@ -52,53 +50,61 @@ export type JITTMulitControlProps<TParent, TName extends Path<TParent>, TListOf,
     | JITTMultiControlObjectComponentProps<TParent, TName, TListOf>
     | JITTMultiControlPrimitiveProps<TParent, TName, TListOf>
     | JITTMultiControlObjectProps<TParent, TName, TListOf, TPropertyName & Path<TListOf>>;
-export function JITTMultiControl<TParent, TName extends Path<TParent>, TListOf, TPropertyName extends Path<TListOf> | undefined = undefined>(outerProps: {
-    name: TName;
-    header?: string;
-    objectType: RealmObjects;
-    ofObjectType: RealmPrimitives | RealmObjects;
-    listType: ListTypeKind;
-    ItemElement?: React.FunctionComponent<{ data: TListOf }>;
-    labelPropertyName?: TPropertyName;
-}) {
-    const MultiElement = (innerProps: Parameters<Exclude<MRT_ColumnDef<TParent & MRT_RowData, any>['Edit'], undefined>>[0]) => {
+export function JITTMultiControl<TParent, TName extends Path<TParent>, TListOf, TPropertyName extends Path<TListOf> | undefined = undefined>(
+    outerProps: {
+        objectType: RealmObjects;
+        ofObjectType: RealmPrimitives | RealmObjects;
+        listType: ListTypeKind;
+        ItemElement?: React.FunctionComponent<{ data: TListOf }>;
+        labelPropertyName?: TPropertyName;
+    },
+    initialDisable = false,
+    ...dependencies: IDependency[]
+) {
+    const MultiElement = (innerProps: Parameters<Exclude<MRT_ColumnDef<any, any>['Edit'], undefined>>[0]) => {
         console.log(`props`, outerProps);
-        const { listType, name, objectType, ofObjectType, header } = outerProps;
+        const { listType, objectType, ofObjectType } = outerProps;
+        const { getIsEmbedded } = useReflectionContext();
+        const getIsPrimitive = is.realmType.primitive;
+        const ofTypeKind = getIsPrimitive(ofObjectType) ? 'primitive' : getIsEmbedded(ofObjectType) ? 'embedded' : 'reference';
         const labelPropertyName = (outerProps as { labelPropertyName?: string }).labelPropertyName;
         const ItemElement =
             (outerProps as { ItemElement?: React.FunctionComponent<{ data: TListOf }> }).ItemElement ??
-            ((({ data }: { data: TListOf }) => <span>{getProperty((outerProps as any).labelPropertyName as string)(data as AnyObject)}</span>) as React.FunctionComponent<{ data: TListOf }>);
-        console.log(`JITTDataStructure`, listType, objectType, ofObjectType, ItemElement, labelPropertyName, name, header);
+            ((({ data }: { data: TListOf }) => (
+                <span>{ofTypeKind === 'primitive' ? (data as string) : getProperty((outerProps as any).labelPropertyName as string)(data as AnyObject)}</span>
+            )) as React.FunctionComponent<{ data: TListOf }>);
+        console.log(`JITTDataStructure`, listType, objectType, ofObjectType, ItemElement, labelPropertyName);
         const { editingRow, creatingRow } = innerProps.table.getState();
         const isEditing = editingRow != null;
         const isCreating = creatingRow != null;
-        const value = isEditing ? getProperty(name)(innerProps.row.original) ?? (listType === 'dictionary' ? {} : []) : listType === 'dictionary' ? {} : [];
+        const formContext = useFormContext();
+        const spread = useDependencies(innerProps, initialDisable, ...dependencies);
+        const value = useMemo(
+            () => (isEditing ? getProperty(spread.name)(innerProps.row.original) ?? (listType === 'dictionary' ? {} : []) : formContext.watch(spread.name) ?? (listType === 'dictionary' ? {} : [])),
+            [formContext, innerProps.row.original, isEditing, listType, spread.name]
+        );
         console.log('MULTI-value', value);
         const db = useLocalRealm();
         const { onSuccess } = useInvalidator(objectType);
+        console.log(`spread`, spread);
         const onDelete = useCallback(
             (ix: number | string) => {
                 const onClick = async () => {
                     if (isCreating) {
-                        return innerProps.table.setCreatingRow((prev) => {
-                            if (prev == null || typeof prev === 'boolean') return prev;
-                            const valuesCache = prev._valuesCache;
-                            const nextCache = { ...valuesCache, [name]: (valuesCache[name] as any[]).filter((x, i) => i !== ix) };
-                            return { ...prev, _valuesCache: nextCache };
-                        });
+                        const nextValue = Array.isArray(value) ? value.filter((x, i) => i !== ix) : removeProperty(value, ix as string);
+                        formContext.setValue(spread.name, nextValue);
+                        return;
                     }
                     switch (listType) {
                         case 'dictionary': {
-                            const dict = (innerProps.row.original[name] ?? {}) as DBDictionary<any>;
-                            console.log(`dict`, dict);
                             const func = () => {
-                                if (is.dbDictionary(dict)) {
+                                if (is.dbDictionary(value)) {
                                     console.log('deleting dictionary entry');
-                                    dict.remove(ix as string);
+                                    value.remove(ix as string);
                                     return;
                                 }
-                                (dict as any)[ix] = undefined;
-                                delete (dict as any)[ix];
+                                // setProperty(spread.name)(dict as any)(undefined);
+                                value[ix as string] = undefined;
                                 // const result = convert(data as any)({} as any);
                                 // Object.entries(result).forEach(([k, v]) => {
                                 //     dict[k] = v;
@@ -108,18 +114,16 @@ export function JITTMultiControl<TParent, TName extends Path<TParent>, TListOf, 
                         }
                         case 'list':
                         case 'set': {
-                            const $set = (innerProps.row.original[name] ?? []) as DBSet<any> | DBList<any> | any[];
-                            console.log('set', $set);
                             const func = () => {
-                                if (is.dbSet($set)) {
-                                    $set.delete($set[ix as number]);
+                                if (is.dbSet(value)) {
+                                    value.delete(value[ix as number]);
                                     return;
                                 }
-                                if (is.dbList($set)) {
-                                    $set.remove(ix as number);
+                                if (is.dbList(value)) {
+                                    value.remove(ix as number);
                                     return;
                                 }
-                                innerProps.row.original[name] = $set.filter((_, i) => i !== (ix as number)) as any;
+                                (innerProps.row.original[spread.name] as any) = (value as any[]).filter((x, i) => i !== ix);
                             };
                             return checkTransaction(db)(func);
                         }
@@ -127,55 +131,59 @@ export function JITTMultiControl<TParent, TName extends Path<TParent>, TListOf, 
                 };
                 return () => onClick().then(onSuccess);
             },
-            [db, innerProps.row.original, innerProps.table, isCreating, listType, name, onSuccess]
+            [db, formContext, innerProps.row.original, isCreating, listType, onSuccess, spread.name, value]
         );
         const onSubmit = useCallback(
-            async (data: TListOf | Record<'value', TListOf>) => {
-                const convertTo = $convertToRealm[ofObjectType as keyof typeof $convertToRealm];
-                const convert = (data: AnyObject) => {
-                    const value = convertTo(data as any);
-                    return listType === 'dictionary' ? (prev: AnyObject) => ({ ...prev, [data.key]: value }) : (prev: AnyArray) => [...prev, value];
+            async (data: { key?: string; value: TListOf }) => {
+                console.log(`onSubmit.data`, data);
+                const convertTo = (ofTypeKind === 'primitive' || ofTypeKind === 'embedded' ? $convertToRealm[ofObjectType as keyof typeof $convertToRealm] : identity) as ConvertToRealmFunction<
+                    TListOf & AnyObject
+                >;
+                const convert = (d: { key?: string; value: TListOf }) => {
+                    const convertedValue = convertTo(d.value as any);
+                    console.log(`convert.d`, d);
+                    console.log(`convert.convertedValue`, convertedValue);
+                    console.log(`convert.value`);
+                    return listType === 'dictionary'
+                        ? () => {
+                              if (d.key == null) throw new Error('no key');
+                              value[d.key] = convertedValue;
+                          }
+                        : listType === 'set'
+                        ? is.dbSet(value)
+                            ? () => value.add(convertedValue)
+                            : () => ((innerProps.row.original[spread.name] as any) = [...value, convertedValue])
+                        : () => {
+                              (innerProps.row.original[spread.name] as any) = [...value, convertedValue];
+                          };
                 };
                 if (isCreating) {
-                    return innerProps.table.setCreatingRow((prev) => {
-                        if (prev == null || typeof prev === 'boolean') return prev;
-                        const valuesCache = prev._valuesCache;
-                        const nextCache = { ...valuesCache, [name]: convert(data as any)(valuesCache[name]) };
-                        return { ...prev, _valuesCache: nextCache };
-                    });
-                }
-                switch (listType) {
-                    case 'dictionary': {
-                        const dict = (innerProps.row.original[name] ?? {}) as DBDictionary<any>;
-                        console.log(`dict`, dict);
-                        const func = () => {
-                            const result = convert(data as any)({} as any);
-                            Object.entries(result).forEach(([k, v]) => {
-                                dict[k] = v;
-                            });
-                        };
-                        return checkTransaction(db)(func);
+                    const converted = convertTo(data.value as any);
+                    console.log(`isCreating.data`, data);
+                    console.log(`isCreating.converted`, converted);
+                    if (listType === 'dictionary') {
+                        if (data.key == null) throw new Error('no key');
+                        const next = { ...value, [data.key]: converted };
+                        console.log(`isCreating.next`, next);
+                        formContext.setValue(spread.name, next);
+                        return;
                     }
-                    case 'list':
-                    case 'set': {
-                        const $set = (innerProps.row.original[name] ?? []) as DBSet<any>;
-                        console.log('set', $set);
-                        const func = () => {
-                            const result = convert(data as any)([]) as any[];
-                            (innerProps.row.original as any)[name] = [...$set, ...result];
-                        };
-                        return checkTransaction(db)(func);
-                    }
+                    const next = [...value, converted];
+                    console.log(`isCreating.next`, next);
+                    formContext.setValue(spread.name, next);
+                    return;
                 }
+                const func = convert(data);
+                checkTransaction(db)(func);
+                onSuccess();
             },
-            [db, isCreating, listType, name, ofObjectType, innerProps.row.original, innerProps.table]
+            [ofTypeKind, ofObjectType, isCreating, db, onSuccess, listType, value, innerProps.row.original, spread.name, formContext]
         );
         const items = listType === 'dictionary' ? (Object.entries(value) as [string, TListOf][]) : (value as TListOf[]);
-        const label = toHeader({ header: header }, name);
-        const JITTListItemInsert = JITTListItemEntry<TParent>({ onSubmit, objectType, ofObjectType, listType });
-        return (
-            <fieldset name={name} className='flex flex-col w-full'>
-                <legend>{label}</legend>
+        const JITTListItemInsert = JITTListItemEntry<TParent, TListOf>({ submit: onSubmit, objectType, ofObjectType, listType, ofTypeKind, labelPropertyName: (labelPropertyName ?? '') as any });
+        return spread.disabled ? null : (
+            <fieldset name={spread.name} className={['flex flex-col w-full', spread.classes.root].join(' ')}>
+                <legend>{spread.label}</legend>
                 <div className='flex flex-row justify-end'>
                     <JITTListItemInsert {...innerProps} />
                 </div>
@@ -208,34 +216,69 @@ export function JITTMultiControl<TParent, TName extends Path<TParent>, TListOf, 
     return MultiElement;
 }
 
-export type JITTListItemEntryProps = {
+export type JITTListItemEntryProps<TListOf> = {
     ofObjectType: RealmPrimitives | RealmObjects;
+    labelPropertyName: Path<TListOf>;
     listType: ListTypeKind;
-    objectType: string;
-    onSubmit: (value: any) => Promise<void>;
+    ofTypeKind: 'primitive' | 'embedded' | 'reference';
+    objectType: RealmObjects | RealmPrimitives;
+    submit: (value: any) => Promise<void>;
 };
-export function JITTListItemEntry<TParent>({ onSubmit, objectType, ofObjectType, listType }: JITTListItemEntryProps) {
-    function JITTListItemEntryInner(props: Parameters<Exclude<MRT_ColumnDef<TParent & MRT_RowData, any>['Edit'], undefined>>[0]) {
-        const columns =
-            listType === 'dictionary'
-                ? ([{ accessorKey: 'key', ...$metas.string({ propertyName: 'key', header: 'Key' }) }, ...collections[ofObjectType].getColumns('value')] as DefinedMRTColumns<TParent & MRT_RowData>)
-                : (collections[ofObjectType].getColumns('value') as DefinedMRTColumns<TParent & MRT_RowData>);
-        const EditControls = () => <>{columns.map(({ Edit }, ix) => (Edit == null ? <></> : <Edit key={ix} {...props} />))}</>;
-        const [isOpen, toggleModal, showModal, hideModal] = useToggler(false);
 
+export function JITTListItemEntry<TParent, TListOf>({ submit, objectType, ofObjectType, labelPropertyName, listType, ofTypeKind }: JITTListItemEntryProps<TListOf>) {
+    function JITTListItemEntryInner(props: Parameters<Exclude<MRT_ColumnDef<any, any>['Edit'], undefined>>[0]) {
+        const getColumns =
+            ofTypeKind === 'primitive' || ofTypeKind === 'embedded'
+                ? collections[ofObjectType].getColumns
+                : (...pre: string[]) => [$metas.lookup([...pre].join('.'), { objectType: ofObjectType as RealmObjects, labelPropertyName: labelPropertyName as any }, false)] as DefinedMRTColumns<any>;
+        const columns: DefinedMRTColumns<any> =
+            listType === 'dictionary' ? ([$metas.string('key', { header: 'Key' }, false), ...getColumns('value')] as DefinedMRTColumns<any>) : (getColumns('value') as DefinedMRTColumns<any>);
+        const initializer = $initialCollection[ofObjectType];
+        const table = useMaterialReactTable({
+            columns,
+            data: [],
+            renderCreateRowDialogContent: renderCreateModal(initializer, (d: any) => submit(d).then(() => table.setCreatingRow(null))),
+            muiTableContainerProps: {
+                classes: {
+                    root: 'hidden'
+                }
+            } as TableContainerProps,
+            muiTablePaperProps: {
+                classes: {
+                    root: 'hidden'
+                }
+            } as PaperProps,
+            muiTableProps: {
+                classes: {
+                    root: 'hidden'
+                }
+            } as TableProps
+        });
+        console.log(`table`, table);
+        console.log(`table.state`, table.getState());
         return (
             <>
-                <JITTItemModal
-                    onSubmit={onSubmit}
-                    hideModal={hideModal}
-                    isOpen={isOpen}
-                    listType={listType}
-                    ofObjectType={ofObjectType}
-                    init={$initialCollection[ofObjectType]}
-                    objectType={objectType}
-                    EditControls={EditControls}></JITTItemModal>
+                <MaterialReactTable
+                    table={table}
+                    // muiTablePaperProps={{
+                    //     className: 'hidden',
+                    //     sx: {
+                    //         display: 'hidden'
+                    //     }
+                    // }}
+                    // muiTableContainerProps={{
+                    //     sx: {
+                    //         display: 'hidden'
+                    //     }
+                    // }}
+                    // muiTableProps={{
+                    //     sx: {
+                    //         display: 'hidden'
+                    //     }
+                    // }}
+                />
                 <Tooltip title='Insert a new record'>
-                    <IconButton color='primary' type='button' onClick={showModal}>
+                    <IconButton color='primary' type='button' onClick={() => table.setCreatingRow(true)}>
                         <FontAwesomeIcon icon={faPlusSquare} className='block object-contain w-5 h-5' />
                     </IconButton>
                 </Tooltip>
@@ -245,92 +288,95 @@ export function JITTListItemEntry<TParent>({ onSubmit, objectType, ofObjectType,
     return JITTListItemEntryInner;
 }
 
-export function JITTItemModal<TParent extends MRT_RowData, TListOf>({
-    EditControls,
-    onSubmit,
-    isOpen,
-    hideModal,
-    ...props
-}: {
-    isOpen: boolean;
-    hideModal: () => void;
-    init: () => TListOf;
-    ofObjectType: RealmPrimitives | RealmObjects;
-    listType: ListTypeKind;
-    objectType: string;
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    EditControls: React.FunctionComponent<{}>;
-    onSubmit: (value: any) => Promise<void>;
-}) {
-    const initializer: () => Promise<TListOf> = (async () => {
-        return is.realmType.primitive(props.ofObjectType) ? { value: await props.init() } : await $initialCollection[props.ofObjectType]();
-    }) as any;
-    const formContext = useForm({
-        criteriaMode: 'all' as const,
-        mode: 'onBlur' as const,
-        reValidateMode: 'onChange' as const,
-        defaultValues: initializer
-    });
-    const { onSuccess } = useInvalidator(props.objectType);
+// export function JITTItemModal<TParent extends MRT_RowData, TListOf>({
+//     EditControls,
+//     onSubmit,
+//     isOpen,
+//     hideModal,
+//     columns,
+//     ...props
+// }: {
+//     isOpen: boolean;
+//     hideModal: () => void;
+//     init: () => Promise<TListOf>;
+//     ofObjectType: RealmPrimitives | RealmObjects;
+//     listType: ListTypeKind;
+//     objectType: string;
+//     // eslint-disable-next-line @typescript-eslint/ban-types
+//     EditControls: React.FunctionComponent<any>;
+//     columns: DefinedMRTColumns<{ key?: string; value: TListOf }>;
+//     onSubmit: (value: any) => Promise<void>;
+// }) {
+//     const initializer: () => Promise<TListOf> = (async () => {
+//         return is.realmType.primitive(props.ofObjectType) ? { value: await props.init() } : await $initialCollection[props.ofObjectType]();
+//     }) as any;
+//     const formContext = useForm({
+//         criteriaMode: 'all' as const,
+//         mode: 'onBlur' as const,
+//         reValidateMode: 'onChange' as const,
+//         defaultValues: initializer
+//     });
 
-    const $onSubmit = useCallback(
-        (ev: React.FormEvent) => {
-            ev.preventDefault();
-            ev.stopPropagation();
-            formContext.handleSubmit((data) => {
-                console.log('onSubmit.data', data);
-                onSubmit(data).then(onSuccess);
-            })(ev);
-        },
-        [formContext, onSubmit, onSuccess]
-    );
-    const onBlur = useCallback(
-        (name: string) => (ev: React.FocusEvent) => {
-            console.log('onBlur', name, ev);
-        },
-        []
-    );
-    return (
-        <OnBlurContext.Provider value={onBlur}>
-            <Modal open={isOpen} onClose={hideModal}>
-                <Box className='absolute top-1/2 left-1/2 -translate-x-1/2 w-[400px] bg-neutral-300 border-solid border-2 border-white shadow-lg pt-2 px-4 pb-3'>
-                    <FormProvider {...formContext}>
-                        <form onSubmit={$onSubmit}>
-                            {/* <DialogTitle variant='h4' className='font-bold text-white bg-slate-600 font-rubik'>
-                                {toProperFromCamel(props.objectType)}
-                            </DialogTitle>
-                            <Divider variant='middle' className='border-yellow-700' /> */}
-                            {/* <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}></DialogContent> */}
-                            <EditControls />
-                            {/* <Divider variant='middle' className='border-yellow-700' /> */}
-                            <div className='flex justify-end w-full'>
-                                <Tooltip title='Cancel'>
-                                    <IconButton aria-label='Cancel' onClick={hideModal}>
-                                        <FontAwesomeIcon icon={faCancel} className='block object-contain w-8 h-8' />
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip title='Save'>
-                                    <IconButton aria-label='Save' color='info' type='submit'>
-                                        {formContext.formState.isSubmitting ? <CircularProgress size={18} /> : <FontAwesomeIcon icon={faFloppyDisk} className='block object-contain w-8 h-8' />}
-                                    </IconButton>
-                                </Tooltip>
-                            </div>
-                            {/* <DialogActions>
-                                <Tooltip title='Cancel'>
-                                    <IconButton aria-label='Cancel' onClick={hideModal}>
-                                        <FontAwesomeIcon icon={faCancel} className='block object-contain w-8 h-8' />
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip title='Save'>
-                                    <IconButton aria-label='Save' color='info' type='submit'>
-                                        {formContext.formState.isSubmitting ? <CircularProgress size={18} /> : <FontAwesomeIcon icon={faFloppyDisk} className='block object-contain w-8 h-8' />}
-                                    </IconButton>
-                                </Tooltip>
-                            </DialogActions> */}
-                        </form>
-                    </FormProvider>
-                </Box>
-            </Modal>
-        </OnBlurContext.Provider>
-    );
-}
+//     table.setCreatingRow(createRow(formContext.getValues()));
+
+//     const $onSubmit = useCallback(
+//         (ev: React.FormEvent) => {
+//             ev.preventDefault();
+//             ev.stopPropagation();
+//             formContext.handleSubmit((data) => {
+//                 console.log('onSubmit.data', data);
+//                 onSubmit(data);
+//             })(ev);
+//         },
+//         [formContext, onSubmit, onSuccess]
+//     );
+//     const onBlur = useCallback(
+//         (name: string) => (ev: React.FocusEvent) => {
+//             console.log('onBlur', name, ev);
+//         },
+//         []
+//     );
+//     return (
+//         <OnBlurContext.Provider value={onBlur}>
+//             <Modal open={isOpen} onClose={hideModal}>
+//                 <Box className='absolute top-1/2 left-1/2 -translate-x-1/2 w-[400px] bg-neutral-300 border-solid border-2 border-white shadow-lg pt-2 px-4 pb-3'>
+//                     <FormProvider {...formContext}>
+//                         <form onSubmit={$onSubmit}>
+//                             {/* <DialogTitle variant='h4' className='font-bold text-white bg-slate-600 font-rubik'>
+//                                 {toProperFromCamel(props.objectType)}
+//                             </DialogTitle>
+//                             <Divider variant='middle' className='border-yellow-700' /> */}
+//                             {/* <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}></DialogContent> */}
+//                             <EditControls />
+//                             {/* <Divider variant='middle' className='border-yellow-700' /> */}
+//                             <div className='flex justify-end w-full'>
+//                                 <Tooltip title='Cancel'>
+//                                     <IconButton aria-label='Cancel' onClick={hideModal}>
+//                                         <FontAwesomeIcon icon={faCancel} className='block object-contain w-8 h-8' />
+//                                     </IconButton>
+//                                 </Tooltip>
+//                                 <Tooltip title='Save'>
+//                                     <IconButton aria-label='Save' color='info' type='submit'>
+//                                         {formContext.formState.isSubmitting ? <CircularProgress size={18} /> : <FontAwesomeIcon icon={faFloppyDisk} className='block object-contain w-8 h-8' />}
+//                                     </IconButton>
+//                                 </Tooltip>
+//                             </div>
+//                             {/* <DialogActions>
+//                                 <Tooltip title='Cancel'>
+//                                     <IconButton aria-label='Cancel' onClick={hideModal}>
+//                                         <FontAwesomeIcon icon={faCancel} className='block object-contain w-8 h-8' />
+//                                     </IconButton>
+//                                 </Tooltip>
+//                                 <Tooltip title='Save'>
+//                                     <IconButton aria-label='Save' color='info' type='submit'>
+//                                         {formContext.formState.isSubmitting ? <CircularProgress size={18} /> : <FontAwesomeIcon icon={faFloppyDisk} className='block object-contain w-8 h-8' />}
+//                                     </IconButton>
+//                                 </Tooltip>
+//                             </DialogActions> */}
+//                         </form>
+//                     </FormProvider>
+//                 </Box>
+//             </Modal>
+//         </OnBlurContext.Provider>
+//     );
+// }

@@ -44,9 +44,8 @@ export class MercariSubSubCategory extends Realm.Object<IMercariSubSubCategory> 
                         });
                     });
             })
-        );    
+        );
     }
-
     static generateFullName(arg: IMercariSubSubCategory) {
         return [arg.parent?.parent?.name, arg.parent?.name, arg.name].filter((x) => x != null).join('::') ?? '';
     }
@@ -56,8 +55,8 @@ export class MercariSubSubCategory extends Realm.Object<IMercariSubSubCategory> 
     taxon: OptionalEntity<IProductTaxonomy>;
     hashTags!: DBSet<Entity<IHashTag>>;
     name!: string;
-    parent: OptionalEntity<IMercariSubCategory>;
     fullname!: string;
+    parent: OptionalEntity<IMercariSubCategory>;
     customItemFields!: DBList<ICustomItemField>;
     get categoryID(): Optional<string> {
         return this.parent?.categoryID;
@@ -75,8 +74,8 @@ export class MercariSubSubCategory extends Realm.Object<IMercariSubSubCategory> 
         const pu = parentedUpdate<'parent', IMercariSubCategory, IMercariSubSubCategory>;
         taxonUpdater.bind(this, pu.bind(this, 'parent'))();
         categorySelectorUpdater.bind(this)();
-        hashTaggedUpdater.bind(this)();  
-        this.fullname = [this.parent?.parent?.name, this.parent?.name, this.name].filter(x => x != null).join('::');
+        hashTaggedUpdater.bind(this)();
+        this.fullname = [this.parent?.parent?.name, this.parent?.name, this.name].filter((x) => x != null).join('::');
         const merged = mergeProductTaxonomy(this.taxon, this.parent?.taxon);
         if (merged) {
             this.taxon = merged as any;

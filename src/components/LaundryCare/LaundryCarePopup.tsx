@@ -193,7 +193,7 @@ export function LaundryCarePopup({ popFrame, onClosing }: { popFrame: () => void
                     register={register}
                     title='Permanent Press'
                     elements={[
-                        { SvgElement: DryCleanPermanentPress, name: 'dry-clean-permanent-press' },
+                        { SvgElement: DryCleanPermanentPress, name: 'dry-clean-permanent-press' },                          
                         { SvgElement: DryCleanPetroleumSolventPermanentPress, name: 'dry-clean-petroleum-solvent-permanent-press' },
                         { SvgElement: TumbleDryPermanentPress, name: 'tumble-dry-permanent-press' },
                         { SvgElement: MachineWashPermanentPress, name: 'machine-wash-permanent-press' },

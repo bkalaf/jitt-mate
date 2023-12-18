@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { stringMeta } from './metas/stringMeta';
 import { materialCompositionColumns } from '../../dto/getColumns/materialComposition';
 import { addressColumns } from '../../dto/getColumns/address';
 import { scanColumns } from '../../dto/getColumns/scan';
@@ -7,7 +6,6 @@ import { productTaxonomyColumns } from '../../dto/getColumns/productTaxonomy';
 import { hashTagUsageColumns } from '../../dto/getColumns/hashTagUsage';
 import { hashTagColumns } from '../../dto/getColumns/hashTag';
 import { brandColumns } from '../../dto/getColumns/brand';
-import { barcodeColumns } from '../../dto/getColumns/barcode';
 import { locationSegmentColumns } from '../../dto/getColumns/locationSegment';
 import { mercariBrandColumns } from '../../dto/getColumns/mercariBrand';
 import { classifierColumns } from '../../dto/getColumns/classifier';
@@ -21,65 +19,49 @@ import { rnColumns } from '../../dto/getColumns/rn';
 import { productColumns } from '../../dto/getColumns/product';
 import { skuColumns } from '../../dto/getColumns/sku';
 import { $metas } from './metas';
+import { measurementsColumns } from '../../dto/getColumns/measurements';
 export const collections: Record<string, StaticTableDefinitions<any>> = {
     string: {
         getColumns: (): DefinedMRTColumns => [
-            {
-                accessorKey: 'value',
-                ...$metas.string({ propertyName: 'value', header: 'Value', required: true, maxLength: 150 })
-            }
+            $metas.string('value', { required: true, maxLength: 150 }, false)
         ]
     },
     int: {
         getColumns: (): DefinedMRTColumns => [
-            {
-                accessorKey: 'value',
-                ...$metas.int('value', { header: 'Value' })
-            }
+            $metas.int('value', { required: true }, false)
         ]
     },
     float: {
         getColumns: (): DefinedMRTColumns => [
-            {
-                accessorKey: 'value',
-                ...$metas.float('value', { header: 'Value', required: true })
-            }
+            $metas.float('value', { precision: 4, required: true }, false)
         ]
     },
     objectId: {
         getColumns: (): DefinedMRTColumns => [
-            {
-                accessorKey: 'value',
-                ...stringMeta({ propertyName: 'value', header: 'Value', required: true })
-            }
+            $metas.oid
         ]
     },
     uuid: {
         getColumns: (): DefinedMRTColumns => [
-            {
-                accessorKey: 'value',
-                ...stringMeta({ propertyName: 'value', header: 'Value', required: true })
-            }
+            $metas.string('value', { required: true }, false)
         ]
     },
     date: {
         getColumns: (): DefinedMRTColumns => [
-            {
-                accessorKey: 'value',
-                ...$metas.date('value', { header: 'Value' })
-            }
+            $metas.date('value', {}, false)
         ]
     },
     hashTagUsage: hashTagUsageColumns,
     hashTag: hashTagColumns,
     brand: brandColumns,
-    barcode: barcodeColumns,
+    // barcode: barcodeColumns,
     locationSegment: locationSegmentColumns,
     mercariBrand: mercariBrandColumns,
     classifier: classifierColumns,
     address: addressColumns,
     scan: scanColumns,
     productTaxonomy: productTaxonomyColumns,
+    measurements: measurementsColumns,
     materialComposition: materialCompositionColumns,
     mercariCategory: mercariCategoryColumns,
     mercariSubCategory: mercariSubCategoryColumns,

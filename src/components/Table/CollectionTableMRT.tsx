@@ -25,15 +25,13 @@ export function CollectionTableMRT<T extends MRT_RowData & EntityBase & IRealmEn
             }
         }
     } as any);
-
+    console.log(`CollectionTableMRT.options`, table.options);
     return (
         <>
-            <section className='flex flex-col'>
-                <MaterialReactTable table={table} />
-                <div className='flex items-center justify-end w-full'>
-                    <span className='inline-flex'>{new Date(dataUpdatedAt).toLocaleString()}</span>
-                </div>
-            </section>
+            <MaterialReactTable table={table} />
+            <div className='flex items-center justify-end w-full'>
+                <span className='inline-flex'>{new Date(dataUpdatedAt).toLocaleString()}</span>
+            </div>
         </>
     );
 }

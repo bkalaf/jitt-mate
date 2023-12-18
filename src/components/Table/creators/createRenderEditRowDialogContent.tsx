@@ -1,21 +1,17 @@
-import { MRT_EditCellTextField, MRT_Row, createRow } from 'material-react-table';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { MRT_Row } from 'material-react-table';
 import { CircularProgress, DialogActions, DialogContent, DialogTitle, Divider, IconButton, Tooltip } from '@mui/material';
 import { toProperFromCamel } from '../../../common/text/toProperCase';
-import { UseMutateAsyncFunction, useMutation } from '@tanstack/react-query';
-import { ConvertToRealmFunction, _Serialized } from './createRenderCreateRowDialogContent';
+import { useMutation } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
-import { FormContainer, FormProvider, useForm, useFormContext } from 'react-hook-form-mui';
+import { FormProvider, useForm } from 'react-hook-form-mui';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCancel, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
 import { ignore } from '../../../common/functions/ignore';
-import { $convertToRealm } from './$convertToRealm';
 import { updateRecordProperty } from '../../../hooks/updateRecord';
 import { useInvalidator } from '../../../hooks/useInvalidator';
-import { useClearCRUD } from 'src/hooks/useClearCRUD';
 import { useLocalRealm } from '../../../routes/loaders/useLocalRealm';
-import { $initialCollection } from './$initialCollection';
 import { OnBlurContext } from './OnBlurContext';
-import { setProperty } from '../../../common/object/setProperty';
 
 export function toEditFormInitializer<T extends AnyObject>(row: MRT_Row<T>) {
     return () => Promise.resolve(row.original.toJSON() as T);
@@ -56,7 +52,7 @@ export function createRenderEditRowDialogContentRHF<T extends AnyObject>(collect
         });
         const { isSaving } = props.table.getState();
         const onBlur = useCallback(
-            (name: string) => (ev: React.FocusEvent<HTMLInputElement>) => {
+            (name: string) => () => {
                 mutateAsync({ propertyNames: [name], row: props.row });
                 // const row = props.row;
                 // console.log('props.row', props.row, 'ev.target.value', ev.target.value);

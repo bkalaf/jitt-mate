@@ -37,9 +37,9 @@ export function AppRoot() {
             <LogInDialog open={loginDialogOpen} toggler={toggleLoginDialogOpen} />
             {isAuthenticated() && <SchemaLoader />}
             <LeftDrawer open={leftDrawerOpen} toggleOpen={toggleLeftDrawerOpen} setClosed={setLeftDrawerClosed} />
-            <BoundingClientElement>
+            <section className='flex flex-col flex-grow overflow-auto'>
                 <Outlet />
-            </BoundingClientElement>
+            </section>
             <Toaster />
             {/* <footer className='w-full h-auto flex bottom-0 sticky bg-black text-white p-0.5 text-lg font-semibold justify-around'>
                 <span className='inline-flex'>{location.pathname}</span>

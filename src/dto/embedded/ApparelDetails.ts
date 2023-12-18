@@ -51,7 +51,9 @@ export class ApparelDetails extends Realm.Object<IApparelDetails> implements IAp
     topAdornment: Optional<keyof TopAdornments>;
     waistType: Optional<keyof WaistTypes>;
     update() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if (this.measurements == null) this.measurements = {} as any;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if (this.clothingCare == null) this.clothingCare = [] as any;
         return this;
     }

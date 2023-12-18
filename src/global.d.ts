@@ -4,6 +4,7 @@ import { ColumnDef, ColumnMeta, FilterFn, IdentifiedColumnDef, Row, RowData, Sor
 import { UseMutateFunction } from '@tanstack/react-query';
 import { RankingInfo } from '@tanstack/match-sorter-utils';
 import { MRT_ColumnDef, MRT_Row, MRT_RowData, MRT_TableOptions } from 'material-react-table';
+import { UseFormReturn } from 'react-hook-form-mui';
 
 declare global {
     export type IDependency = [action: 'enable' | 'disable', property: string, predicate: (value: any) => boolean];
@@ -324,6 +325,9 @@ declare global {
     export type Unserialized<T extends AnyObject> = {
         [P in DBProperties<T>]: T[P] extends DBList<infer R> ? R[] : T[P] extends DBSet<infer R> ? R[] : T[P] extends DBDictionary<infer R> ? Record<string, R> : T[P];
     };
+    export type BarcodeSubmitter = (formContext: UseFormReturn) => (index: number) => (value: string) => void;
+    export type CtorResult<T extends AnyObject> = Pick<T, DBProperties<T>>
+
     export type ConvertToRealmFunction<T extends AnyObject> = (payload: _Serialized<T, true>) => Unserialized<T>;
     export interface SymbolConstructor {
         readonly convertToRealm: unique symbol;

@@ -78,6 +78,9 @@ export class Sku extends Realm.Object<ISku> implements ISku {
         return this;
     }
     _id: BSON.ObjectId = new BSON.ObjectId();
+    get summaryName(): string {
+        return this.product?.summaryName ?? '';
+    }
     @wrapInTransactionDecorator()
     update() {
         if (this.hashTags == null) this.hashTags = [] as any;

@@ -1,53 +1,22 @@
-import { createMRTColumnHelper } from 'material-react-table';
 import { ILocationSegment } from '../../dal/types';
-import { barcodeMeta } from '../../components/Table/barcodeMeta';
-import { boolMeta } from '../../components/Table/metas/boolMeta';
-import { dbListMeta } from '../../components/Table/metas/dbListMeta';
-import { enumMeta } from '../../components/Table/metas/enumMeta';
-import { objectIdMeta } from '../../components/Table/metas/objectIdMeta';
-import { stringMeta } from '../../components/Table/metas/stringMeta';
 import { LocationKinds } from '../../dal/enums/locationKinds';
 import { LocationLabelColors, LocationLabelColorsColors } from '../../dal/enums/locationLabelColors';
 import { LocationTypes, LocationTypesColors } from '../../dal/enums/locationTypes';
-
-export const locationSegmentHelper = createMRTColumnHelper<ILocationSegment>();
+import { $metas } from '../../components/Table/metas';
 
 export const locationSegmentColumns = {
-    getColumns: (...pre: string[]): DefinedMRTColumns =>
-        [
-            locationSegmentHelper.accessor('_id', objectIdMeta),
-            locationSegmentHelper.accessor('name', {
-                ...stringMeta({ propertyName: 'name', header: 'Name', required: true, maxLength: 50 })
-            }),
-            locationSegmentHelper.accessor('barcode', {
-                ...barcodeMeta('barcode', { header: '' }),
-                enableEditing: false,
-                enableClickToCopy: true,
-                sortingFn: 'sortBarcode'
-            }) as any,
-            locationSegmentHelper.accessor('barcode.valid', {
-                ...boolMeta({ propertyName: 'valid', header: 'Valid', readOnly: true }),
-                enableEditing: false,
-                Edit: undefined
-            }),
-            locationSegmentHelper.accessor('upcs', {
-                ...dbListMeta<ILocationSegment>('upcs', 'barcode', {
-                    header: 'UPCS',
-                    parentObjectType: 'locationSegment',
-                    ItemComponent: ({ payload }: { payload: ILocationSegment }) => [payload.barcode?.rawValue, payload.barcode?.type].join('/')
-                })
-            }),
-            locationSegmentHelper.accessor('notes', {
-                ...stringMeta({ propertyName: 'notes', header: 'Notes', maxLength: 200 })
-            }),
-            locationSegmentHelper.accessor('type', {
-                ...enumMeta('type', LocationTypes, { colorMap: LocationTypesColors, header: 'Location Type' })
-            }),
-            locationSegmentHelper.accessor('kind', {
-                ...enumMeta('kind', LocationKinds, { header: 'Location Kind' })
-            }),
-            locationSegmentHelper.accessor('color', {
-                ...enumMeta('color', LocationLabelColors, { colorMap: LocationLabelColorsColors, header: 'Label Color' })
-            })
-        ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns
+    getColumns: (...pre: string[]): DefinedMRTColumns<ILocationSegment> =>
+        (
+            [
+                $metas.oid,
+                $metas.string('name', { required: true, maxLength: 50 }, false),
+                $metas.barcode('upcs', {}, false),
+                $metas.string('notes', { maxLength: 200 }, false),
+                $metas.enum('type', { enumMap: LocationTypes, colorMap: LocationTypesColors, header: 'Location Type' }, false),
+                $metas.enum('kind', { enumMap: LocationKinds, header: 'Location Kind' }, false),
+                $metas.enum('color', { enumMap: LocationLabelColors, colorMap: LocationLabelColorsColors }, false)
+            ] as DefinedMRTColumns<ILocationSegment>
+        ).map((x) =>
+            x.columnDefType === 'group' ? x : x.accessorKey != null ? { ...x, accessorKey: [...pre, x.accessorKey].join('.') } : x.id != null ? { ...x, id: [...pre, x.id].join('.') } : x
+        ) as DefinedMRTColumns<ILocationSegment>
 } as StaticTableDefinitions<ILocationSegment>;

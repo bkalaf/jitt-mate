@@ -1,36 +1,21 @@
-import { createMRTColumnHelper } from 'material-react-table';
 import { IClassifier, IHashTag, IMercariSubSubCategory } from '../../dal/types';
-import { boolMeta } from '../../components/Table/metas/boolMeta';
-import { lookupMeta } from '../../components/Table/metas/lookupMeta';
-import { objectIdMeta } from '../../components/Table/metas/objectIdMeta';
-import { percentageMeta } from '../../components/Table/metas/percentageMeta';
-import { stringMeta } from '../../components/Table/metas/stringMeta';
-import { productTaxonomyColumns } from './productTaxonomy';
-
-export const classifierHelper = createMRTColumnHelper<IClassifier>();
+import { $metas } from '../../components/Table/metas';
 
 export const classifierColumns = {
-    getColumns: (...pre: string[]): DefinedMRTColumns =>
-        [
-            classifierHelper.accessor('_id', objectIdMeta),
-            classifierHelper.accessor('name', {
-                ...stringMeta({ propertyName: 'name', header: 'Name', required: true, maxLength: 50 })
-            }),
-            classifierHelper.accessor('isAthletic', {
-                ...boolMeta({ propertyName: 'isAthletic', header: 'Is Athletic', defaultValue: false })
-            }),
-            classifierHelper.accessor('mercariSubSubCategory', {
-                ...lookupMeta<IMercariSubSubCategory, IClassifier>('mercariSubSubCategory', 'mercariSubSubCategory', 'fullname', { header: 'Full Name' })
-            }),
-            classifierHelper.accessor('shortname', {
-                ...stringMeta({ propertyName: 'shortname', header: 'Short Name', maxLength: 30 })
-            }),
-            classifierHelper.accessor('hashTags', {
-                ...$metas.set<IClassifier, IHashTag, 'hashTags'>('hashTags', 'name', 'classifier', 'reference', 'hashTag', 'set', { header: 'Hash Tags' })
-            }),
-            classifierHelper.accessor('shipWeightPercent', {
-                ...percentageMeta('shipWeightPercent', { header: 'Ship Weight %' })
-            }),
-            ...(productTaxonomyColumns.getColumns('taxon') as DefinedMRTColumns<IClassifier>)
-        ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns
+    getColumns: (...pre: string[]): DefinedMRTColumns<IClassifier> =>
+        (
+            [
+                $metas.oid,
+                $metas.string<IClassifier>('name', { required: true, maxLength: 50 }, false),
+                $metas.bool<IClassifier>('isAthletic', { defaultValue: false }, false),
+                $metas.lookup<IClassifier, IMercariSubSubCategory>('mercariSubSubCategory', { objectType: 'mercariSubSubCategory', labelPropertyName: 'fullname' }, false),
+                $metas.string<IClassifier>('shortname', { maxLength: 30 }, false),
+
+                $metas.percent<IClassifier>('shipWeightPercent', { min: 1, max: 2 }, false),
+                $metas.embed<IClassifier>('taxon', { getColumnsKey: 'productTaxonomy' }, false),
+                $metas.set<IClassifier, IHashTag, 'hashTags'>('hashTags', 'brand', 'hashTag', 'name', {}, false)
+            ] as DefinedMRTColumns<IClassifier>
+        ).map((x) =>
+            x?.columnDefType === 'group' ? x : x.accessorKey != null ? { ...x, accessorKey: [...pre, x.accessorKey].join('.') } : x.id != null ? { ...x, id: [...pre, x.id].join('.') } : x
+        ) as DefinedMRTColumns<IClassifier>
 } as StaticTableDefinitions<IClassifier>;

@@ -126,7 +126,7 @@ export function useMUIReactTable<T extends MRT_RowData>({
             renderDetailPanel,
             renderToolbarInternalActions,
             renderRowActions,
-            renderCreateRowDialogContent: createRenderCreateRowDialogContentRHF(collection, insertAsync),
+            renderCreateRowDialogContent: createRenderCreateRowDialogContentRHF(collection),
             renderEditRowDialogContent: createRenderEditRowDialogContentRHF(collection),
             data: data ?? [],
             enableRowNumbers,

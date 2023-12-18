@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { MRT_Row, MRT_TableInstance } from 'material-react-table';
 import { QueryClientProvider } from '@tanstack/react-query';

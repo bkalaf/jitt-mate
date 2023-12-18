@@ -1,32 +1,21 @@
 import { createMRTColumnHelper } from 'material-react-table';
-import { lookupMeta } from '../../components/Table/metas/lookupMeta';
-import { objectIdMeta } from '../../components/Table/metas/objectIdMeta';
-import { stringMeta } from '../../components/Table/metas/stringMeta';
 import { IBrand, IMercariBrand, IHashTag } from '../../dal/types';
 import { $metas } from '../../components/Table/metas';
 
 export const brandHelper = createMRTColumnHelper<IBrand>();
 export const brandColumns = {
-    getColumns: (...pre: string[]): DefinedMRTColumns =>
-        [
-            brandHelper.accessor('_id', objectIdMeta),
-            brandHelper.accessor('name', {
-                ...stringMeta({ propertyName: 'name', header: 'Name', required: true, maxLength: 100 })
-            }),
-            brandHelper.accessor('folder', {
-                ...stringMeta({ propertyName: 'folder', header: 'Folder' })
-            }),
-            brandHelper.accessor('mercariBrand', {
-                ...lookupMeta<IMercariBrand, IBrand>('mercariBrand', 'mercariBrand', 'name', { header: 'Mercari Brand' })
-            }),
-            brandHelper.accessor('website', {
-                ...stringMeta({ propertyName: 'website', header: 'URL', type: 'url' })
-            }),
-            brandHelper.accessor('parent', {
-                ...lookupMeta<IBrand, IBrand>('parent', 'brand', 'name', { header: 'Parent' })
-            }),
-            brandHelper.accessor('hashTags', {
-                ...$metas.set<IBrand, IHashTag, 'hashTags'>('hashTags', 'name', 'brand', 'reference', 'hashTag', 'set', { header: 'Hash Tags' })
-            })
-        ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns
+    getColumns: (...pre: string[]): DefinedMRTColumns<IBrand> =>
+        (
+            [
+                $metas.oid,
+                $metas.string('name', { required: true, maxLength: 100 }, false),
+                $metas.string('folder', { fn: (x: IBrand) => x.folder }, false),
+                $metas.lookup<IBrand, IMercariBrand>('mercariBrand', { objectType: 'mercariBrand', labelPropertyName: 'name' }, false),
+                $metas.string('website', { maxLength: 150, type: 'url', header: 'URL' }, false),
+                $metas.lookup<IBrand, IBrand>('parent', { objectType: 'brand', labelPropertyName: 'name' }, false),
+                $metas.set<IBrand, IHashTag, 'hashTags'>('hashTags', 'brand', 'hashTag', 'name', {}, false)
+            ] as DefinedMRTColumns<IBrand>
+        ).map((x) =>
+            x.columnDefType === 'group' ? x : x.accessorKey != null ? { ...x, accessorKey: [...pre, x.accessorKey].join('.') } : x.id != null ? { ...x, id: [...pre, x.id].join('.') } : x
+        ) as DefinedMRTColumns<IBrand>
 } as StaticTableDefinitions<IBrand>;

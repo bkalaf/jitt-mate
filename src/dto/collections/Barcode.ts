@@ -171,11 +171,12 @@ export class Barcode extends Realm.Object<IBarcode> implements IBarcode {
     valid = false;
     type: Optional<BarcodeTypesKey>;
     static ctor(value: string, callRealm = false) {
+        const [valid, type] = Barcode.classify(value);
         const result = {
             rawValue: value,
-            type: 'ean13',
-            valid: false
-        } as WithoutAccessors<IBarcode>;
+            type,
+            valid
+        } as CtorResult<IBarcode>;
         if (callRealm) {
             const db = window.$$store;
             if (db == null) throw new Error('no realm');

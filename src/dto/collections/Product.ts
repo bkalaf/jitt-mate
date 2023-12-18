@@ -39,7 +39,7 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
     classifier: OptionalEntity<IClassifier>;
     color: Optional<keyof Colors>;
     descriptiveText: Optional<string>;
-    dimensions: IDimensions = {} as any;
+    dimensions: IDimensions & DBDictionary<number> = {} as any;
     features: DBList<string> = [] as any;
     flags: DBSet<'isAthletic' | 'isDecorative' | 'isGraphic' | 'isRare' | 'isVintage' | 'isCollectible' | 'isDiscontinued' | 'isMediaMail' | 'isMissingTags'> = [] as any;
     folder!: BSON.UUID;
@@ -116,6 +116,14 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
     }
     get effectiveTaxon(): OptionalEntity<IProductTaxonomy> {
         return this.taxon;
+    }
+    static updateTaxon(product: IProduct) {
+        taxonUpdater.bind(product)();
+        const merged = mergeProductTaxonomy(product.taxon, product.classifier?.taxon);
+        if (merged) {
+            product.taxon = merged as any;
+        }
+        return product;
     }
     update(this: Entity<IProduct>): Entity<IProduct> {
         if (this._id == null) this._id = new BSON.ObjectId();

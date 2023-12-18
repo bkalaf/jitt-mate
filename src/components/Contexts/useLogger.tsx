@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import * as fs from 'graceful-fs';
 
 export type LogTypes = 'db' | 'error' | 'schema' | 'data' | 'defs' | 'view'
 
@@ -13,13 +12,6 @@ export function useLogger() {
         // }
         // writeProcess(msg);
         // console.log(msg);
-    }, [writeProcess]);
+    }, []);
     return writeFile;
-}
-
-export function useLog(category: LogTypes) {
-    const log = useLogger();
-    return useCallback((...args: string[]) => {
-        log(args.join('\n'), category)
-    }, [category, log])
 }

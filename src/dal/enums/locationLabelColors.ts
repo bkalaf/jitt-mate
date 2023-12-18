@@ -1,4 +1,5 @@
-import { getAssoc, objectMap, toEnumMap } from './locationTypes';
+import { getAssoc, toEnumMap } from './locationTypes';
+import { objectMap } from './objectMap';
 
 export const _LocationLabelColors = {
     orange: { text: 'orange', color: 'bg-orange-700 text-white' },

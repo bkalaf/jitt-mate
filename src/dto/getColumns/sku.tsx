@@ -13,6 +13,7 @@ export const skuColumns = {
     getColumns: (...pre: string[]): DefinedMRTColumns =>
         [
             skuHelper.accessor('_id', objectIdMeta),
+            skuHelper.accessor('upcs', $metas.list('upcs', 'scanValue', 'sku', 'barcode', { header: 'UPCS' })),
             skuHelper.accessor('product', {
                 ...$metas.lookup('product', 'product', 'summaryName', {
                     header: 'Product'
@@ -38,6 +39,6 @@ export const skuColumns = {
             skuHelper.accessor('hashTags', {
                 ...$metas.set<ISku, IHashTag, 'hashTags'>('hashTags', 'name', 'sku', 'hashTag', { header: 'Hash Tags' })
             }),
-            skuHelper.accessor('upcs', $metas.list('upcs', 'scanValue', 'sku', 'barcode', { header: 'UPCS' }))
+            
         ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns
 };

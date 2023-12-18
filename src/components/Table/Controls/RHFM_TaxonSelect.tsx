@@ -3,8 +3,8 @@ import { MRT_ColumnDef, MRT_RowData } from 'material-react-table';
 import { taxonomy } from '../../../dal/enums/taxa';
 import { createFrom } from '../../../common/array/createFrom';
 import { endsWith } from '../../../dal/endsWith';
-import { Controller, useFormContext, useWatch } from 'react-hook-form';
-import { AutocompleteElement, SelectElement } from 'react-hook-form-mui';
+import { useFormContext, useWatch } from 'react-hook-form';
+import { AutocompleteElement } from 'react-hook-form-mui';
 import { IconButton, Stack, Tooltip } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/pro-solid-svg-icons';
@@ -14,8 +14,6 @@ export function getOptions(fullname: string) {
     const segments = createFrom(() => fullname, count);
     return [[], ...segments.map((x, ix) => x.split('.').slice(0, ix + 1))];
 }
-
-console.log(getOptions('kingdom.phlyum.klass.order.family'));
 
 export function getNodeLevel(name: string) {
     if (endsWith('kingdom')(name)) return 0;
@@ -58,7 +56,10 @@ export function RHFM_TaxonSelect<T extends MRT_RowData>(props: Parameters<Exclud
                 autocompleteProps={{
                     className: 'flex flex-grow',
                     clearOnEscape: true,
-                    handleHomeEndKeys: true
+                    handleHomeEndKeys: true,
+                    onChange: (ev: React.SyntheticEvent<any, any>, value: { id: string, label: string }) => {
+                        context.setValue(name, value.id);
+                    }
                 }}
             />
             {value != null && typeof value === 'string' && value.length > 0 && (

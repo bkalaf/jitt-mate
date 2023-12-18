@@ -1,7 +1,8 @@
-import { MRT_Row, MRT_ShowHideColumnsButton, MRT_ToggleDensePaddingButton, MRT_ToggleFiltersButton, MRT_ToggleFullScreenButton, MRT_ToggleGlobalFilterButton, createRow } from 'material-react-table';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { MRT_Row, MRT_ShowHideColumnsButton, MRT_ToggleDensePaddingButton, MRT_ToggleFullScreenButton, createRow } from 'material-react-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconDefinition, faBoltLightning, faDumpsterFire, faFilterSlash, faFilters, faFloppyDisk, faLink, faMagnifyingGlass, faMagnifyingGlassMinus, faRedoAlt, faSquarePlus } from '@fortawesome/pro-solid-svg-icons';
-import { IconButton, IconButtonPropsColorOverrides } from '@mui/material';
+import { faBoltLightning, faDumpsterFire, faFilterSlash, faFilters, faLink, faMagnifyingGlass, faMagnifyingGlassMinus, faRedoAlt, faSquarePlus } from '@fortawesome/pro-solid-svg-icons';
+import { IconButton } from '@mui/material';
 import { useCallback } from 'react';
 import { BSON } from 'mongodb';
 import { is } from '../../../dal/is';
@@ -41,7 +42,7 @@ export function createRenderToolbarInternalActions<T extends AnyObject>(outerPro
         const disableInsertDelete = !outerProps.getCanInsertDelete();
         const { getIsEmbedded } = useReflectionContext();
         const enableLink = outerProps.objectType != null && !(getIsEmbedded(outerProps.objectType) || is.realmType.primitive(outerProps.objectType));
-        const [open, toggleOpen, setOpen, setClosed] = useToggler(false);
+        const [open,, setOpen, setClosed] = useToggler(false);
 
         return (
             <>

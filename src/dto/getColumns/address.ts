@@ -1,32 +1,25 @@
-import { createMRTColumnHelper } from 'material-react-table';
 import { IAddress } from '../../dal/types';
-import { enumMeta } from '../../components/Table/metas/enumMeta';
-import { stringMeta } from '../../components/Table/metas/stringMeta';
 import { Countries } from '../../dal/enums/countries';
 import { Provinces } from '../../dal/enums/provinces';
-
-const addressHelper = createMRTColumnHelper<IAddress>();
+import { $metas } from '../../components/Table/metas';
+import { toEnableDependency } from '../../components/Table/toDependency';
 
 export const addressColumns = {
-    getColumns: (...pre: string[]): DefinedMRTColumns =>
-        [
-            addressHelper.accessor('city', {
-                ...stringMeta({ propertyName: 'city', header: 'City' })
-            }),
-            addressHelper.accessor('country', {
-                ...enumMeta('country', Countries, { header: 'Country' })
-            }),
-            addressHelper.accessor('line1', {
-                ...stringMeta({ propertyName: 'line1', header: 'Line #1' })
-            }),
-            addressHelper.accessor('line2', {
-                ...stringMeta({ propertyName: 'line2', header: 'Line #2' })
-            }),
-            addressHelper.accessor('postalCode', {
-                ...stringMeta({ propertyName: 'postalCode', header: 'Postal Code' })
-            }),
-            addressHelper.accessor('province', {
-                ...enumMeta('province', Provinces, { header: 'Province/State' })
-            })
-        ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns
+    getColumns: (...pre: string[]): DefinedMRTColumns<IAddress> =>
+        ([
+            $metas.string<IAddress>('line1', { maxLength: 150 }, false),
+            $metas.string<IAddress>(
+                'line2',
+                { maxLength: 150 },
+                true,
+                toEnableDependency([...pre, 'line1'].join('.'), (x: string) => x != null && x.length > 0)
+            ),
+            $metas.string<IAddress>('city', { maxLength: 50 }, false),
+            $metas.enum<IAddress>('province', { enumMap: Provinces, header: 'Province/State' }, false),
+            $metas.enum<IAddress>('country', { enumMap: Countries }, false),
+            $metas.string<IAddress>('postalCode', { pattern: /^[0-9]{5}(-?[0-9]{4})?$/, patternMsg: 'Input must be in the form 01234 or 01234-1232.' })
+        ]
+        ).map((x) => (x.columnDefType === 'group' ? x : x.accessorKey != null ? { ...x,
+        accessorKey: [...pre, x.accessorKey].join('.') } : x.id != null ? { ...x, id: [...
+        pre, x.id].join('.') }: x) ) as DefinedMRTColumns<IAddress>
 } as StaticTableDefinitions<IAddress>;

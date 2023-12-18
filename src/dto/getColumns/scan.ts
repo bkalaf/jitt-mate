@@ -1,26 +1,16 @@
-import { createMRTColumnHelper } from 'material-react-table';
-import { dateMeta } from '../../components/Table/metas/dateMeta';
-import { lookupMeta } from '../../components/Table/metas/lookupMeta';
-import { IScan } from '../../dal/types';
+import { ILocationSegment, IScan } from '../../dal/types';
+import { $metas } from '../../components/Table/metas';
 
-const scanHelper = createMRTColumnHelper<IScan>();
 export const scanColumns = {
-    getColumns: (...pre: string[]): DefinedMRTColumns =>
-        [
-            scanHelper.accessor('fixture', {
-                ...lookupMeta('fixture', 'locationSegment', 'name', { header: 'Fixture' })
-            }),
-            scanHelper.accessor('shelf', {
-                ...lookupMeta('shelf', 'locationSegment', 'name', { header: 'Shelf' })
-            }),
-            scanHelper.accessor('bin', {
-                ...lookupMeta('bin', 'locationSegment', 'name', { header: 'Bin' })
-            }),
-            scanHelper.accessor('timestamp', {
-                ...dateMeta('timestamp', { header: 'Timestamp' })
-            })
-        ].map((x) => ({
-            ...x,
-            accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined
-        })) as DefinedMRTColumns
+    getColumns: (...pre: string[]): DefinedMRTColumns<IScan> =>
+        (
+            [
+                $metas.lookup<IScan, ILocationSegment>('fixture', { labelPropertyName: 'name', objectType: 'locationSegment' }, false),
+                $metas.lookup<IScan, ILocationSegment>('shelf', { labelPropertyName: 'name', objectType: 'locationSegment' }, false),
+                $metas.lookup<IScan, ILocationSegment>('bin', { labelPropertyName: 'name', objectType: 'locationSegment' }, false),
+                $metas.date('timestamp', { type: 'datetime-local' }, false)
+            ] as DefinedMRTColumns<IScan>
+        ).map((x) =>
+            x.columnDefType === 'group' ? x : x.accessorKey != null ? { ...x, accessorKey: [...pre, x.accessorKey].join('.') } : x.id != null ? { ...x, id: [...pre, x.id].join('.') } : x
+        ) as DefinedMRTColumns<IScan>
 } as StaticTableDefinitions<IScan>;

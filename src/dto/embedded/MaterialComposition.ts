@@ -107,6 +107,7 @@ export class MaterialComposition extends Realm.Object<IMaterialComposition> impl
             this.suede,
             this.wool,
             this.spandex
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ].filter((x) => x != null) as any as number[];
         return values.reduce(sum, 0) === 1;
     }
@@ -148,6 +149,7 @@ export class MaterialComposition extends Realm.Object<IMaterialComposition> impl
             this.suede,
             this.wool,
             this.spandex
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ].filter((x) => x != null) as any as number[];
         return 1 - values.reduce(sum, 0);
     }

@@ -17,6 +17,7 @@ import { WaistTypes } from '../enums/waistTypes';
 import { SleeveTypes } from '../enums/sleeveTypes';
 import * as LaundryCare from '../../../laundry-care.json';
 import { ItemConditions } from '../enums/itemConditions';
+import { ChestFitTypesKey } from '../enums/chestFitTypes';
 
 export type LaundryCareOptions = keyof typeof LaundryCare;
 export type AttributeObject = Record<string, any>;
@@ -83,21 +84,24 @@ export interface IAddress {
     country?: Optional<keyof Countries>;
     readonly streetOnly: Optional<string>;
     readonly cityState: Optional<string>;
+    readonly output: string;
 }
-
+export type RnTypes = 'imporer' | 'other' | 'mailOrder' | 'retailer' | 'wholesale' | 'manufacturing' | 'internet';
+export type RnTypesFlags = `is${Capitalize<RnTypes>}`;
 export interface IRn extends IRealmEntity<IRn> {
     companyName: string;
     rnNo: number;
     legalBusinessName: Optional<string>;
     companyType: Optional<string>;
-    isRetailer: boolean;
-    isMailOrder: boolean;
-    isInternet: boolean;
-    isImporter: boolean;
-    isOther: boolean;
+    // isRetailer: boolean;
+    // isMailOrder: boolean;
+    // isInternet: boolean;
+    // isImporter: boolean;
+    // isOther: boolean;
     noType: Optional<RnNumberTypesKey>;
-    isManufacturer: boolean;
-    isWholesaler: boolean;
+    flags: DBSet<RnTypesFlags>;
+    // isManufacturer: boolean;
+    // isWholesaler: boolean;
     productLine: Optional<string>;
     material: Optional<string>;
     url: Optional<string>;
@@ -108,8 +112,10 @@ export interface IRn extends IRealmEntity<IRn> {
 
 export type FlagsKeys = `is${Capitalize<Flags>}`;
 // export type IFlagDictionary = Partial<Record<FlagsKeys, boolean>>;
+
 export interface IMeasurementDictionary {
     chestInches: Optional<number>;
+    chestFit: Optional<ChestFitTypesKey>;
     neckInches: Optional<number>;
     inseamInches: Optional<number>;
     lengthInches: Optional<number>;
@@ -139,6 +145,7 @@ export interface ICategorySelector extends IProductAttributes {
 }
 export interface IParented<T> {
     parent: OptionalEntity<T>;
+    readonly fullname: string;
 }
 export interface IMercariCategory extends IRealmEntity<IMercariCategory>, ICategorySelector {
     name: string;
@@ -314,7 +321,7 @@ export interface IProduct extends IRealmEntity<IProduct>, IProductAttributes, IH
     classifier: OptionalEntity<IClassifier>;
     color: Optional<keyof typeof Colors>;
     descriptiveText: Optional<string>;
-    dimensions: IDimensions;
+    dimensions: IDimensions & DBDictionary<number>;
     features: DBList<string>;
     flags: DBSet<FlagsKeys>;
     folder: BSON.UUID;
@@ -365,6 +372,7 @@ export interface ISku extends IRealmEntity<ISku>, IHashTagged, IUPC {
     skuPrinted: boolean;
     scans: DBList<IScan>;
     readonly productImages: DBBacklink<IProductImage>;
+    readonly summaryName: string;
     shipWeightPercent: Optional<number>;
     // markForPrinting(realm: Realm): Entity<ISku>;
     // unmarkForPrinting(realm: Realm): Entity<ISku>;

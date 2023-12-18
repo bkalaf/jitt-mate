@@ -11,7 +11,9 @@ export function RHFM_Depends<T extends MRT_RowData, TValue>(def: Partial<MRT_Col
         const values = getValues();
         const enableDependencies = dependencies.filter(x => x[0] === 'enable');
         const disableDependencies = dependencies.filter((x) => x[0] === 'disable');
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const enabled = enableDependencies.map(([_act, prop, pred]) => pred(values[prop])).reduce((l, r) => l || r, true);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const disabled = disableDependencies.map(([_act, prop, pred]) => pred(values[prop])).reduce((l, r) => l || r, false);
         return (enabled && !disabled) ? <Edit {...props} /> : null;
     }
@@ -21,5 +23,6 @@ export function RHFM_Depends<T extends MRT_RowData, TValue>(def: Partial<MRT_Col
     return {
         ...remain,
         Edit: InnerRHFMDepends
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as MRT_ColumnDef<T, any>;
 }

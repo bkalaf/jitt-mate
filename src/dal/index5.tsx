@@ -2,18 +2,24 @@
 import { MongoClient, ObjectId } from 'mongodb';
 
 const client = new MongoClient('mongodb+srv://admin:Nv0DN8uRo9Otwb8i@jitt-core.p62mz.mongodb.net/test');
-const collection = client.db('jitt-mate').collection('sku');
+const collection = client.db('jitt-mate').collection('product');
 
 async function run() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const docs = await collection.find<{ _id: ObjectId, sku: Record<string, any> }>({}).toArray();
+    const docs = await collection.find<any>({}).toArray();
     for (const doc of docs) {
-        await collection.updateOne({ _id: new ObjectId(doc._id.toHexString()) }, {
-            $unset: {
-                sku: true,
-                _barcode: true
+        const obj = Object.fromEntries(
+            Object.entries(doc.dimensions)
+                .filter(([k, v]) => v == null || v === 0)
+                .map(([k]) => [['dimensions', k].join('.'), true] as [string, boolean])
+        );
+        console.log(obj);
+        await collection.updateOne(
+            { _id: new ObjectId(doc._id.toHexString()) },
+            {
+                $unset: obj
             }
-        });
+        );
         // { $set: { upcs: [ doc.sku ]}}
     }
 }
@@ -40,4 +46,3 @@ run().finally(() => console.log('DONE!'));
 //             }
 //         }
 //     ])
-    
