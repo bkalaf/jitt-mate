@@ -43,19 +43,7 @@ export const productColumns = {
                 $metas.barcode('upcs', {}, false),
                 $metas.lookup<IProduct, IProductLine>(
                     'productLine',
-                    { objectType: 'productLine', labelPropertyName: 'name', onChange: (formContext: UseFormReturn<FieldValues>, db: Realm) => (ev: React.ChangeEvent, newValue: any) => {
-                        const func = () => {
-                            const values = formContext.getValues() as any as IProduct;
-                            formContext.setValue('taxon.kingdom', newValue?.taxon?.kingdom ?? null);
-                            formContext.setValue('taxon.phylum', newValue?.taxon?.phylum ?? null);
-                            formContext.setValue('taxon.klass', newValue?.taxon?.klass ?? null);
-                            formContext.setValue('taxon.order', newValue?.taxon?.order ?? null);
-                            formContext.setValue('taxon.family', newValue?.taxon?.family ?? null);
-                            formContext.setValue('taxon.genus', newValue?.taxon?.genus ?? null);
-                            formContext.setValue('taxon.species', newValue?.taxon?.species ?? null);
-                        }
-                        checkTransaction(db)(func);
-                    } },
+                    { objectType: 'productLine', labelPropertyName: 'name' },
                     false,
                     toDisableDependency('brand', (x) => x != null)
                 ),
@@ -65,7 +53,27 @@ export const productColumns = {
                     false,
                     toDisableDependency('productLine', (x) => x != null)
                 ),
-                $metas.lookup<IProduct, IClassifier>('classifier', { objectType: 'classifier', labelPropertyName: 'name' }, false),
+                $metas.lookup<IProduct, IClassifier>(
+                    'classifier',
+                    {
+                        objectType: 'classifier',
+                        labelPropertyName: 'name',
+                        onChange: (formContext: UseFormReturn<FieldValues>, db: Realm) => (ev: React.ChangeEvent, newValue: any) => {
+                            const func = () => {
+                                const values = formContext.getValues() as any as IProduct;
+                                formContext.setValue('taxon.kingdom', newValue?.taxon?.kingdom ?? null);
+                                formContext.setValue('taxon.phylum', newValue?.taxon?.phylum ?? null);
+                                formContext.setValue('taxon.klass', newValue?.taxon?.klass ?? null);
+                                formContext.setValue('taxon.order', newValue?.taxon?.order ?? null);
+                                formContext.setValue('taxon.family', newValue?.taxon?.family ?? null);
+                                formContext.setValue('taxon.genus', newValue?.taxon?.genus ?? null);
+                                formContext.setValue('taxon.species', newValue?.taxon?.species ?? null);
+                            };
+                            checkTransaction(db)(func);
+                        }
+                    },
+                    false
+                ),
                 $metas.string('descriptiveText', { maxLength: 100 }, false),
                 $metas.string('circa', { maxLength: 4 }, false),
                 $metas.enum('color', { enumMap: colorToName, colorMap: colorToClasses }, false),

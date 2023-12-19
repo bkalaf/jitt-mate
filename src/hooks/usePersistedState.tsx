@@ -39,6 +39,7 @@ const numberCompare = function (a?: number, b?: number) {
     if (a == null || b == null) return false;
     return a === b;
 };
+
 export function usePersistedState(collectionOverride?: string) {
     const loadedCollections = useRef<string[]>([]);
     const [columnFilters, setColumnFilters] = useLoggingState<MRT_ColumnFiltersState>([], 'columnFilters', arrayCompare);

@@ -86,7 +86,7 @@ export interface IAddress {
     readonly cityState: Optional<string>;
     readonly output: string;
 }
-export type RnTypes = 'imporer' | 'other' | 'mailOrder' | 'retailer' | 'wholesale' | 'manufacturing' | 'internet';
+export type RnTypes = 'importer' | 'other' | 'mailOrder' | 'retailer' | 'wholesale' | 'manufacturing' | 'internet';
 export type RnTypesFlags = `is${Capitalize<RnTypes>}`;
 export interface IRn extends IRealmEntity<IRn> {
     companyName: string;

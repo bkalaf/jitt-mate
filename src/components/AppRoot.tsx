@@ -1,10 +1,9 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { SchemaLoader } from './TopBarAuthSegment';
 import { Toaster } from './Toaster/Toaster';
 import { useEffect } from 'react';
 import { LeftDrawer } from './Navigation/LeftDrawer';
 import { useToggler } from '../hooks/useToggler';
-import { BoundingClientElement } from './BoundingClientElement';
 import { TopAppBar } from './TopAppBar';
 import { useRealmContext } from '../hooks/useRealmContext';
 import { not } from '../common/not';

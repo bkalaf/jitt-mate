@@ -4,7 +4,6 @@ import { CircularProgress, DialogActions, DialogContent, IconButton, Tooltip } f
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCancel, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
 import { OnBlurContext } from '../creators/OnBlurContext';
-import { ignore } from '../../../common/functions/ignore';
 import { MRT_RowData } from 'material-react-table';
 
 export function renderCreateModal<T extends MRT_RowData>(init: () => Promise<any>, submit: (data: any) => Promise<void>) {
@@ -15,7 +14,7 @@ export function renderCreateModal<T extends MRT_RowData>(init: () => Promise<any
             reValidateMode: 'onChange' as const,
             defaultValues: init
         });
-        const { errors, isValid } = formContext.formState;
+        const { isValid } = formContext.formState;
         useEffect(() => {
             console.log(`create form state change: isValid`, isValid);
         }, [isValid]);
@@ -23,7 +22,8 @@ export function renderCreateModal<T extends MRT_RowData>(init: () => Promise<any
             ev.preventDefault();
             ev.stopPropagation();
             formContext.handleSubmit(submit)(ev);
-        }, [formContext]);
+            props.table.setCreatingRow(null);
+        }, [formContext, props.table]);
         const onBlur = useCallback(
             (name: string) => (ev: React.FocusEvent<HTMLInputElement>) => {
                 // if (ev.target.name == null) {

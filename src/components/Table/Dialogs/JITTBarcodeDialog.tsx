@@ -1,7 +1,7 @@
 import { Dialog, DialogActions, DialogContent, DialogTitle, Divider } from '@mui/material';
 import { JITTIconButton } from '../clothingCareMeta';
 import { faCancel, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FormContainer, TextFieldElement, useForm } from 'react-hook-form-mui';
 import { charRange } from '../../../common/array/charRange';
 
@@ -37,6 +37,9 @@ export function JITTBarcodeDialog({ isOpen, hideModal, submit }: { isOpen: boole
             return prev;
         });
     }, []);
+    useEffect(() => {
+        formContext.setValue('value', value);
+    }, [formContext, value])
     return (
         <FormContainer context={formContext}>
             <Dialog maxWidth='md' fullWidth open={isOpen} onClose={hideModal}>

@@ -240,15 +240,10 @@ export const toMaterialComposition: ConvertToRealmFunction<IMaterialComposition>
     suede: $unserialize.float(suede),
     wool: $unserialize.float(wool)
 })
-export const toRn: ConvertToRealmFunction<IRn> = ({ _id, addresses, brand, companyName, companyType, isInternet, isMailOrder, isManufacturer, isImporter, isOther, isRetailer, isWholesaler, legalBusinessName, material, rnNo, noType, productLine, url }) => ({
+export const toRn: ConvertToRealmFunction<IRn> = ({ _id, addresses, brand, companyName, companyType, flags, legalBusinessName, material, rnNo, noType, productLine, url }) => ({
     _id: toNotNullOID(_id),
-    isImporter: unserializeBool(isImporter) ?? false,
-    isInternet: unserializeBool(isInternet) ?? false,
-    isMailOrder: unserializeBool(isMailOrder) ?? false,
-    isManufacturer: unserializeBool(isManufacturer) ?? false,
-    isOther: unserializeBool(isOther) ?? false,
-    isRetailer: unserializeBool(isRetailer) ?? false,
-    isWholesaler: unserializeBool(isWholesaler) ?? false,
+    flags: (flags ?? []) as any[],    
+    // [unserializeBool(isImporter) ?? false ? 'isImporter' : null, unserializeBool(isInternet) ?? false ? 'isInternet' : null,  unserializeBool(isMailOrder) ?? false ? 'isMailOrder' : null, unserializeBool(isManufacturer) ?? false ? 'isManufacturer' : null,unserializeBool(isOther) ?? false ? 'isOther' : null, unserializeBool(isRetailer) ?? false ? 'isRetailer' : null, unserializeBool(isWholesaler) ?? false ? 'isWholesale' : null ].filter(x => x != null) as any[],
     productLine: unserializeString(productLine),
     material: unserializeString(material),
     url: unserializeString(url),

@@ -2,7 +2,6 @@ import { MRT_Row, MRT_RowData, MRT_TableInstance } from 'material-react-table';
 import { useMemo } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { IRealmEntity } from '../dal/types';
-import { usePersistedState } from './usePersistedState';
 import { useReflectionContext } from '../components/Contexts/useReflectionContext';
 import { createRenderToolbarInternalActions } from '../components/Table/creators/createRenderToolbarInternalActions';
 import { konst } from '../common/functions/konst';
@@ -17,78 +16,43 @@ import { createRenderCreateRowDialogContentRHF } from '../components/Table/creat
 import { useLocalRealm } from '../routes/loaders/useLocalRealm';
 import { updateRecord } from './updateRecord';
 import { createDetailSubComponent } from '../components/Table/creators/createDetailSubComponent';
-export function useMUIReactTable<T extends MRT_RowData>({
-    type,
-    objectType,
-    propertyName,
-    parentRow,
-    isLink
+import { BSON } from 'realm';
+import { useNonPersistedState } from './useNonPersistedState';
+
+export function useMUIItemReactTable<T extends MRT_RowData>({
+    type, parentRow
 }: {
     type?: 'list' | 'dictionary' | 'set' | 'object';
-    propertyName?: string;
-    objectType?: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parentRow?: MRT_Row<any>;
-    isLink?: boolean;
 }) {
-    const collectionRoute = useParams<{ collection: string }>().collection;
-    const collection = objectType ?? collectionRoute ?? 'n/a';
-    const db = useLocalRealm;
+    const collectionRoute = useParams<{ collection: string; }>().collection;
+    const collection = collectionRoute ?? 'n/a';
+    const oidRoute = useParams<{ oid: string; }>().oid;
+    const oid = oidRoute ?? 'n/a';
+    const db = useLocalRealm();
+
+    const { data, dataUpdatedAt, isLoading: isQueryLoading, isError: isQueryErrored } = useQuery({
+        queryKey: [collection, oid],
+        queryFn: () => {
+            return Promise.resolve([db.objectForPrimaryKey(collection, new BSON.ObjectId(oid))]);
+        }
+    });
+    const getCanInsertDelete = () => false;
     const {
-        deleteOne,
-        insert,
-        invalidator,
-        columns,
-        getCanInsertDelete,
-        toGetRowCanExpand,
-        getRowId,
-        persistedName,
-        queryFn,
-        queryKey,
+        deleteOne, invalidator, columns, toGetRowCanExpand, getRowId,
         // renderDetailPanel: toRenderDetailPanel
     } = useMemo(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        () => tableType[type ?? 'collection']({ collection: collectionRoute ?? '', objectType: objectType ?? '', propertyName: propertyName ?? '', parentRow: parentRow as any }) as TableTypeObject<T>,
-        [collectionRoute, objectType, parentRow, propertyName, type]
+        () => tableType['collection']({ collection: collectionRoute ?? '', objectType: '', propertyName: '', parentRow: parentRow as any }) as TableTypeObject<T>,
+        [collectionRoute, parentRow]
     );
-    const {
-        queryFn: $queryFn,
-        queryKey: $queryKey,
-        getRowId: $getRowId,
-        columns: $columns
-    } = useMemo(
-        () =>
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            isLink ?? false ? tableType.collection({ collection: collection ?? ('' as any), objectType: '', parentRow: undefined as any, propertyName: '' }) : { columns, queryFn, queryKey, getRowId },
-        [collection, columns, getRowId, isLink, queryFn, queryKey]
-    );
-    const {
-        data,
-        dataUpdatedAt,
-        isLoading: isQueryLoading,
-        isError: isQueryErrored
-    } = useQuery({
-        queryKey: $queryKey,
-        queryFn: $queryFn
+
+    const { isPending: isEditPending, isError: isEditError } = useMutation({
+        mutationFn: updateRecord(collection, db)
     });
     const {
-        isPending: isInsertPending,
-        isError: isInsertError
-    } = useMutation({
-        mutationFn: insert,
-        ...invalidator
-    });
-    const {
-        isPending: isEditPending,
-        isError: isEditError
-    } = useMutation({
-        mutationFn: updateRecord(collection, db())
-    });
-    const {
-        mutateAsync: deleteAsync,
-        mutate: deleteSync,
-        isPending: isDeletePending,
-        isError: isDeleteError
+        mutateAsync: deleteAsync, mutate: deleteSync, isPending: isDeletePending, isError: isDeleteError
     } = useMutation({
         mutationFn: deleteOne,
         ...invalidator
@@ -105,14 +69,26 @@ export function useMUIReactTable<T extends MRT_RowData>({
         }
         invalidator.onSuccess();
     };
-    const isError = isDeleteError || isInsertError || isEditError || isQueryErrored;
-    const isLoading = isDeletePending || isInsertPending || isEditPending || isQueryLoading;
-    const { state, handlers, resetState } = usePersistedState(persistedName);
+    const isError = isDeleteError || isEditError || isQueryErrored;
+    const isLoading = isDeletePending || isEditPending || isQueryLoading;
+    const { state, handlers, resetState } = useNonPersistedState();
+    const enableRowNumbers = type != null && (type === 'set' || type === 'list');
     const { getFieldInfos } = useReflectionContext();
     const fieldInfos = useMemo(() => getFieldInfos(collection), [collection, getFieldInfos]);
     const getRowCanExpand = useMemo(() => toGetRowCanExpand(fieldInfos), [fieldInfos, toGetRowCanExpand]);
     const renderDetailPanel = (createDetailSubComponent ?? konst(konst(<></>)))(fieldInfos);
-    const renderToolbarInternalActions = createRenderToolbarInternalActions({ onClickDumpsterFire, resetState, onClickLightning, getCanInsertDelete, objectType, propertyName, parentRow, type, state, handlers });
+    const renderToolbarInternalActions = createRenderToolbarInternalActions({
+        onClickDumpsterFire,
+        resetState,
+        onClickLightning,
+        getCanInsertDelete,
+        objectType: undefined,
+        propertyName: undefined,
+        parentRow,
+        type: 'object',
+        state,
+        handlers
+    });
     const renderRowActions = createRenderRowActions({ getCanInsertDelete, deleteOne: deleteSync });
     const constants = useTableConstants();
     const defaultColumn = useDefaultColumn<T>();
@@ -126,26 +102,27 @@ export function useMUIReactTable<T extends MRT_RowData>({
             renderCreateRowDialogContent: createRenderCreateRowDialogContentRHF(collection),
             renderEditRowDialogContent: createRenderEditRowDialogContentRHF(collection),
             data: data ?? [],
-            getRowId: $getRowId,
+            enableRowNumbers,
+            getRowId: getRowId,
             getRowCanExpand,
             renderFallbackValue: null,
-            columns: $columns,
+            columns: columns,
             defaultColumn,
             ...handlers,
             state: {
                 ...state,
                 isLoading,
                 showLoadingOverlay: isLoading,
-                isSaving: isInsertPending || isEditPending,
+                isSaving: isEditPending,
                 showAlertBanner: isError,
                 showProgressBars: isLoading
             },
-            
+
             muiToolbarAlertBannerProps: isError
                 ? {
-                      color: 'error' as AlertColor,
-                      children: 'NETWORK ERROR - COLLECTION FAILED TO LOAD.'
-                  }
+                    color: 'error' as AlertColor,
+                    children: 'NETWORK ERROR - COLLECTION FAILED TO LOAD.'
+                }
                 : undefined
         },
         invalidator

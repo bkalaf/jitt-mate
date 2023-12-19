@@ -30,5 +30,6 @@ export const listDefinition = function <T extends IRealmObject<T>, TListOf, TNam
             labelPropertyName: opts.labelProperty != null && typeof opts.labelProperty === 'string' ? opts.labelProperty : undefined,
             ItemElement: ItemComponent
         }, initialDisable, ...dependencies)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as MRT_ColumnDef<T, any>;
 };

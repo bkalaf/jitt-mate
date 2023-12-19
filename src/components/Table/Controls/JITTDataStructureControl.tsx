@@ -1,6 +1,5 @@
-import { MRT_ColumnDef, MRT_TableOptions, MaterialReactTable, useMaterialReactTable } from 'material-react-table';
+import { MRT_ColumnDef, MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import { Path, useFormContext } from 'react-hook-form-mui';
-import { BSON } from 'realm';
 import { is } from '../../../dal/is';
 import { getProperty } from '../../Contexts/getProperty';
 import { useCallback, useMemo } from 'react';
@@ -18,39 +17,10 @@ import { useDependencies } from '../../../hooks/useDependencies';
 import { useReflectionContext } from '../../Contexts/useReflectionContext';
 import { removeProperty } from './removeProperty';
 import { identity } from '../../../common/functions/identity';
-import { createRenderCreateRowDialogContentRHF } from '../creators/createRenderCreateRowDialogContent';
 import { renderCreateModal } from './renderCreateModal';
 
-export type JITTMultiControlObjectComponentProps<TParent, TName extends Path<TParent>, TListOf> = {
-    name: TName;
-    header?: string;
-    objectType: RealmObjects;
-    ofObjectType: RealmObjects | RealmPrimitives;
-    listType: ListTypeKind;
-    ItemElement: React.FunctionComponent<{ data: TListOf }>;
-};
-export type JITTMultiControlObjectProps<TParent, TName extends Path<TParent>, TListOf, TPropertyName extends Path<TListOf>> = {
-    name: TName;
-    header?: string;
-    objectType: RealmObjects;
-    ofObjectType: RealmPrimitives | RealmObjects;
-    listType: ListTypeKind;
-    labelPropertyName?: TPropertyName;
-};
-export type JITTMultiControlPrimitiveProps<TParent, TName extends Path<TParent>, TListOf> = {
-    name: TName;
-    header?: string;
-    objectType: RealmObjects;
-    ofObjectType: RealmPrimitives | RealmObjects;
-    listType: ListTypeKind;
-    ItemElement: React.FunctionComponent<{ data: TListOf }>;
-};
-export type RealmJSType = string | number | boolean | ArrayBuffer | BSON.ObjectId | BSON.UUID | Date;
-export type JITTMulitControlProps<TParent, TName extends Path<TParent>, TListOf, TPropertyName extends Path<TListOf> | undefined = undefined> =
-    | JITTMultiControlObjectComponentProps<TParent, TName, TListOf>
-    | JITTMultiControlPrimitiveProps<TParent, TName, TListOf>
-    | JITTMultiControlObjectProps<TParent, TName, TListOf, TPropertyName & Path<TListOf>>;
-export function JITTMultiControl<TParent, TName extends Path<TParent>, TListOf, TPropertyName extends Path<TListOf> | undefined = undefined>(
+
+export function JITTMultiControl<TParent, TListOf, TPropertyName extends Path<TListOf> | undefined = undefined>(
     outerProps: {
         objectType: RealmObjects;
         ofObjectType: RealmPrimitives | RealmObjects;
@@ -179,7 +149,7 @@ export function JITTMultiControl<TParent, TName extends Path<TParent>, TListOf, 
             },
             [ofTypeKind, ofObjectType, isCreating, db, onSuccess, listType, value, innerProps.row.original, spread.name, formContext]
         );
-        const items = listType === 'dictionary' ? (Object.entries(value) as [string, TListOf][]) : (value as TListOf[]);
+        const items = listType === 'dictionary' ? (Object.entries(value) as [string, TListOf][]) : (Array.from(value) as TListOf[]);
         const JITTListItemInsert = JITTListItemEntry<TParent, TListOf>({ submit: onSubmit, objectType, ofObjectType, listType, ofTypeKind, labelPropertyName: (labelPropertyName ?? '') as any });
         return spread.disabled ? null : (
             <fieldset name={spread.name} className={['flex flex-col w-full', spread.classes.root].join(' ')}>
@@ -237,7 +207,7 @@ export function JITTListItemEntry<TParent, TListOf>({ submit, objectType, ofObje
         const table = useMaterialReactTable({
             columns,
             data: [],
-            renderCreateRowDialogContent: renderCreateModal(initializer, (d: any) => submit(d).then(() => table.setCreatingRow(null))),
+            renderCreateRowDialogContent: renderCreateModal(initializer, (d: any) => submit(d)),
             muiTableContainerProps: {
                 classes: {
                     root: 'hidden'

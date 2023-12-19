@@ -1,7 +1,3 @@
-import { splitAt } from '../../common/text/splitAt';
-import { pluralize } from './pluralize';
-import { toCamelCase } from './toCamelCase';
-import * as fs from 'graceful-fs';
 
 export const Taxa = {
     media: {

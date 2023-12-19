@@ -9,11 +9,9 @@ import { ItemGroups } from '../../dal/enums/itemGroups';
 import { Genders } from '../../dal/enums/genders';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { $$queryClient } from '../../components/App';
-import { listDefaultUpdater } from '../updaters/listDefaultUpdater';
-import { categorySelectorUpdater } from '../updaters/categorySelectorUpdater';
-import { hashTaggedUpdater } from '../updaters/hashTaggedUpdater';
-import { taxonUpdater } from '../updaters/taxonUpdater';
 import { mergeProductTaxonomy } from '../embedded/mergeProductTaxonomy';
+import { prependText } from '../../common/text/prependText';
+import { HashTag } from './HashTag';
 
 export class MercariCategory extends Realm.Object<IMercariCategory> implements IMercariCategory {
     constructor(realm: Realm, args: any) {
@@ -40,18 +38,24 @@ export class MercariCategory extends Realm.Object<IMercariCategory> implements I
         return this.taxon;
     }
     get allHashTags(): Entity<IHashTag>[] {
-        return Array.from(this.hashTags.toJSON()) as any;
+        return Array.from(this.hashTags.values()) as any;
     }
     gender: Optional<keyof Genders>;
     itemGroup: Optional<keyof ItemGroups>;
 
     @wrapInTransactionDecorator()
     update() {
-        const lu = listDefaultUpdater<IMercariCategory>;
-        lu.bind(this)(['hashTags']);
-        taxonUpdater.bind(this)();
-        categorySelectorUpdater.bind(this)();
-        hashTaggedUpdater.bind(this)();
+        if (this.hashTags == null) this.hashTags = [] as any;
+        if (this.taxon == null) this.taxon = { lock: false } as any;
+        if (this.taxon != null && this.taxon.update != null) {
+            this.taxon = this.taxon.update();
+        }
+        if (!this.id.startsWith('#')) {
+            this.id = prependText('#')(this.id);
+        }
+        if (this.hashTags) {
+            HashTag.pruneList(this.hashTags);
+        }
         return this;
     }
 
@@ -76,5 +80,4 @@ export class MercariCategory extends Realm.Object<IMercariCategory> implements I
             taxon: $db.productTaxonomy.opt
         }
     };
-
 }

@@ -6,7 +6,6 @@ import { $$ } from '../../common/comparator/areRealmObjectsEqual';
 import { daysDiffFromNow } from '../../common/date/daysDiffFromNow';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { $$queryClient } from '../../components/App';
-import { listDefaultUpdater } from '../updaters/listDefaultUpdater';
 
 export class HashTag extends Realm.Object<IHashTag> implements IHashTag {
     @wrapInTransactionDecorator()
@@ -52,9 +51,7 @@ export class HashTag extends Realm.Object<IHashTag> implements IHashTag {
 
     @wrapInTransactionDecorator()
     update(): Entity<IHashTag> {
-        const lu = listDefaultUpdater<IHashTag>;
-        lu.bind(this)(['usage']);
-
+        if (this.usage == null) this.usage = [] as any;
         if (this.usage.length <= 2) return this;
         const arr = Array.from(this.usage).map((x, ix) => [ix, x] as [number, IHashTagUsage]);
         const mostRecentIndex = arr.sort((x, y) => $$.date.sort(y[1].from, x[1].from))[0][0];
@@ -88,7 +85,8 @@ export class HashTag extends Realm.Object<IHashTag> implements IHashTag {
 
     @wrapInTransactionDecorator()
     static ctor(name: string, count = 0) {
-        const realm = window.$$store!;
+        if (window.$$store == null) throw new Error('no stored realm');
+        const realm = window.$$store;
         const result: Realm.Object<IHashTag> & IHashTag = realm.create<IHashTag>($db.hashTag(), { _id: new BSON.ObjectId(), name, usage: [HashTagUsage.ctor(count)] });
        
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

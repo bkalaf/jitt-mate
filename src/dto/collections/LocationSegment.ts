@@ -6,7 +6,6 @@ import { LocationLabelColorsKey, _LocationLabelColors } from '../../dal/enums/lo
 import { LocationTypesObj } from '../../dal/enums/locationTypes';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { $$queryClient } from '../../components/App';
-import { upcsUpdater } from '../updaters/upcsUpdater';
 
 export class LocationSegment extends Realm.Object<ILocationSegment> implements ILocationSegment {
     constructor(realm: Realm, args: any) {
@@ -32,7 +31,8 @@ export class LocationSegment extends Realm.Object<ILocationSegment> implements I
 
     @wrapInTransactionDecorator()
     update() {
-        upcsUpdater.bind(this)();
+        if (this.upcs == null) this.upcs = [] as any;
+        this.upcs.forEach(x => x.update());
         return this;
     }
     // @basicEnumDecorator({ enumMap: LocationTypes, colorMap: LocationTypesColors })

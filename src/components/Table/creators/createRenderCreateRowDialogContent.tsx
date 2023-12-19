@@ -9,7 +9,6 @@ import { $initialCollection } from './$initialCollection';
 import { $convertToRealm } from './$convertToRealm';
 import { faCancel, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ignore } from '../../../common/functions/ignore';
 import { tableType } from '../../../hooks/tableType';
 import { useInvalidator } from '../../../hooks/useInvalidator';
 import { FormProvider, useForm } from 'react-hook-form-mui';

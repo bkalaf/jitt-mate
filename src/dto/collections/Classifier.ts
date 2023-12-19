@@ -7,11 +7,8 @@ import { IClassifier, IMercariSubSubCategory, IHashTag, IProductTaxonomy } from 
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { surroundText } from '../../common/text/surroundText';
 import { $$queryClient } from '../../components/App';
-import { parentedUpdate } from '../updaters/parentedUpdate';
-import { boolDefaultUpdater } from '../updaters/boolDefaultUpdater';
-import { hashTaggedUpdater } from '../updaters/hashTaggedUpdater';
-import { taxonUpdater } from '../updaters/taxonUpdater';
 import { mergeProductTaxonomy } from '../embedded/mergeProductTaxonomy';
+import { HashTag } from './HashTag';
 
 export class Classifier extends Realm.Object<IClassifier> implements IClassifier {
     constructor(realm: Realm, args: any) {
@@ -68,11 +65,38 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
 
     @wrapInTransactionDecorator()
     update() {
-        const pu = parentedUpdate<'mercariSubSubCategory', IMercariSubSubCategory, IClassifier>;
-        taxonUpdater.bind(this, pu.bind(this, 'mercariSubSubCategory'))();
-        hashTaggedUpdater.bind(this)();
-        const bd = boolDefaultUpdater<IClassifier>;
-        bd.bind(this)(['isAthletic']);
+        if (this.taxon == null) this.taxon = { lock: false } as any;
+        if ('parent' in this) {
+            const parent = this.mercariSubSubCategory;
+            if (parent != null) {
+                const target = parent.taxon ?? ({ lock: false } as IProductTaxonomy);
+                if (target != null && !target.lock) {
+                    const values = [parent.taxon?.kingdom, parent.taxon?.phylum, parent.taxon?.klass, parent.taxon?.order, parent.taxon?.family, parent.taxon?.genus, parent.taxon?.species].filter(
+                        (x) => x != null
+                    ) as string[];
+                    const setters = [
+                        (value: string) => (target.kingdom = value),
+                        (value: string) => (target.phylum = value),
+                        (value: string) => (target.klass = value),
+                        (value: string) => (target.order = value),
+                        (value: string) => (target.family = value),
+                        (value: string) => (target.genus = value),
+                        (value: string) => (target.species = value)
+                    ];
+                    for (let index = 0; index < values.length; index++) {
+                        const currentValue = values[index];
+                        setters[index](currentValue);
+                    }
+                }
+            }
+        }
+        if (this.taxon != null && this.taxon.update != null) {
+            this.taxon = this.taxon.update();
+        }
+        if (this.hashTags) {
+            HashTag.pruneList(this.hashTags);
+        }
+        if (this.isAthletic == null) this.isAthletic = false;
         const merged = mergeProductTaxonomy(this.taxon, this.mercariSubSubCategory?.taxon);
         if (merged) {
             this.taxon = merged as any;
@@ -81,7 +105,7 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
         if (newName != null && newName.length > 0) {
             this.name = newName;
         }
-        
+
         return this;
     }
     _id: BSON.ObjectId = new BSON.ObjectId();

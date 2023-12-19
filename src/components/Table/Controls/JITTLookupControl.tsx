@@ -1,26 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AutocompleteElement, FormProvider, Path, UseFormReturn, useForm, useFormContext } from 'react-hook-form-mui';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { AutocompleteElement, FieldValues, Path, UseFormReturn, useFormContext } from 'react-hook-form-mui';
+import { useQuery } from '@tanstack/react-query';
 import { useLocalRealm } from '../../../routes/loaders/useLocalRealm';
 import { useDependencies } from '../../../hooks/useDependencies';
 import { MRT_ColumnDef, MRT_Row, MRT_RowData } from 'material-react-table';
 import { getProperty } from '../../Contexts/getProperty';
-import { IMaterialComposition } from '../../../dal/types';
-import { useCallback } from 'react';
-import { updateRecordProp } from '../../../hooks/updateRecord';
-import { useCollectionRoute } from '../../../hooks/useCollectionRoute';
-import { useInvalidator } from '../../../hooks/useInvalidator';
 import { is } from '../../../dal/is';
 import { checkTransaction } from '../../../util/checkTransaction';
-import { JITTIconButton } from '../clothingCareMeta';
-import { faCancel, faFloppyDisk, faPlusSquare, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
-import { Dialog, DialogActions, DialogContent, List, ListItem, ListItemText } from '@mui/material';
+import { createFilterOptions } from '@mui/material';
 import { toNotNullOID } from '../../../dal/toOID';
-import { useToggler } from '../../../hooks/useToggler';
-import { $metas } from '../metas';
-import { collections } from '../collections';
-import { $initialCollection } from '../creators/$initialCollection';
-import { removeProperty } from './removeProperty';
 
 // creatingRow: MRT_Row<T> | null, setCreatingRow: MRT_TableInstance<T>['setCreatingRow']
 export function updateDictionary<T extends MRT_RowData, TValue>(db: Realm, collection: RealmObjects, propertyName: string, formContext: UseFormReturn, creatingRow: MRT_Row<T> | null) {
@@ -46,110 +34,6 @@ export function updateDictionary<T extends MRT_RowData, TValue>(db: Realm, colle
         checkTransaction(db)(() => (value == null ? delete (dictionary ?? {})[key] : { ...(dictionary ?? {}), [key]: value }));
         return Promise.resolve();
     };
-}
-export function JITTMaterialsControl<T extends MRT_RowData>(initialDisable = false, ...dependencies: IDependency[]) {
-    function InnerJITTMaterialsControl(props: Parameters<Exclude<MRT_ColumnDef<T, DBDictionary<IMaterialComposition> | Record<string, IMaterialComposition>>['Edit'], undefined>>[0]) {
-        const dictionary = Object.entries(props.cell.getValue() ?? {});
-        const collection = useCollectionRoute();
-        const db = useLocalRealm();
-        const onSuccess = useInvalidator(collection);
-        const { name, disabled, label } = useDependencies(props, initialDisable, ...dependencies);
-        const { mutateAsync } = useMutation({
-            mutationFn: updateRecordProp(collection, db),
-            ...onSuccess
-        });
-        const onDelete = useCallback(
-            (index: string) => {
-                return () => {
-                    const func = () => {
-                        const oldValue = props.cell.getValue();
-                        const newValue = is.dbDictionary(oldValue) ? oldValue.remove(index) : removeProperty(oldValue, index);
-                        mutateAsync({
-                            propertyName: name,
-                            _id: props.row.original._id,
-                            value: newValue
-                        });
-                    };
-                    checkTransaction(db)(func);
-                };
-            },
-            [db, mutateAsync, name, props.cell, props.row.original._id]
-        );
-        const { creatingRow } = props.table.getState();
-        const formContext = useFormContext();
-        const { mutateAsync: insertAsync } = useMutation({
-            mutationFn: updateDictionary(db, collection, name, formContext, creatingRow),
-            ...onSuccess
-        });
-        const [isOpen, toggleOpen, , hideModal] = useToggler(false);
-        const Dialog = JITTMaterialDialog({ isOpen, hideModal, onInsert: insertAsync, _id: props.row.id });
-        return (
-            <fieldset>
-                <legend className='flex flex-row'>
-                    <span className='inline-flex'>{label}</span>
-                    <JITTIconButton color='primary' Icon={faPlusSquare} title='Insert' onClick={toggleOpen} className='w-5 h-5' />
-                </legend>
-                <Dialog {...(props as any)} />
-                <List disablePadding>
-                    {dictionary.map(([k, v], ix) => (
-                        <ListItem
-                            key={ix}
-                            disableGutters
-                            disablePadding
-                            secondaryAction={<JITTIconButton color='error' Icon={faTrashCan} title='Delete this row' onClick={onDelete(k)} className='w-5 h-5' />}>
-                            <ListItemText primary={k} secondary={v.toOutput} />
-                        </ListItem>
-                    ))}
-                </List>
-            </fieldset>
-        );
-    }
-    return InnerJITTMaterialsControl;
-}
-export function JITTMaterialDialog<TParent>({
-    isOpen,
-    hideModal,
-    onInsert,
-    _id
-}: {
-    isOpen: boolean;
-    hideModal: () => void;
-    _id: OID;
-    onInsert: (values: { _id: OID; key: string; value: IMaterialComposition }) => Promise<void>;
-}) {
-    function InnerMaterialsDialog(props: Parameters<Exclude<MRT_ColumnDef<any, any>['Edit'], undefined>>[0]) {
-        const columns = [$metas.string('key', { header: 'Key' }, false), ...collections['materialComposition'].getColumns('value')] as DefinedMRTColumns<{ key: string; value: TParent & MRT_RowData }>;
-        const EditControls = useEditControls(columns);
-        const formContext = useForm({
-            defaultValues: () =>
-                $initialCollection['materialComposition']().then((value) => ({
-                    key: '',
-                    value: value as IMaterialComposition
-                }))
-        });
-        const onClick = useCallback(
-            (ev: React.MouseEvent) => {
-                formContext.handleSubmit(({ key, value }) => {
-                    onInsert({ _id, key, value }).then(hideModal);
-                })(ev);
-            },
-            [formContext]
-        );
-        return (
-            <FormProvider {...formContext}>
-                <Dialog open={isOpen} onClose={hideModal} maxWidth='md' fullWidth>
-                    <DialogContent>
-                        <EditControls {...(props as any)} />
-                    </DialogContent>
-                    <DialogActions className='flex justify-end w-full'>
-                        <JITTIconButton type='button' color='warning' title='Cancel' Icon={faCancel} className='w-5 h-5' onClick={hideModal} />
-                        <JITTIconButton type='button' color='primary' title='Submit' Icon={faFloppyDisk} onClick={onClick} className='w-5 h-5' />
-                    </DialogActions>
-                </Dialog>
-            </FormProvider>
-        );
-    }
-    return InnerMaterialsDialog;
 }
 export function JITTLookupControl<T extends MRT_RowData, TLookup extends EntityBase>(
     {
@@ -196,6 +80,13 @@ export function JITTLookupControl<T extends MRT_RowData, TLookup extends EntityB
                     isOptionEqualToValue: (option: T, value: T) => {
                         return option._id.toHexString() === value._id.toHexString();
                     },
+                    filterOptions: createFilterOptions({
+                        ignoreCase: true,
+                        ignoreAccents: true,
+                        limit: 50,
+                        trim: true,
+                        matchFrom: 'any'
+                    }),
                     onChange: (ev, newValue) => {
                         onBlur({ ...ev, target: { value: newValue } } as any);
                         if (onChange) {

@@ -1,16 +1,3 @@
-export function tap<T extends any[], U, V>(defFunc: (...x: T) => U, post?: (x: U) => V) {
-    return (func?: (...args: T) => U) => {
-        return (...values: T) => {
-            const sub = (func ?? defFunc)(...values);
-            return post ? post(sub) : (sub as any as V);
-        };
-    };
-}
-
-export const toFlag =
-    (name: string, desiredResult = true) =>
-    (value?: boolean) =>
-        (value ?? false) === desiredResult ? ['* ', name, '*'].join('') : undefined;
 
 // export function getDescription(product: IProduct, sku: ISku) {
 //     const {

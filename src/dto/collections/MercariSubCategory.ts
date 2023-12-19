@@ -1,22 +1,16 @@
-import { kingdoms } from '../embedded/ProductTaxonomy';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Realm, { BSON } from 'realm';
 import { $db } from '../../dal/db';
-import { IHashTag, IMercariCategory, IMercariSubCategory, IProductTaxonomy, IRealmEntity } from '../../dal/types';
+import { IHashTag, IMercariCategory, IMercariSubCategory, IProductTaxonomy } from '../../dal/types';
 import { ApparelGroups } from '../../dal/enums/apparelGroups';
 import { ApparelTypes } from '../../dal/enums/apparelType';
 import { ItemGroups } from '../../dal/enums/itemGroups';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
-import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
-import { prependText } from '../../common/text/prependText';
 import { $$queryClient } from '../../components/App';
-import { HashTag } from './HashTag';
-import { parentedUpdate } from '../updaters/parentedUpdate';
-import { categorySelectorUpdater } from '../updaters/categorySelectorUpdater';
-import { hashTaggedUpdater } from '../updaters/hashTaggedUpdater';
-import { taxonUpdater } from '../updaters/taxonUpdater';
 import { mergeProductTaxonomy } from '../embedded/mergeProductTaxonomy';
+import { prependText } from '../../common/text/prependText';
+import { HashTag } from './HashTag';
 
 export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implements IMercariSubCategory {
     constructor(realm: Realm, args: any) {
@@ -40,15 +34,43 @@ export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implem
         return this.parent?.id;
     }
     get fullname(): string {
-        return [this.parent?.name, this.name].filter(x => x != null).join('::');
+        return [this.parent?.name, this.name].filter((x) => x != null).join('::');
     }
     @wrapInTransactionDecorator()
     update() {
-        const pu = parentedUpdate<'parent', IMercariCategory, IMercariSubCategory>;
-        taxonUpdater.bind(this, pu.bind(this, 'parent'))();
-        categorySelectorUpdater.bind(this)();
-        hashTaggedUpdater.bind(this)();    
-        const merged = mergeProductTaxonomy(this.taxon, this.parent?.taxon)
+        if (this.hashTags) {
+            HashTag.pruneList(this.hashTags);
+        }
+        if (this.taxon == null) this.taxon = { lock: false } as any;
+
+        if ('parent' in this) {
+            const parent = this.parent;
+            if (parent != null) {
+                const target = parent.taxon ?? ({ lock: false } as IProductTaxonomy);
+                if (target != null && !target.lock) {
+                    const values = [parent.taxon?.kingdom, parent.taxon?.phylum, parent.taxon?.klass, parent.taxon?.order, parent.taxon?.family, parent.taxon?.genus, parent.taxon?.species].filter(
+                        (x) => x != null
+                    ) as string[];
+                    const setters = [
+                        (value: string) => (target.kingdom = value),
+                        (value: string) => (target.phylum = value),
+                        (value: string) => (target.klass = value),
+                        (value: string) => (target.order = value),
+                        (value: string) => (target.family = value),
+                        (value: string) => (target.genus = value),
+                        (value: string) => (target.species = value)
+                    ];
+                    for (let index = 0; index < values.length; index++) {
+                        const currentValue = values[index];
+                        setters[index](currentValue);
+                    }
+                }
+            }
+        }
+        if (this.taxon != null && this.taxon.update != null) {
+            this.taxon = this.taxon.update();
+        }
+        const merged = mergeProductTaxonomy(this.taxon, this.parent?.taxon);
         if (merged) {
             this.taxon = merged as any;
         }
@@ -97,9 +119,4 @@ export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implem
             taxon: $db.productTaxonomy.opt
         }
     };
-
-    @staticColumnsDecorator
-    static columns(...prefixes: string[]): DefinedColumns {
-        return [];
-    }
 }

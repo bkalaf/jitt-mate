@@ -5,6 +5,7 @@ import { createMonads } from './createMonads';
 import { distinctBy } from '../array/distinctBy';
 
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createComparable = function <T, U>(extractor: (x: T) => U, comp: (x: U, y: U) => CompareResult = (x: any, y: any) => x < y ? -1 : x > y ? 1 : 0): IComparable<T> {
     return (left: T) =>
         (right: T): CompareResult =>
@@ -17,6 +18,7 @@ const getTimestamp = (x: Date) => x.valueOf();
 export function curr<T, U, V>(func: (x: T, y: U) => V) {
     return (args: [T, U]) => func(...args);
 }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createEqualTo = function <T, U>(extractor: (x: T) => U, comp: (x: U, y: U) => CompareResult = (x: any, y: any) => (x < y ? -1 : x > y ? 1 : 0)) {
     const c1 = curr(createComparable)([extractor, comp]);
     return comparableToEquatable(c1);

@@ -9,7 +9,6 @@ import { IHashTag, IMercariBrand } from '../../dal/types';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { $$queryClient } from '../../components/App';
 import { HashTag } from './HashTag';
-import { listDefaultUpdater } from '../updaters/listDefaultUpdater';
 
 export class MercariBrand extends Realm.Object<IMercariBrand> implements IMercariBrand {
     constructor(realm: Realm, args: any) {
@@ -34,8 +33,7 @@ export class MercariBrand extends Realm.Object<IMercariBrand> implements IMercar
 
     @wrapInTransactionDecorator()
     update() {
-        const lu = listDefaultUpdater<IMercariBrand>;
-        lu.bind(this)(['hashTags']);
+        if (this.hashTags == null) this.hashTags = [] as any;
         HashTag.pruneList(this.hashTags);
         return this;
     }

@@ -1,4 +1,4 @@
-import { MRT_ColumnDef, MRT_RowData } from 'material-react-table';
+import { MRT_ColumnDef } from 'material-react-table';
 import { useDependencies } from '../../../hooks/useDependencies';
 import { Box, List, ListItem, ListItemText } from '@mui/material';
 import { JITTIconButton } from '../clothingCareMeta';
@@ -10,22 +10,14 @@ import { JITTBarcodeDialog } from '../Dialogs/JITTBarcodeDialog';
 import { useFormContext } from 'react-hook-form';
 import { IBarcode } from '../../../dal/types';
 import { useCallback, useMemo } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { updateRecordProp } from '../../../hooks/updateRecord';
-import { useCollectionRoute } from '../../../hooks/useCollectionRoute';
-import { useLocalRealm } from '../../../routes/loaders/useLocalRealm';
-import { useInvalidator } from '../../../hooks/useInvalidator';
 import { Barcode } from '../../../dto/collections/Barcode';
 import { useEditingOrCreatingRow } from '../../../hooks/useEditingOrCreatingRow';
 
-type B1 = DBProperties<IBarcode>;
-type B2 = GetReadOnlyProperties<IBarcode>;
-type B3 = FunctionProperties<IBarcode>;
-
-export function JITTBarcodeControl<T extends MRT_RowData>(initialDisable = false, ...dependencies: IDependency[]) {
+export function JITTBarcodeControl(initialDisable = false, ...dependencies: IDependency[]) {
     function InnerJITTBarcodeControl(props: Parameters<Exclude<MRT_ColumnDef<any, any>['Edit'], undefined>>[0]) {
         const spread = useDependencies(props, initialDisable, ...dependencies);
-        const array = props.cell.getValue<IBarcode[] | DBList<IBarcode> | undefined>();
+        const formContext = useFormContext();
+        const array = formContext.watch(spread.name);
         const value = useMemo(() => (array == null ? [] : Array.isArray(array) ? array : Array.from(array.values())), [array]);
         const [isOpen, toggleOpen, , hideModal] = useToggler(false);
         const onChange = useEditingOrCreatingRow(props, initialDisable, ...dependencies);
@@ -79,7 +71,7 @@ export function JITTBarcodeRow({ barcode, onDelete }: { barcode: IBarcode; onDel
             className='flex w-full aria-invalid:bg-rose-300'
             aria-invalid={!valid}
             secondaryAction={<JITTIconButton color='error' onClick={onDelete} Icon={faTrashCan} className='w-5 h-5' title='Delete this row.' />}>
-            <ListItemText primary={<InnerBarcode value={parseInt(rawValue, 10).toFixed(0)} type={'ean' as keyof BarcodeTypes} />} secondary={type} />
+            <ListItemText primary={<InnerBarcode value={rawValue.padStart(13, '0')} type={'ean' as keyof BarcodeTypes} />} secondary={type} />
         </ListItem>
     );
 }

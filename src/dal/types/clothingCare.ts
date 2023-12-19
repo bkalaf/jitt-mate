@@ -1,8 +1,9 @@
-import { toProperCase, toProperFromCamel } from '../../common/text/toProperCase';
+import { toProperFromCamel } from '../../common/text/toProperCase';
 
 export const degreeF = '\u2109';
 export const degreeC = '\u2103';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const degreeCdegreeF = '\u2103\u2109'
 export class CareInstructions {
     #instructions: string[] = [];

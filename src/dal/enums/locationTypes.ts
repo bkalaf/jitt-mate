@@ -1,3 +1,4 @@
+import { getAssoc } from './getAssoc';
 import { objectMap } from './objectMap';
 
 export const LocationTypesObj = {
@@ -11,13 +12,4 @@ export const LocationTypesColors = objectMap(getAssoc<{ color: string }, 'color'
 
 
 export type LocationTypes = typeof LocationTypes;
-export type LocationTypesKey = keyof LocationTypes;
 
-export function getAssoc<T, K extends keyof T & string>(key: K, def: T[K] | undefined = undefined) {
-    return function(obj: T): T[K] {
-        return Object.getOwnPropertyNames(obj).includes(key) ? obj[key] : def as any;
-    }
-}
-export function toEnumMap(obj: Record<string, { text: string, color: string }>) {
-    return [objectMap(getAssoc<{ text: string }, 'text'>('text', ''))(obj), objectMap(getAssoc<{ color: string }, 'color'>('color', ''))(obj)];
-}

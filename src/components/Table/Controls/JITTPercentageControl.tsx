@@ -1,4 +1,4 @@
-import { TextFieldElement, useFormContext, useWatch } from 'react-hook-form-mui';
+import { TextFieldElement, useFormContext } from 'react-hook-form-mui';
 import { useDependencies } from '../../../hooks/useDependencies';
 import { MRT_ColumnDef } from 'material-react-table';
 import { faDollarSign } from '@fortawesome/pro-solid-svg-icons';
@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Icon } from '@mui/material';
 
 export function JITTPercentageControl(opts: { header?: string; max?: number; min?: number; readOnly?: boolean; required?: boolean; } = {}, initalDisable = false, ...dependencies: IDependency[]) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function MRT_PercentageControl(props: Parameters<Exclude<MRT_ColumnDef<any, any>['Edit'], undefined>>[0]) {
         const spread = useDependencies(props, initalDisable, ...dependencies);
         const { watch } = useFormContext();

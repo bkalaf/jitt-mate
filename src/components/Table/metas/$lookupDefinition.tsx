@@ -3,7 +3,7 @@ import { LookupCell } from '../Cells/LookupCell';
 import { JITTLookupControl } from '../Controls/JITTLookupControl';
 import { toHeader } from '../toHeader';
 
-export function lookupDefinition<T extends AnyObject, TLookup extends EntityBase>(
+export function lookupDefinition<T extends EntityBase, TLookup extends EntityBase>(
     name: Path<T>,
     {
         objectType,
@@ -23,7 +23,7 @@ export function lookupDefinition<T extends AnyObject, TLookup extends EntityBase
     return {
         accessorKey: name,
         header: header,
-        Cell: LookupCell<T, TLookup>(labelPropertyName),
+        Cell: LookupCell<T, TLookup>(labelPropertyName as any),
         enableColumnFilter: false,
         Edit: JITTLookupControl<T, TLookup>({ objectType, labelPropertyName, onChange }, initialDisable ?? false, ...dependencies)
     } as DefinedMRTColumn<T>;

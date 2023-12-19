@@ -1,5 +1,4 @@
 import { charRange } from '../array/charRange';
-import { identity } from '../functions/identity';
 import { capitalize } from './capitalize';
 import { splitAt } from './splitAt';
 import { splitWhen } from './splitWhen';

@@ -3,10 +3,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RealmProvider } from './Providers/RealmProvider';
 import { catchError } from './catchError';
 import { ToasterProvider } from './Providers/ToasterProvider';
-import { OverlayContextProvider } from './Contexts/OverlayContext';
 import { LocalForageProvider } from './Providers/LocalForageProvider';
 import { router } from './router';
-import { SpinnerProvider } from './Contexts/SpinnerContext';
 import { ReflectionProvider } from './Contexts/ReflectionProvider';
 export function alertError(err: unknown) {
     alert((err as Error).message);
@@ -62,17 +60,13 @@ export function App() {
     return (
         <LocalForageProvider>
             <QueryClientProvider client={$$queryClient}>
-                <SpinnerProvider>
-                    <ToasterProvider>
-                        <RealmProvider>
-                            <ReflectionProvider>
-                                <OverlayContextProvider>
-                                    <RouterProvider router={router} />
-                                </OverlayContextProvider>
-                            </ReflectionProvider>
-                        </RealmProvider>
-                    </ToasterProvider>
-                </SpinnerProvider>
+                <ToasterProvider>
+                    <RealmProvider>
+                        <ReflectionProvider>
+                                <RouterProvider router={router} />
+                        </ReflectionProvider>
+                    </RealmProvider>
+                </ToasterProvider>
             </QueryClientProvider>
         </LocalForageProvider>
     );

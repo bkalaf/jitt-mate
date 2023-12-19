@@ -2,14 +2,18 @@ import { $db } from '../../dal/db';
 import Realm, { BSON } from 'realm';
 import { IBrand, IHashTag, IProductLine } from '../../dal/types';
 import { $$queryClient } from '../../components/App';
+import { wrapInTransactionDecorator } from '../../dal/transaction';
 
 export class ProductLine extends Realm.Object<IProductLine> implements IProductLine {
     brand: OptionalEntity<IBrand>;
     name = '';
     _id: OID = new BSON.ObjectId();
 
-    update(this: Entity<IProductLine>): Entity<IProductLine> {
+    @wrapInTransactionDecorator()
+    update() {
         this.brand?.update();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if (this.hashTags == null) this.hashTags = [] as any;
         return this;
     }
 
@@ -32,7 +36,7 @@ export class ProductLine extends Realm.Object<IProductLine> implements IProductL
     }
     hashTags!: DBSet<Entity<IHashTag>>;
     get allHashTags(): Entity<IHashTag>[] {
-        return [];
+        return [...this.hashTags.values(), ...this.brand?.allHashTags ?? []];
     }
     static schema: Realm.ObjectSchema = {
         name: 'productLine',
@@ -40,7 +44,8 @@ export class ProductLine extends Realm.Object<IProductLine> implements IProductL
         properties: {
             _id: $db.objectId,
             name: $db.string(),
-            brand: $db.brand.opt
+            brand: $db.brand.opt,
+            hashTags: $db.hashTag.set
         }
     };
 }

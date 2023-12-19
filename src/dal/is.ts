@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // ///<reference path="./../../global.d.ts" />
 import { BSON } from 'realm';
 import { both } from '../common/functions/both';

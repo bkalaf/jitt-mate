@@ -1,5 +1,4 @@
 import { MRT_ColumnDef, MRT_RowData } from 'material-react-table';
-import { CheckboxButtonGroup, UseFormReturn, useFormContext } from 'react-hook-form-mui';
 import * as LaundryCareTypes from '../../../laundry-care.json';
 import {
     BleachWithChlorine,
@@ -66,7 +65,6 @@ import { IconDefinition } from '@fortawesome/pro-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Tooltip, IconButton, CircularProgress, IconButtonProps } from '@mui/material';
 import { $cn } from '../../util/$cn';
-import { useInvalidator } from '../../hooks/useInvalidator';
 import SvgBleaching from '../../assets/laundrySVG/Bleaching';
 
 export const degreeF = '\u2109';
@@ -351,8 +349,6 @@ export type ClothingCareIndividualKeys<T extends ClothingCareSectionKeys> = {
     [P in ClothingCareSectionKeys]: { [R in keyof typeof ClothingCareMap[P]]: R }[keyof typeof ClothingCareMap[P]];
 }[T];
 
-export type C1 = ClothingCareIndividualKeys<'bleaching'>;
-export type C2 = ClothingCareIndividualKeys<'drying'>;
 
 export const ClothingCareCompleteMap = Object.fromEntries(
     Object.entries(ClothingCareMap).map(([k, v]) => [
@@ -363,7 +359,7 @@ export const ClothingCareCompleteMap = Object.fromEntries(
     Record<'drying', Record<ClothingCareIndividualKeys<'drying'>, { name: string; text: string; Element: React.FunctionComponent<{ props: any }> }>>;
 
 export const getClothingCareSection = (section: ClothingCareSectionKeys) => ClothingCareMap[section];
-export const getClothingCareSectionKeys = (section: ClothingCareSectionKeys) => getClothingCareSection(section);
+// export const getClothingCareSectionKeys = (section: ClothingCareSectionKeys) => getClothingCareSection(section);
 
 export const sectionNames = ['bleaching', 'drying', 'ironing', 'dryClean', 'tumbleDry', 'washTemperature', 'wash', 'permanentPress', 'gentleOrDelicate'] as ClothingCareSectionKeys[];
 export const ClothingCareMapNoCategory = sectionNames.map(getClothingCareSection).reduce((pv, cv) => ({ ...pv, ...cv }), {}) as Record<

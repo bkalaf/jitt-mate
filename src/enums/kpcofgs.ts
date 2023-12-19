@@ -33,6 +33,7 @@ export const $phlyums = $kingdoms.map(x => {
 
 export const $klasses = $phlyums
     .map((x) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const p = (taxonomy[x.parent as keyof typeof taxonomy] as any)[x.value];
         return Object.keys(p).map((p2) => toComboBoxOption(p2, x, 2));
     })
@@ -41,6 +42,7 @@ export const $klasses = $phlyums
 export const $orders = $klasses
     .map((x) => {
         const [$k, $p] = x.parent?.split('.') ?? [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const p = (taxonomy[$k as keyof typeof taxonomy] as any)[$p][x.value];
         return typeof p === 'string' ? [toComboBoxOption(p, x, 3)] : Object.keys(p).map((p2) => toComboBoxOption(p2, x, 3));
     })
@@ -50,6 +52,7 @@ export const $orders = $klasses
 export const $families = $orders
     .map((x) => {
         const [$k, $p, $c] = x.parent?.split('.') ?? [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const p = (taxonomy[$k as keyof typeof taxonomy] as any)[$p][$c][x.value];
         return typeof p === 'string' ? (x.value === p ? [] : [toComboBoxOption(p, x, 4)]) : Object.keys(p ?? {}).map((p2) => toComboBoxOption(p2, x, 4));
     })
@@ -64,13 +67,6 @@ export const $genuses = $families
     })
     .reduce((p, c) => [...p, ...c], [])
     .sort(sorter);
-
-console.log(JSON.stringify($kingdoms, null, '\t'));
-console.log(JSON.stringify($phlyums, null, '\t'));
-console.log(JSON.stringify($klasses, null, '\t'));
-console.log(JSON.stringify($orders, null, '\t'));
-console.log(JSON.stringify($families, null, '\t'));
-console.log(JSON.stringify($genuses, null, '\t'));
 
 
 

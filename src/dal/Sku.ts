@@ -1,9 +1,7 @@
 import Realm, { BSON } from 'realm';
 import { $db } from './db';
 import { IBarcode, IBrand, IHashTag, ILocationSegment, IProduct, IProductImage, IProductTaxonomy, IScan, ISku } from './types';
-import { ISizeEntry } from '../enums/sizes';
-import { createColumnHelper } from '@tanstack/react-table';
-import { Colors, colorToName } from './enums/colors';
+import { colorToName } from './enums/colors';
 import { wrapInTransactionDecorator } from './transaction';
 import { Scan } from '../dto/embedded/Scan';
 import { ItemConditions } from './enums/itemConditions';

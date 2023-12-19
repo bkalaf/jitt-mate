@@ -3,6 +3,7 @@ import { IHashTag, IMercariSubCategory, IMercariSubSubCategory } from '../../dal
 import { $metas } from '../../components/Table/metas';
 
 export const mercariSubSubCategoryColumns = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getColumns: (...pre: string[]): MRT_ColumnDef<IMercariSubSubCategory, any>[] =>
         (
             [

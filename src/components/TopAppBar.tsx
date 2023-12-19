@@ -1,12 +1,11 @@
 import { faBars } from '@fortawesome/pro-duotone-svg-icons';
-import { faEllipsisH } from '@fortawesome/pro-solid-svg-icons';
+import { faBackward, faEllipsisH } from '@fortawesome/pro-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Image } from '@mui/icons-material';
 import { AppBar, Avatar, Box, Button, Container, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material';
-import { useCallback } from 'react';
 import { useMenuAnchor } from '../hooks/useMenuAnchor';
 import { useRealmContext } from '../hooks/useRealmContext';
-import { compR, composeR } from '../common/functions/composeR';
+import { useNavigate } from 'react-router';
+import { JITTIconButton } from './Table/clothingCareMeta';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const logo = require('./../assets/logos/resized-logo.png');
 
@@ -14,6 +13,7 @@ export function TopAppBar({ pages, toggleLeftDrawer, settings }: { settings: [st
     const { currentUser } = useRealmContext();
     const [menuOpen, menuAnchor, handleOpenMenu, handleCloseMenu] = useMenuAnchor();
     const [userMenuOpen, userMenuAnchor, handleOpenUserMenu, handleCloseUserMenu] = useMenuAnchor();
+    const navigate = useNavigate();
     return (
         <AppBar position='static'>
             <Container className='max-w-full'>
@@ -27,6 +27,7 @@ export function TopAppBar({ pages, toggleLeftDrawer, settings }: { settings: [st
                         <Box className='flex h-12'>
                             <img src={logo} alt='Junk-in-the-Trunk, Inc logo' className='block object-scale-down' />
                         </Box>
+                        <JITTIconButton title='Go back' Icon={faBackward} color='error' className='w-6 h-6' onClick={() => navigate(-1)} />
                     </Box>
                     <Box className='flex flex-grow md:hidden'>
                         <Tooltip title='Expand the main menubar.'>
@@ -34,6 +35,7 @@ export function TopAppBar({ pages, toggleLeftDrawer, settings }: { settings: [st
                                 <FontAwesomeIcon icon={faEllipsisH} className='block object-cover' />
                             </IconButton>
                         </Tooltip>
+                        
                         <Menu
                             id='menu-appbar'
                             anchorEl={menuAnchor}

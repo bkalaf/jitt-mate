@@ -1,5 +1,3 @@
-import { colorToClasses } from './colors';
-
 export const ItemConditions = {
     new: {
         value: 'new',

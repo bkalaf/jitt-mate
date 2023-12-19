@@ -1,11 +1,11 @@
 import { faDollarSign } from '@fortawesome/pro-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Icon } from '@mui/material';
-import { MRT_ColumnDef, MRT_RowData } from 'material-react-table';
+import { MRT_ColumnDef } from 'material-react-table';
 import { TextFieldElement } from 'react-hook-form-mui';
 import { useDependencies } from '../../../hooks/useDependencies';
 
-export function JITTDollarControl<T extends MRT_RowData>(opts: { required?: boolean; readOnly?: boolean; min?: number, max?: number }, initialDisable = false, ...dependencies: IDependency[]) {
+export function JITTDollarControl(opts: { required?: boolean; readOnly?: boolean; min?: number, max?: number }, initialDisable = false, ...dependencies: IDependency[]) {
     return function MRT_DollarControl(props: Parameters<Exclude<MRT_ColumnDef<any, any>['Edit'], undefined>>[0]) {
         const spread = useDependencies(props, initialDisable, ...dependencies);
         return (

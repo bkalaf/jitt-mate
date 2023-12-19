@@ -21,7 +21,7 @@ export type RHFM_TextFieldElementProps = {
     maxMessage?: string;
     validators?: ([string, (value: any) => boolean])[]
 };
-export function RHFM_TextFieldElement<T extends EntityBase>({
+export function RHFM_TextFieldElement({
     header,
     patternMessage,
     requiredMessage,

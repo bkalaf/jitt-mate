@@ -9,6 +9,7 @@ export type     IRealmContext = {
     logOut: () => Promise<void>;
     logIn: (creds: { email: string; password: string }) => Promise<void>;
     dbIsOpen: () => boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     schema: Realm.RealmObjectConstructor<any>[];
 };
 

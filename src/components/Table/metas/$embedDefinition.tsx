@@ -2,7 +2,6 @@ import { Path, useFormContext } from 'react-hook-form-mui';
 import { toHeader } from '../toHeader';
 import { collections } from '../collections';
 import { MRT_ColumnDef, MRT_RowData, createMRTColumnHelper } from 'material-react-table';
-import { JITTEmbedControl } from '../Controls/JITTEmbedControl';
 import { useDisabled } from '../../../hooks/useDependencies';
 
 const helper = createMRTColumnHelper();

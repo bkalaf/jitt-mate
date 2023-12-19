@@ -1,5 +1,5 @@
-import { useCallback, useMemo } from 'react';
-import { MRT_ColumnDef, MRT_Row, MRT_RowData, MRT_TableInstance } from 'material-react-table';
+import { useCallback } from 'react';
+import { MRT_ColumnDef } from 'material-react-table';
 import { ignore } from '../common/functions/ignore';
 import { useMutation } from '@tanstack/react-query';
 import { useLocalRealm } from '../routes/loaders/useLocalRealm';
@@ -9,7 +9,8 @@ import { useInvalidator } from './useInvalidator';
 import { useFormContext } from 'react-hook-form';
 import { useDependencies } from './useDependencies';
 
-export function useEditingOrCreatingRow<T extends MRT_RowData>(props: Parameters<Exclude<MRT_ColumnDef<any, any>['Edit'], undefined>>[0], initialDisable: boolean, ...dependencies: IDependency[]) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function useEditingOrCreatingRow(props: Parameters<Exclude<MRT_ColumnDef<any, any>['Edit'], undefined>>[0], initialDisable: boolean, ...dependencies: IDependency[]) {
     const spread = useDependencies(props, initialDisable, ...dependencies);
     const formContext = useFormContext();
     const { creatingRow } = props.table.getState();
@@ -22,6 +23,7 @@ export function useEditingOrCreatingRow<T extends MRT_RowData>(props: Parameters
         ...onSuccess
     });
     const onChange = useCallback((func?: () => void) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return (data: any) => {
             if (isCreating) {
                 props.table.setCreatingRow((current) => {

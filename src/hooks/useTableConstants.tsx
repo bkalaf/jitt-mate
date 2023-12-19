@@ -26,12 +26,14 @@ export function useTableConstants<T extends MRT_RowData>() {
                 selectAllMode: 'page' as const,
                 enableRowSelection: true,
                 enableStickyFooter: true,
+                enableRowNumbers: true,
                 enableStickyHeader: true,
                 enableRowActions: true,
                 layoutMode: 'grid' as MRT_TableOptions<T>['layoutMode'],
                 muiPaginationProps: {
                     rowsPerPageOptions: [15, 25, 50, 100, 250, 500, 1000, 2500]
                 },
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 muiTableBodyRowProps: (params: Parameters<Extract<Exclude<MRT_TableOptions<any>['muiTableBodyRowProps'], undefined>, (...args: any[]) => any>>[0]) =>
                     ({
                         className: 'odd:bg-zinc-300 aria-selected:bg-rose-500 ring ring-transparent hover:ring-rose-500',
@@ -45,6 +47,7 @@ export function useTableConstants<T extends MRT_RowData>() {
                 muiTableBodyCellProps: {
                     className: 'bg-inherit whitespace-pre'
                 },
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 muiTableHeadCellProps: (params: Parameters<Extract<Exclude<MRT_TableOptions<any>['muiTableHeadCellProps'], undefined>, (...args: any[]) => any>>[0]) => ({
                     'aria-sort': params.column.getIsSorted() ? params.column.getIsSorted() : undefined,
                     'data-column-type': params.column.columnDef.columnDefType,
@@ -60,6 +63,7 @@ export function useTableConstants<T extends MRT_RowData>() {
                         justifyContent: 'start'
                     }
                 } as MRT_TableOptions<T>['muiTopToolbarProps']
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } as any as MRT_TableOptions<T>),
         []
     );

@@ -6,11 +6,11 @@ import { BSON } from 'realm';
 import { $$queryClient } from '../../components/App';
 import { $db } from '../../dal/db';
 import { HashTag } from './HashTag';
-import { taxonUpdater } from '../updaters/taxonUpdater';
 import * as Realm from 'realm';
 import { $initialCollection } from '../../components/Table/creators/$initialCollection';
 import { checkTransaction } from '../../util/checkTransaction';
 import { mergeProductTaxonomy } from '../embedded/mergeProductTaxonomy';
+import { wrapInTransactionDecorator } from '../../dal/transaction';
 
 export class Product extends Realm.Object<IProduct> implements IProduct {
     constructor(realm: Realm, args: any) {
@@ -82,7 +82,7 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
     taxon: OptionalEntity<IProductTaxonomy>;
     upcs: DBList<Entity<IBarcode>> = [] as any;
     get allHashTags(): Entity<IHashTag>[] {
-        return [];
+        return Array.from(new Set([...this.hashTags.values(), ...(this.brand?.allHashTags ?? []), ...(this.productLine?.allHashTags ?? []), ...(this.classifier?.allHashTags ?? [])]).values()).sort((a, b) => a.$maxCount > b.$maxCount ? -1 : a.$maxCount < b.$maxCount ? 1 : 0);
     }
     get isNoBrand(): boolean {
         return this.effectiveBrand == null;
@@ -117,15 +117,8 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
     get effectiveTaxon(): OptionalEntity<IProductTaxonomy> {
         return this.taxon;
     }
-    static updateTaxon(product: IProduct) {
-        taxonUpdater.bind(product)();
-        const merged = mergeProductTaxonomy(product.taxon, product.classifier?.taxon);
-        if (merged) {
-            product.taxon = merged as any;
-        }
-        return product;
-    }
-    update(this: Entity<IProduct>): Entity<IProduct> {
+    @wrapInTransactionDecorator()
+    update() {
         if (this._id == null) this._id = new BSON.ObjectId();
         if (this.apparelDetails == null) {
             $initialCollection['apparelDetails']().then((ad) => (this.apparelDetails = ad as any));
@@ -141,11 +134,15 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
         if (this.upcs) this.upcs.forEach((x) => x.update());
         if (this.hashTags == null) this.hashTags = [] as any;
         if (this.hashTags) HashTag.pruneList(this.hashTags);
-        taxonUpdater.bind(this)();
+        if (this.taxon == null) this.taxon = { lock: false } as any;
+        if (this.taxon != null && this.taxon.update != null) {
+            this.taxon = this.taxon.update();
+        }
         const merged = mergeProductTaxonomy(this.taxon, this.classifier?.taxon);
         if (merged) {
             this.taxon = merged as any;
         }
+        this.hashTags = this.allHashTags as any;
         return this;
     }
 }

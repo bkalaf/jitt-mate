@@ -348,7 +348,7 @@ export const tableType: Record<string, (args: { parentRow: MRT_Row<EntityBase & 
         queryFn: () => Promise.resolve([parentRow.original[propertyName]]),
         getRowId: () => '0',
         columns: collections[objectType].getColumns(propertyName),
-        insert: (args: { values: T }) => {
+        insert: () => {
             throw new Error('cannot insert');
         },
         invalidator: {
@@ -377,7 +377,7 @@ export const tableType: Record<string, (args: { parentRow: MRT_Row<EntityBase & 
             });
         },
         toGetRowCanExpand: () => () => false,
-        deleteOne: (args) => {
+        deleteOne: () => {
             throw new Error('cannot delete');
         }
     }),

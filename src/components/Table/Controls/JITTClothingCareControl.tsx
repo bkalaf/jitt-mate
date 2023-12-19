@@ -21,7 +21,7 @@ export function JITTClothingCareControl<T extends MRT_RowData>(initialDisable = 
         console.log(`watchedValue`, value);
         const cellValue = props.cell.getValue();
         console.log(`cellValue`, cellValue);
-        const [isOpen, toggleOpen, showModal, hideModal] = useToggler(false);
+        const [isOpen, toggleOpen,, hideModal] = useToggler(false);
         const onSuccess = useInvalidateRoute();
         const objectType = useCollectionRoute();
         const onDelete = useCallback(

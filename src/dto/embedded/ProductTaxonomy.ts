@@ -5,7 +5,6 @@ import Realm from 'realm';
 import { IProductTaxonomy } from '../../dal/types';
 import { $db } from '../../dal/db';
 import { taxonomy } from '../../dal/enums/taxa';
-import { staticColumnsDecorator } from '../../decorators/class/defineColumnsDecorator';
 import { darken, lighten, styled } from '@mui/material';
 import { is } from '../../dal/is';
 import { MRT_Row, MRT_TableInstance } from 'material-react-table';

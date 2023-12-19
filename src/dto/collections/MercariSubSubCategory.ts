@@ -6,12 +6,9 @@ import { ICustomItemField, IHashTag, IMercariSubCategory, IMercariSubSubCategory
 import { cleanup, is } from '../../dal/is';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { $$queryClient } from '../../components/App';
-import { parentedUpdate } from '../updaters/parentedUpdate';
-import { listDefaultUpdater } from '../updaters/listDefaultUpdater';
-import { categorySelectorUpdater } from '../updaters/categorySelectorUpdater';
-import { hashTaggedUpdater } from '../updaters/hashTaggedUpdater';
-import { taxonUpdater } from '../updaters/taxonUpdater';
 import { mergeProductTaxonomy } from '../embedded/mergeProductTaxonomy';
+import { prependText } from '../../common/text/prependText';
+import { HashTag } from './HashTag';
 
 export const ifList = (s: string): string | PropertySchema => (is.realmType.list(s) ? { type: 'list', objectType: cleanup(s) } : s);
 export const ifOpt = (s: string): string | PropertySchema => {
@@ -69,12 +66,42 @@ export class MercariSubSubCategory extends Realm.Object<IMercariSubSubCategory> 
 
     @wrapInTransactionDecorator()
     update() {
-        const lu = listDefaultUpdater<IMercariSubSubCategory>;
-        lu.bind(this)(['hashTags', 'customItemFields']);
-        const pu = parentedUpdate<'parent', IMercariSubCategory, IMercariSubSubCategory>;
-        taxonUpdater.bind(this, pu.bind(this, 'parent'))();
-        categorySelectorUpdater.bind(this)();
-        hashTaggedUpdater.bind(this)();
+        if (this.hashTags == null) this.hashTags = [] as any;
+        if (this.customItemFields == null) this.customItemFields = [] as any;
+        if (this.taxon == null) this.taxon = { lock: false } as any;
+        if ('parent' in this) {
+            const parent = this.parent;
+            if (parent != null) {
+                const target = parent.taxon ?? ({ lock: false } as IProductTaxonomy);
+                if (target != null && !target.lock) {
+                    const values = [parent.taxon?.kingdom, parent.taxon?.phylum, parent.taxon?.klass, parent.taxon?.order, parent.taxon?.family, parent.taxon?.genus, parent.taxon?.species].filter(
+                        (x) => x != null
+                    ) as string[];
+                    const setters = [
+                        (value: string) => (target.kingdom = value),
+                        (value: string) => (target.phylum = value),
+                        (value: string) => (target.klass = value),
+                        (value: string) => (target.order = value),
+                        (value: string) => (target.family = value),
+                        (value: string) => (target.genus = value),
+                        (value: string) => (target.species = value)
+                    ];
+                    for (let index = 0; index < values.length; index++) {
+                        const currentValue = values[index];
+                        setters[index](currentValue);
+                    }
+                }
+            }
+        }
+        if (this.taxon != null && this.taxon.update != null) {
+            this.taxon = this.taxon.update();
+        }
+        if (!this.id.startsWith('#')) {
+            this.id = prependText('#')(this.id);
+        }
+        if (this.hashTags) {
+            HashTag.pruneList(this.hashTags);
+        }
         this.fullname = [this.parent?.parent?.name, this.parent?.name, this.name].filter((x) => x != null).join('::');
         const merged = mergeProductTaxonomy(this.taxon, this.parent?.taxon);
         if (merged) {
