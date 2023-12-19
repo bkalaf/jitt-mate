@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { IRealmEntity } from '../dal/types';
 import { usePersistedState } from './usePersistedState';
-import { useReflectionContext } from '../components/Contexts/useReflectionContext';
+import { useReflectionContext } from './useReflectionContext';
 import { createRenderToolbarInternalActions } from '../components/Table/creators/createRenderToolbarInternalActions';
 import { konst } from '../common/functions/konst';
 import { createRenderRowActions } from '../components/Table/creators/createRenderRowActions';
@@ -14,7 +14,7 @@ import { TableTypeObject, tableType } from './tableType';
 import { AlertColor } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { createRenderCreateRowDialogContentRHF } from '../components/Table/creators/createRenderCreateRowDialogContent';
-import { useLocalRealm } from '../routes/loaders/useLocalRealm';
+import { useLocalRealm } from './useLocalRealm';
 import { updateRecord } from './updateRecord';
 import { createDetailSubComponent } from '../components/Table/creators/createDetailSubComponent';
 export function useMUIReactTable<T extends MRT_RowData>({

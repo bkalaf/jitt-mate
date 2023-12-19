@@ -10,7 +10,7 @@ import { faCancel, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
 import { ignore } from '../../../common/functions/ignore';
 import { updateRecordProperty } from '../../../hooks/updateRecord';
 import { useInvalidator } from '../../../hooks/useInvalidator';
-import { useLocalRealm } from '../../../routes/loaders/useLocalRealm';
+import { useLocalRealm } from '../../../hooks/useLocalRealm';
 import { OnBlurContext } from './OnBlurContext';
 
 export function toEditFormInitializer<T extends AnyObject>(row: MRT_Row<T>) {

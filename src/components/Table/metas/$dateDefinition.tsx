@@ -1,6 +1,5 @@
 import { DateCell } from '../Cells/DateCell';
 import { JITTTextControl } from '../Controls/JITTTextControl';
-import { toProperFromCamel } from '../../../common/text/toProperCase';
 import { MRT_RowData } from 'material-react-table';
 import { Path } from 'react-hook-form-mui';
 import { toHeader } from '../toHeader';

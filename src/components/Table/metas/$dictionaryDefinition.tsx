@@ -21,7 +21,7 @@ export function dictionaryDefinition<T extends MRT_RowData, TListOf, TName exten
         accessorKey: name,
         header: toHeader(opts, name),
         Cell: DBDictionaryDetailCell(ItemComponent),
-        Edit: JITTMultiControl<T, TName, TListOf, TPropertyName>(
+        Edit: JITTMultiControl<T, TListOf, TPropertyName>(
             {
                 listType: 'dictionary',
                 objectType: opts.objectType,

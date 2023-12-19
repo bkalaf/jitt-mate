@@ -1,5 +1,4 @@
-import { useRealmContext } from '../../hooks/useRealmContext';
-
+import { useRealmContext } from './useRealmContext';
 
 export function useLocalRealm() {
     const { db } = useRealmContext();

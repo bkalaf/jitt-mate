@@ -1,40 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AutocompleteElement, FieldValues, Path, UseFormReturn, useFormContext } from 'react-hook-form-mui';
 import { useQuery } from '@tanstack/react-query';
-import { useLocalRealm } from '../../../routes/loaders/useLocalRealm';
+import { useLocalRealm } from '../../../hooks/useLocalRealm';
 import { useDependencies } from '../../../hooks/useDependencies';
-import { MRT_ColumnDef, MRT_Row, MRT_RowData } from 'material-react-table';
+import { MRT_ColumnDef, MRT_RowData } from 'material-react-table';
 import { getProperty } from '../../Contexts/getProperty';
-import { is } from '../../../dal/is';
-import { checkTransaction } from '../../../util/checkTransaction';
 import { createFilterOptions } from '@mui/material';
-import { toNotNullOID } from '../../../dal/toOID';
 
-// creatingRow: MRT_Row<T> | null, setCreatingRow: MRT_TableInstance<T>['setCreatingRow']
-export function updateDictionary<T extends MRT_RowData, TValue>(db: Realm, collection: RealmObjects, propertyName: string, formContext: UseFormReturn, creatingRow: MRT_Row<T> | null) {
-    return function ({ _id, key, value }: { _id: OID; key: string; value: TValue | undefined }) {
-        if (creatingRow) {
-            if (typeof creatingRow === 'boolean') return Promise.reject(new Error('creating row is a boolean'));
-            const dictionary = formContext.watch(propertyName);
-            formContext.setValue(propertyName, { ...(dictionary ?? {}), [key]: value });
-            // const { _valuesCache } = creatingRow;
-            // const dictionary = (_valuesCache[propertyName] as Record<string, TValue> | undefined) ??  {};
-            // setCreatingRow({ ...creatingRow, _valuesCache: { ..._valuesCache, [propertyName]: { ...dictionary, [key]: value }}});
-            return Promise.resolve();
-        }
-        const obj = db.objectForPrimaryKey<T>(collection, toNotNullOID(_id) as T[keyof T]);
-        if (obj == null) {
-            return Promise.reject(new Error(`cannot find obj ${_id.toString()}`));
-        }
-        const dictionary = (obj[propertyName] as DBDictionary<TValue> | Record<string, TValue> | undefined) ?? {};
-        if (is.dbDictionary(dictionary)) {
-            checkTransaction(db)(() => (value == null ? dictionary.remove(key) : (dictionary[key] = value)));
-            return Promise.resolve();
-        }
-        checkTransaction(db)(() => (value == null ? delete (dictionary ?? {})[key] : { ...(dictionary ?? {}), [key]: value }));
-        return Promise.resolve();
-    };
-}
 export function JITTLookupControl<T extends MRT_RowData, TLookup extends EntityBase>(
     {
         objectType,
@@ -90,7 +62,7 @@ export function JITTLookupControl<T extends MRT_RowData, TLookup extends EntityB
                     onChange: (ev, newValue) => {
                         onBlur({ ...ev, target: { value: newValue } } as any);
                         if (onChange) {
-                            onChange(formContext, db)(ev, newValue);
+                            onChange(formContext, db)(ev as any, newValue);
                         }
                     },
                     disabled,

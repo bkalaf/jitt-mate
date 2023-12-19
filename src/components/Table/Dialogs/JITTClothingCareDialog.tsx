@@ -4,7 +4,7 @@ import { Dialog, DialogTitle, Divider, DialogActions, ButtonGroup, DialogContent
 import { useCallback, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { updateRecordProp } from '../../../hooks/updateRecord';
-import { useLocalRealm } from '../../../routes/loaders/useLocalRealm';
+import { useLocalRealm } from '../../../hooks/useLocalRealm';
 import { toProperFromCamel } from '../../../common/text/toProperCase';
 import { ClothingCareOptions, ClothingCareIndividualKeys, ClothingCareSectionKeys, sectionNames, getClothingCareSection, JITTIconButton } from '../clothingCareMeta';
 

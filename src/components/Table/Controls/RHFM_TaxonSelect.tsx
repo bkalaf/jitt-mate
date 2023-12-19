@@ -72,26 +72,3 @@ export function RHFM_TaxonSelect<T extends MRT_RowData>(props: Parameters<Exclud
         </Stack>
     );
 }
-
-export function testGetOptions(name: string, fullname: string) {
-    const nodeLevel = getNodeLevel(name);
-    const segments = getOptions(fullname);
-    const materializedPath = segments.length > nodeLevel ? segments[nodeLevel] : undefined;
-    console.log(`materializedPath`, materializedPath);
-    const opts = Object.keys(
-        materializedPath?.reduce((pv, cv) => {
-            return pv[cv];
-        }, taxonomy as Record<string, any>) ?? {}
-    );
-    console.log(opts);
-}
-
-console.log(taxonomy);
-// testGetOptions('kingdom', '');
-// testGetOptions('this.phylum', 'apparel.men.bottoms');
-// testGetOptions('this.order', 'apparel.men.bottoms.pants');
-// testGetOptions('this.species', 'apparel.men.bottoms.pants');
-// testGetOptions('this.phylum', 'apparel.men.tops.button-front');
-// testGetOptions('this.klass', 'apparel.men.tops.button-front');
-// testGetOptions('this.order', 'apparel.men.tops.button-front');
-// testGetOptions('this.family', 'apparel.men.tops.button-front');

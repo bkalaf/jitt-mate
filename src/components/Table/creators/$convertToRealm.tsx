@@ -139,13 +139,13 @@ const toMercariSubSubCategory: ConvertToRealmFunction<IMercariSubSubCategory> = 
     _id: toNotNullOID(_id),
     id,
     name,
+    customItemFields: (customItemFields ?? []) as any,
     shipWeightPercent:
         shipWeightPercent != null ? (typeof shipWeightPercent === 'number' ? shipWeightPercent : typeof shipWeightPercent === 'string' ? parseFloat(shipWeightPercent) : undefined) : undefined,
     taxon: (taxon == null ? { lock: false } : toProductTaxonomy(taxon)) as any,
     hashTags: hashTags.map((x) => window.$$store?.objectForPrimaryKey<IHashTag>('hashTag', toOID(x))) as Entity<IHashTag>[],
     parent: unserializedLookup<IMercariSubCategory>('mercariSubCategory')(parent),
-    fullname,
-    customItemFields: [] as any[]
+    fullname
 });
 const toClassifier: ConvertToRealmFunction<IClassifier> = ({ _id, hashTags, mercariSubSubCategory, isAthletic, name, notes, shipWeightPercent, shortname, taxon }) => ({
     _id: toNotNullOID(_id),

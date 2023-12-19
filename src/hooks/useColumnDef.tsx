@@ -1,4 +1,4 @@
-import { useOnBlurContext } from '../creators/useOnBlurContext';
+import { useOnBlurContext } from './useOnBlurContext';
 import { MRT_ColumnDef } from 'material-react-table';
 import { useMemo } from 'react';
 

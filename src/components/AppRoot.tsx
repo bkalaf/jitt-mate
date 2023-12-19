@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { SchemaLoader } from './TopBarAuthSegment';
+import { SchemaLoader } from './SchemaLoader';
 import { Toaster } from './Toaster/Toaster';
 import { useEffect } from 'react';
 import { LeftDrawer } from './Navigation/LeftDrawer';

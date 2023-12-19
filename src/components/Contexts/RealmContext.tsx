@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import * as Realm from 'realm';
+import Realm from 'realm';
 
 export type     IRealmContext = {
     app: Realm.App;

@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { MRT_ColumnDef } from 'material-react-table';
 import { ignore } from '../common/functions/ignore';
 import { useMutation } from '@tanstack/react-query';
-import { useLocalRealm } from '../routes/loaders/useLocalRealm';
+import { useLocalRealm } from './useLocalRealm';
 import { updateRecordProp } from './updateRecord';
 import { useCollectionRoute } from './useCollectionRoute';
 import { useInvalidator } from './useInvalidator';

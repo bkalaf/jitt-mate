@@ -7,14 +7,14 @@ import { IconButton, List, ListItem, ListItemText, PaperProps, TableContainerPro
 import { collections } from '../collections';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlusSquare, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
-import { useLocalRealm } from '../../../routes/loaders/useLocalRealm';
+import { useLocalRealm } from '../../../hooks/useLocalRealm';
 import { $initialCollection } from '../creators/$initialCollection';
 import { useInvalidator } from '../../../hooks/useInvalidator';
 import { $convertToRealm } from '../creators/$convertToRealm';
 import { $metas } from '../metas';
 import { checkTransaction } from '../../../util/checkTransaction';
 import { useDependencies } from '../../../hooks/useDependencies';
-import { useReflectionContext } from '../../Contexts/useReflectionContext';
+import { useReflectionContext } from '../../../hooks/useReflectionContext';
 import { removeProperty } from './removeProperty';
 import { identity } from '../../../common/functions/identity';
 import { renderCreateModal } from './renderCreateModal';

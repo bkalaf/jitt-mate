@@ -5,7 +5,7 @@ import { faFloppyDisk, faTimesCircle } from '@fortawesome/pro-solid-svg-icons';
 import * as React from 'react';
 import { ipcRenderer } from 'electron';
 import { toNotNullOID } from '../../dal/toOID';
-import { useLocalRealm } from '../../routes/loaders/useLocalRealm';
+import { useLocalRealm } from '../../hooks/useLocalRealm';
 import { MRT_ColumnDef } from 'material-react-table';
 
 export function InsertItemModal<T extends FieldValues & EntityBase>({

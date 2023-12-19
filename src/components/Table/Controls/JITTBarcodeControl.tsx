@@ -1,17 +1,15 @@
 import { MRT_ColumnDef } from 'material-react-table';
 import { useDependencies } from '../../../hooks/useDependencies';
-import { Box, List, ListItem, ListItemText } from '@mui/material';
+import { Box, List } from '@mui/material';
 import { JITTIconButton } from '../clothingCareMeta';
-import { InnerBarcode } from '../Cells/InnerBarcode';
-import { BarcodeTypes } from '../../../dal/enums/barcodeTypes';
-import { faPlusSquare, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
+import { faPlusSquare } from '@fortawesome/pro-solid-svg-icons';
 import { useToggler } from '../../../hooks/useToggler';
 import { JITTBarcodeDialog } from '../Dialogs/JITTBarcodeDialog';
 import { useFormContext } from 'react-hook-form';
-import { IBarcode } from '../../../dal/types';
 import { useCallback, useMemo } from 'react';
 import { Barcode } from '../../../dto/collections/Barcode';
 import { useEditingOrCreatingRow } from '../../../hooks/useEditingOrCreatingRow';
+import { JITTBarcodeRow } from './JITTBarcodeRow';
 
 export function JITTBarcodeControl(initialDisable = false, ...dependencies: IDependency[]) {
     function InnerJITTBarcodeControl(props: Parameters<Exclude<MRT_ColumnDef<any, any>['Edit'], undefined>>[0]) {
@@ -64,14 +62,3 @@ export function JITTBarcodeControl(initialDisable = false, ...dependencies: IDep
     return InnerJITTBarcodeControl;
 }
 
-export function JITTBarcodeRow({ barcode, onDelete }: { barcode: IBarcode; onDelete: () => void }) {
-    const { rawValue, type, valid } = barcode;
-    return (
-        <ListItem
-            className='flex w-full aria-invalid:bg-rose-300'
-            aria-invalid={!valid}
-            secondaryAction={<JITTIconButton color='error' onClick={onDelete} Icon={faTrashCan} className='w-5 h-5' title='Delete this row.' />}>
-            <ListItemText primary={<InnerBarcode value={rawValue.padStart(13, '0')} type={'ean' as keyof BarcodeTypes} />} secondary={type} />
-        </ListItem>
-    );
-}

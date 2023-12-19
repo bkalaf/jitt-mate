@@ -1,6 +1,6 @@
 import { useFormContext } from 'react-hook-form-mui';
 import { useMutation } from '@tanstack/react-query';
-import { useLocalRealm } from '../../../routes/loaders/useLocalRealm';
+import { useLocalRealm } from '../../../hooks/useLocalRealm';
 import { useDependencies } from '../../../hooks/useDependencies';
 import { MRT_ColumnDef, MRT_RowData } from 'material-react-table';
 import { IMaterialComposition } from '../../../dal/types';
@@ -16,7 +16,7 @@ import { List, ListItem, ListItemText } from '@mui/material';
 import { useToggler } from '../../../hooks/useToggler';
 import { removeProperty } from './removeProperty';
 import { JITTMaterialDialog } from './JITTMaterialDialog';
-import { updateDictionary } from './JITTLookupControl';
+import { updateDictionary } from './updateDictionary';
 
 export function JITTMaterialsControl<T extends MRT_RowData>(initialDisable = false, ...dependencies: IDependency[]) {
     function InnerJITTMaterialsControl(props: Parameters<Exclude<MRT_ColumnDef<T, DBDictionary<IMaterialComposition> | Record<string, IMaterialComposition>>['Edit'], undefined>>[0]) {

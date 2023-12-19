@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FieldValues, UseFormWatch, useFormContext } from 'react-hook-form-mui';
 import { $cn } from '../util/$cn';
-import { useColumnDef } from '../components/Table/Controls/useColumnDef';
+import { useColumnDef } from './useColumnDef';
 import { MRT_ColumnDef } from 'material-react-table';
 
 export function useDisabled(watch: UseFormWatch<FieldValues>, initialValue = false, ...dependencies: IDependency[]) {    
