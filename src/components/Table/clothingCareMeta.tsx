@@ -60,12 +60,7 @@ import {
     WetCleanDelicate,
     WetCleanPermanentPress
 } from '../../assets/laundrySVG';
-import { toKebabCase } from '../../dal/enums/toCamelCase';
-import { IconDefinition } from '@fortawesome/pro-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Tooltip, IconButton, CircularProgress, IconButtonProps } from '@mui/material';
-import { $cn } from '../../util/$cn';
-import SvgBleaching from '../../assets/laundrySVG/Bleaching';
+import { toKebabCase } from '../../common/text/toKebabCase';
 
 export const degreeF = '\u2109';
 export const degreeC = '\u2103';
@@ -375,33 +370,5 @@ export function ClothingCareCell<T extends MRT_RowData>(props: Parameters<Exclud
     return <span>{output}</span>;
 }
 
-export function JITTIconButton({
-    isLoading,
-    title,
-    type,
-    color,
-    onClick,
-    Icon,
-    disabled,
-    ...rest
-}: {
-    isLoading?: boolean;
-    title: string;
-    type?: React.ButtonHTMLAttributes<HTMLButtonElement>['type'];
-    onClick?: React.ButtonHTMLAttributes<HTMLButtonElement>['onClick'];
-    color?: IconButtonProps['color'];
-    Icon: IconDefinition | typeof SvgBleaching;
-    className?: string;
-    disabled?: boolean;
-}) {
-    const spread = $cn(rest, {}, 'block object-contain');
-    return (
-        <Tooltip title={title}>
-            <IconButton aria-label={title} color={color ?? 'primary'} type={type ?? 'button'} onClick={onClick} disabled={disabled ?? false}>
-                {isLoading ?? false ? <CircularProgress size={18} /> : typeof Icon === 'function' ? <Icon /> : <FontAwesomeIcon icon={Icon} {...spread} />}
-            </IconButton>
-        </Tooltip>
-    );
-}
 export type ClothingCareOptions = ClothingCareIndividualKeys<ClothingCareSectionKeys>;
 

@@ -36,16 +36,17 @@ export function useTableConstants<T extends MRT_RowData>() {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 muiTableBodyRowProps: (params: Parameters<Extract<Exclude<MRT_TableOptions<any>['muiTableBodyRowProps'], undefined>, (...args: any[]) => any>>[0]) =>
                     ({
-                        className: 'odd:bg-zinc-300 aria-selected:bg-rose-500 ring ring-transparent hover:ring-rose-500',
+                        // className: 'odd:bg-zinc-300 aria-selected:bg-rose-500 ring ring-transparent hover:ring-rose-500',
                         classes: {
-                            root: 'odd:bg-zinc-300 aria-selected:bg-rose-500 ring ring-transparent hover:ring-rose-500',
-                            selected: 'ring ring-red-500'
+                            root: 'border border-black divide-x divide-black data-row-even:bg-sky-400 data-row-even:text-black data-row-odd:bg-neutral-300 data-row-odd:text-black hover:ring-rose-500',
+                            selected: 'bg-rose-400'
                         },
-                        'aria-selected': Object.keys(params.table.getSelectedRowModel().rowsById).includes(params.row.id)
+                        'aria-selected': Object.keys(params.table.getSelectedRowModel().rowsById).includes(params.row.id),
+                        'data-row': params.row.index % 2 === 0 ? 'even' : 'odd'
                         // Object.entries(params.table.getState().rowSelection).filter(([k, v]) => v).map(([k]) => k).includes(params.row.id)
                     } as TableRowProps),
                 muiTableBodyCellProps: {
-                    className: 'bg-inherit whitespace-pre'
+                    className: 'whitespace-pre'
                 },
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 muiTableHeadCellProps: (params: Parameters<Extract<Exclude<MRT_TableOptions<any>['muiTableHeadCellProps'], undefined>, (...args: any[]) => any>>[0]) => ({
@@ -56,6 +57,8 @@ export function useTableConstants<T extends MRT_RowData>() {
                     }
                 }),
                 positionToolbarAlertBanner: 'bottom' as MRT_TableOptions<T>['positionToolbarAlertBanner'],
+                muiEditRowDialogProps: { maxWidth: 'lg' } as MRT_TableOptions<T>['muiEditRowDialogProps'],
+                muiCreateRowModalProps: { maxWidth: 'lg' } as MRT_TableOptions<T>['muiCreateRowModalProps'],
                 columnFilterDisplayMode: 'subheader' as MRT_TableOptions<T>['columnFilterDisplayMode'],
                 muiTopToolbarProps: {
                     sx: {
@@ -63,7 +66,7 @@ export function useTableConstants<T extends MRT_RowData>() {
                         justifyContent: 'start'
                     }
                 } as MRT_TableOptions<T>['muiTopToolbarProps']
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } as any as MRT_TableOptions<T>),
         []
     );

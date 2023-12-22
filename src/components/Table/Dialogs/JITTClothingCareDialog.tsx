@@ -6,7 +6,8 @@ import { useMutation } from '@tanstack/react-query';
 import { updateRecordProp } from '../../../hooks/updateRecord';
 import { useLocalRealm } from '../../../hooks/useLocalRealm';
 import { toProperFromCamel } from '../../../common/text/toProperCase';
-import { ClothingCareOptions, ClothingCareIndividualKeys, ClothingCareSectionKeys, sectionNames, getClothingCareSection, JITTIconButton } from '../clothingCareMeta';
+import { ClothingCareOptions, ClothingCareIndividualKeys, ClothingCareSectionKeys, sectionNames, getClothingCareSection } from '../clothingCareMeta';
+import { JITTIconButton } from '../JITTIconButton';
 
 export function JITTClothingCareDialog<T extends MRT_RowData>({
     isOpen, hideModal, dbSet, onSuccess, name, objectType, row

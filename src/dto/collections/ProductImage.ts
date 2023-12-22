@@ -7,6 +7,7 @@ import { IBinaryFile, IProductImage, ISku } from '../../dal/types';
 import { checkForFolder } from '../../common/fs/checkForFolder';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { checkTransaction } from '../../util/checkTransaction';
+import { $$queryClient } from '../../components/App';
 
 export class BinaryFile<T extends 'original' | 'remove-bg'> extends Realm.Object<IBinaryFile<T>> implements IBinaryFile<T> {
     mimeType!: string;
@@ -38,14 +39,14 @@ export class BinaryFile<T extends 'original' | 'remove-bg'> extends Realm.Object
     }
 }
 function getRemoveBGFilename(fullpath: string) {
-    const filename = path.basename(fullpath).replace(path.extname(fullpath), Config.removeBgSuffix);
+    const filename = path.basename(fullpath).replace(path.extname(fullpath), Config.productImages.removeBGSuffix);
     return {
-        uploadPath: Config.downloadsPath,
+        uploadPath: Config.filesystem.downloadsFolder,
         filename
     };
 }
 function getDestinationPath(sku: OptionalEntity<ISku>) {
-    const basePath = Config.productsRoot;
+    const basePath = Config.productImages.imageRoot;
     if (sku == null) throw new Error('no sku');
     const brandFolder = sku.product?.productLine?.brand?.folder ?? sku.product?.brand?.folder ?? 'no-brand';
     const productFolder = sku.product?.folder.toHexString(true);
@@ -66,13 +67,103 @@ export class ProductImage extends Realm.Object<IProductImage> implements IProduc
     uploadedFrom!: string;
     sku: OptionalEntity<ISku>;
     doNotRemoveBG!: boolean;
+    constructor(realm: Realm, args: any) {
+        super(realm, args);
+        const { toDestinationPath } = getDestinationPath(this.sku);
+        const { filename: removeBGFileName, uploadPath: removeBGUploadPath } = getRemoveBGFilename(this.uploadedFrom);
+        const removeBGOriginFullName = [removeBGUploadPath, removeBGFileName].join('/')
+        const destinations = {
+            original: toDestinationPath(path.basename(this.uploadedFrom)),
+            removeBG: toDestinationPath(removeBGFileName)
+        };
+        checkForFolder(path.dirname(destinations.original));
+        if (fs.existsSync(this.uploadedFrom)) {
+            try {
+                fs.renameSync(this.uploadedFrom, destinations.original);
+            } catch (error1) {
+                console.error(error1);
+                console.error((error1 as Error).message);
+                try {
+                    fs.copyFileSync(this.uploadedFrom, destinations.original);
+                    fs.rmSync(this.uploadedFrom);
+                } catch (error2) {
+                    console.error(error2);
+                    console.error((error2 as Error).message);
+                    throw new Error([(error1 as Error).message, (error2 as Error).message].join('\n'));
+                }
+            }
+        } else {
+            throw new Error(`file does not exist: ${this.uploadedFrom}`);
+        }
+        if (fs.existsSync(removeBGOriginFullName)) {
+            try {
+                fs.renameSync(removeBGOriginFullName, destinations.removeBG);
+            } catch (error1) {
+                console.error(error1);
+                console.error((error1 as Error).message);
+                try {
+                    fs.copyFileSync(removeBGOriginFullName, destinations.removeBG);
+                    fs.rmSync(removeBGOriginFullName);
+                } catch (error2) {
+                    console.error(error2);
+                    console.error((error2 as Error).message);
+                    throw new Error([(error1 as Error).message, (error2 as Error).message].join('\n'));
+                }
+            }
+        } else {
+            throw new Error(`file does not exist: ${removeBGOriginFullName}`);
+        }
+        setImmediate(() =>
+            Promise.resolve(this.update()).then(() => {
+                $$queryClient
+                    .invalidateQueries({
+                        queryKey: [$db.productImage()]
+                    })
+                    .then(() => {
+                        $$queryClient.refetchQueries({
+                            queryKey: [$db.productImage()]
+                        });
+                    });
+            })
+        );
+    }
 
-    static ctor(sku: ISku, uploadedFrom: string) {
-        return {
+    @wrapInTransactionDecorator()
+    static ctor(sku: Entity<ISku>, uploadedFrom: string) {
+        if (window.$$store == null) throw new Error('no saved store');
+
+        const { toDestinationPath } = getDestinationPath(sku);
+        const { filename: removeBGFileName } = getRemoveBGFilename(uploadedFrom);
+        const destinations = {
+            original: toDestinationPath(path.basename(uploadedFrom)),
+            removeBG: toDestinationPath(removeBGFileName)
+        };
+        checkForFolder(path.dirname(destinations.original));
+        if (fs.existsSync(uploadedFrom)) {
+            try {
+                fs.renameSync(uploadedFrom, destinations.original);
+            } catch (error1) {
+                console.error(error1);
+                console.error((error1 as Error).message);
+                try {
+                    fs.copyFileSync(uploadedFrom, destinations.original);
+                    fs.rmSync(uploadedFrom);
+                } catch (error2) {
+                    console.error(error2);
+                    console.error((error2 as Error).message);
+                    throw new Error([(error1 as Error).message, (error2 as Error).message].join('\n'));
+                }
+            }
+        } else {
+            throw new Error(`file does not exist: ${uploadedFrom}`);
+        }
+        const result = {
             sku,
             uploadedFrom,
-            doNotRemoveBG: false
+            doNotRemoveBG: false,
+            _id: new BSON.ObjectId()
         } as any as IProductImage;
+        return window.$$store.create<IProductImage>('productImage', result);
     }
     get destinations(): {
         original: string;
@@ -133,18 +224,18 @@ export class ProductImage extends Realm.Object<IProductImage> implements IProduc
         }
         console.info(`creating remove-bg: ${fn}`);
         const removeBg = await BinaryFile.ctor('remove-bg', fn);
-        checkTransaction(db)(() => this.removeBg = removeBg as any)
+        checkTransaction(db)(() => (this.removeBg = removeBg as any));
     }
     @wrapInTransactionDecorator()
     update() {
-        const { uploadPath, filename: removeBGFileName } = getRemoveBGFilename(this.uploadedFrom);
-        const { toDestinationPath, destinationFolder } = getDestinationPath(this.sku);
-        const { original: destinationOriginal, removeBG: destinationRemoveBg } = this.destinations;
-        if (this.doNotRemoveBG == null) this.doNotRemoveBG = false;
-        if (this.uploadedFrom == null) {
-            this.uploadedFrom = '';
-            return this;
-        }
+        // const { uploadPath, filename: removeBGFileName } = getRemoveBGFilename(this.uploadedFrom);
+        // const { toDestinationPath, destinationFolder } = getDestinationPath(this.sku);
+        // const { original: destinationOriginal, removeBG: destinationRemoveBg } = this.destinations;
+        // if (this.doNotRemoveBG == null) this.doNotRemoveBG = false;
+        // if (this.uploadedFrom == null) {
+        //     this.uploadedFrom = '';
+        //     return this;
+        // }
         // this.createOriginal(destinationOriginal)
         //     .then(() => {
         //         return this.createRemoveBG(destinationRemoveBg).then(() => {
@@ -154,18 +245,18 @@ export class ProductImage extends Realm.Object<IProductImage> implements IProduc
         //     .catch(catchError);
         return this;
     }
-    async updateAsync(db: Realm) {
-        const { original: destinationOriginal, removeBG: destinationRemoveBg } = this.destinations;
-        // console.info(`original: ${destinationOriginal}, remove: ${destinationRemoveBg}`);
-        // if (this.doNotRemoveBG == null) this.doNotRemoveBG = false;
-        // if (this.uploadedFrom == null) {
-        //     this.uploadedFrom = '';
-        //     return this;
-        // }
-        await this.createOriginal(db, destinationOriginal);
-        await this.createRemoveBG(db, destinationRemoveBg);
-        return this;
-    }
+    // async updateAsync(db: Realm) {
+    //     const { original: destinationOriginal, removeBG: destinationRemoveBg } = this.destinations;
+    //     // console.info(`original: ${destinationOriginal}, remove: ${destinationRemoveBg}`);
+    //     // if (this.doNotRemoveBG == null) this.doNotRemoveBG = false;
+    //     // if (this.uploadedFrom == null) {
+    //     //     this.uploadedFrom = '';
+    //     //     return this;
+    //     // }
+    //     await this.createOriginal(db, destinationOriginal);
+    //     await this.createRemoveBG(db, destinationRemoveBg);
+    //     return this;
+    // }
     // static async ctor(sku: ISku, f: File) {
     //     const buffer = await f.arrayBuffer();
     //     const ext = path.extname(f.name);
@@ -252,13 +343,13 @@ export class ProductImage extends Realm.Object<IProductImage> implements IProduc
     get removeBGFilename(): string {
         const ext = path.extname(this.uploadedFrom);
         const base = this.filename.replaceAll(ext, '');
-        return [base, Config.removeBgSuffix].join('');
+        return [base, Config.productImages.removeBGSuffix].join('');
     }
     get removeBGUploadPath(): string {
-        return [Config.downloadsPath, this.removeBGFilename].join('/');
+        return [Config.filesystem.downloadsFolder, this.removeBGFilename].join('/');
     }
     get brandFolder(): string {
-        return this.sku?.effective.isNoBrand ?? false ? 'no-brand' : this.sku?.effective.brandFolder ?? 'no-brand';
+        return this.sku?.isNoBrand ?? true ? 'no-brand' : this.sku?.effectiveBrand?.folder ?? 'no-brand';
     }
     get productFolder(): string {
         return this.sku?.product?.folder.toHexString(true) ?? 'n/a';
@@ -267,7 +358,7 @@ export class ProductImage extends Realm.Object<IProductImage> implements IProduc
         return this.sku?.barcode?.scanValue ?? '0';
     }
     get destinationPath(): string {
-        return [Config.productsRoot, this.brandFolder, this.productFolder, this.skuFolder].join('/');
+        return [Config.productImages.imageRoot, this.brandFolder, this.productFolder, this.skuFolder].join('/');
     }
 
     static schema: Realm.ObjectSchema = {

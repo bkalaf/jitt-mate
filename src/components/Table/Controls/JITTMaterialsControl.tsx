@@ -8,13 +8,13 @@ import { useCallback } from 'react';
 import { updateRecordProp } from '../../../hooks/updateRecord';
 import { useCollectionRoute } from '../../../hooks/useCollectionRoute';
 import { useInvalidator } from '../../../hooks/useInvalidator';
-import { is } from '../../../dal/is';
+import { is } from '../../../common/is';
 import { checkTransaction } from '../../../util/checkTransaction';
-import { JITTIconButton } from '../clothingCareMeta';
+import { JITTIconButton } from '../JITTIconButton';
 import { faPlusSquare, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { List, ListItem, ListItemText } from '@mui/material';
 import { useToggler } from '../../../hooks/useToggler';
-import { removeProperty } from './removeProperty';
+import { removeProperty } from '../../../common/object/removeProperty';
 import { JITTMaterialDialog } from './JITTMaterialDialog';
 import { updateDictionary } from './updateDictionary';
 

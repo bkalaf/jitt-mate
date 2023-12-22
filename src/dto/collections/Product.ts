@@ -1,17 +1,60 @@
-import { ApparelDetails } from './../embedded/ApparelDetails';
-import { Colors } from '../../dal/enums/colors';
+import { ColorsInfos, aliasesToMainColors } from '../../dal/enums/colors';
 import { Countries } from '../../dal/enums/countries';
-import { DimensionKeys, IApparelDetails, IBarcode, IBrand, IClassifier, IDimensions, IHashTag, IMaterialComposition, IProduct, IProductLine, IProductTaxonomy } from '../../dal/types';
+import { IApparelDetails, IBarcode, IBrand, IClassifier, IDimensions, IDraft, IHashTag, IMaterialComposition, IProduct, IProductLine, IProductTaxonomy } from '../../dal/types';
 import { BSON } from 'realm';
 import { $$queryClient } from '../../components/App';
 import { $db } from '../../dal/db';
 import { HashTag } from './HashTag';
 import * as Realm from 'realm';
 import { $initialCollection } from '../../components/Table/creators/$initialCollection';
-import { checkTransaction } from '../../util/checkTransaction';
-import { mergeProductTaxonomy } from '../embedded/mergeProductTaxonomy';
+import { mergeProductTaxonomy } from '../../util/mergeProductTaxonomy';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
+import { Genders } from '../../dal/enums/genders';
+import { SleeveTypes } from '../../dal/enums/sleeveTypes';
+import { NecklineTypes } from '../../dal/enums/necklineTypes';
+import { BacklineTypes } from '../../dal/enums/backlineTypes';
+import { WaistTypes } from '../../dal/enums/waistTypes';
+import { LegTypes } from '../../dal/enums/legTypes';
+import { CollarTypes } from '../../dal/enums/collarTypes';
+import { CuffTypes } from '../../dal/enums/cuffTypes';
+import { TopAdornments } from '../../dal/enums/topAdornments';
+import { ApparelTypes } from '../../dal/enums/apparelType';
 
+export function ofEnum<T extends string>(enumMap: EnumMap<T>) {
+    return function(value?: T | undefined) {
+        return value == null ? undefined : enumMap[value];
+    }
+}
+export function getAllLinkedFields(draft: IDraft) {
+    const { sku } = draft;
+    const { product, barcode: primarySKU, defects, condition, price, upcs: allSKUS } = sku;
+    if (primarySKU == null) throw new Error('no barcode-sku');
+    const { rawValue: barcodeSKUvalue } = primarySKU;
+    if (product == null) throw new Error('no product');
+    const { productLine, allHashTags: hashTags, effectiveCategoryID: categoryId, effectiveSubCategoryID: subCategoryId, effectiveSubSubCategoryID: subSubCategoryId, effectiveShipWeightPercent: shipWeightPercent, apparelDetails, circa, color, descriptiveText, features, flags, dimensions, origin, notes, modelNo, materials, upcs: productBarcodes, classifier, folder: productFolder } = product;
+    if (classifier == null) throw new Error('no classifier');
+    const { taxon, name: classifierName } = classifier;
+    if (taxon == null) throw new Error('no taxon');
+    const { apparelType, bookType, backlineType, cuffType, collarType, chestFitType, gender, gameRating, movieRating, frontType, itemGroup, legType, mediaType, size, sleeveType, necklineType, topAdornment, waistType, videoType } = taxon;
+    const { diameterInches, lengthInches, widthInches, heightInches, weightGrams, runtimeMin, volumeFlOz } = dimensions.toJSON() as IDimensions;
+    const brand = productLine != null ? productLine.brand : product.brand;
+    const { name: brandName, mercariBrand, folder: brandFolder } = brand ?? { name: 'no-brand' };
+    const { name: mercariBrandName } = mercariBrand ?? {}
+    const apparelShortDescr = [
+        ofEnum(Genders)(gender),
+        ofEnum(aliasesToMainColors)(color),
+        ofEnum(SleeveTypes)(sleeveType),
+        ofEnum(NecklineTypes)(necklineType),
+        ofEnum(BacklineTypes)(backlineType),
+        ofEnum(WaistTypes)(waistType),
+        ofEnum(LegTypes)(legType),
+        ofEnum(CollarTypes)(collarType),
+        ofEnum(CuffTypes)(cuffType),
+        ofEnum(TopAdornments)(topAdornment),
+        descriptiveText,
+        ofEnum(ApparelTypes)(apparelType)
+    ].filter(x => x != null).join(' ');
+}
 export class Product extends Realm.Object<IProduct> implements IProduct {
     constructor(realm: Realm, args: any) {
         super(realm, args);
@@ -37,7 +80,7 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
     brand: OptionalEntity<IBrand>;
     circa: Optional<string>;
     classifier: OptionalEntity<IClassifier>;
-    color: Optional<keyof Colors>;
+    color: Optional<keyof typeof ColorsInfos>;
     descriptiveText: Optional<string>;
     dimensions: IDimensions & DBDictionary<number> = {} as any;
     features: DBList<string> = [] as any;
@@ -119,6 +162,7 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
     }
     @wrapInTransactionDecorator()
     update() {
+        console.group('Product.update')
         if (this._id == null) this._id = new BSON.ObjectId();
         if (this.apparelDetails == null) {
             $initialCollection['apparelDetails']().then((ad) => (this.apparelDetails = ad as any));
@@ -143,6 +187,7 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
             this.taxon = merged as any;
         }
         this.hashTags = this.allHashTags as any;
+        console.groupEnd();
         return this;
     }
 }

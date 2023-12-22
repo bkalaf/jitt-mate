@@ -14,7 +14,7 @@ export const listDefinition = function <T extends IRealmObject<T>, TListOf, TNam
 ) {
     const ItemComponent: React.FunctionComponent<{ data: TListOf }> =
         typeof opts.labelProperty === 'string'
-            ? ({ data }: { data: TListOf }) => <span className='whitespace-pre'>{data ? (getProperty(opts.labelProperty as string)(data) as string).toString() : null}</span>
+            ? ({ data }: { data: TListOf }) => <span className='whitespace-pre'>{data ? (getProperty(opts.labelProperty as string)(data) as string) : null}</span>
             : typeof opts.labelProperty === 'function'
             ? opts.labelProperty
             : () => null;
@@ -23,13 +23,17 @@ export const listDefinition = function <T extends IRealmObject<T>, TListOf, TNam
         header: toHeader(opts, name),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: DBSetDetailCell<Entity<TListOf>, T>(ItemComponent as any),
-        Edit: JITTMultiControl<T, TName, TListOf, Path<TListOf> | undefined>({
-            listType: 'list',
-            objectType: opts.objectType,
-            ofObjectType: opts.ofObjectType,
-            labelPropertyName: opts.labelProperty != null && typeof opts.labelProperty === 'string' ? opts.labelProperty : undefined,
-            ItemElement: ItemComponent
-        }, initialDisable, ...dependencies)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Edit: JITTMultiControl<T, TListOf, TName & Path<TListOf>>(
+            {
+                listType: 'list',
+                objectType: opts.objectType,
+                ofObjectType: opts.ofObjectType,
+                labelPropertyName: opts.labelProperty != null && typeof opts.labelProperty === 'string' ? opts.labelProperty as any: undefined,
+                ItemElement: ItemComponent
+            },
+            initialDisable,
+            ...dependencies
+        )
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as MRT_ColumnDef<T, any>;
 };

@@ -98,7 +98,7 @@ declare global {
         | 'mercariSubCategory'
         | 'mercariSubSubCategory'
         | 'part'
-        | 'price'
+        | 'sellingPrice'
         | 'product'
         | 'productImage'
         | 'productLine'
@@ -108,6 +108,7 @@ declare global {
         | 'scan'
         | 'selfStorage '
         | 'shippingOption'
+        | 'shippingService'
         | 'operation'
         | 'sku'
         | 'storageFacility';
@@ -126,7 +127,7 @@ declare global {
     export type DBList<T> = Realm.Types.List<T>;
     export type DBDictionary<T> = Realm.Types.Dictionary<T>;
     export type DBSet<T> = Realm.Types.Set<T>;
-    export type DBBacklink<T> = Realm.Types.LinkingObjects<T, any>;
+    export type DBBacklink<T> = Realm.Types.LinkingObjects<Entity<T>, any>;
     export type MercariColor = 'black' | 'grey' | 'white' | 'beige' | 'red' | 'gold' | 'silver' | 'pink' | 'purple' | 'blue' | 'green' | 'yellow' | 'orange' | 'brown';
     export interface IRealmType {
         (): string;
@@ -366,6 +367,39 @@ declare module '@tanstack/table-core' {
     }
     interface FilterMeta {
         itemRank: RankingInfo;
+    }
+}
+declare module '@mui/material/styles' {
+    interface Palette {
+        important: Palette['primary'];
+        highlight: Palette['primary'];
+        callout: Palette['primary'];
+        neon: Palette['primary'];
+        caution: Palette['primary'];
+        neutral: Palette['primary'];
+        metal: Palette['primary'];
+    }
+
+    interface PaletteOptions {
+        important?: PaletteOptions['primary'];
+        highlight?: PaletteOptions['primary'];
+        callout?: PaletteOptions['primary'];
+        neon?: PaletteOptions['primary'];
+        caution?: PaletteOptions['primary'];
+        neutral?: PaletteOptions['primary'];
+        metal?: PaletteOptions['primary'];
+    }
+}
+
+declare module '@mui/material/IconButton' {
+    interface IconButtonPropsColorOverrides {
+        important: true;
+        highlight: true;
+        callout: true;
+        neon: true;
+        metal: true;
+        neutral: true;
+        caution: true;
     }
 }
 export const i = 1;

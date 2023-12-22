@@ -1,4 +1,4 @@
-import { isEqual } from './areRealmObjectsEqual';
+import { isEqual } from './isEqual';
 import { compR } from '../functions/composeR';
 
 export function comparableToEquatable<T>(comparable: IComparable<T>): IEquatable<T> {

@@ -1,28 +1,20 @@
+import { enumColors } from './sleeveTypes';
 
-export interface LegTypes {
-   straight: string;
-   boot: string;
-   flare: string;
-   slim: string;
-   relaxed: string;
-   casual: string;
-   skinny: string;
-   baggy: string;
-   'slim-boot': string;
-}
-
-export type LegTypesKey = keyof LegTypes;
-export const LegTypes: EnumMap<LegTypesKey> = {
-    straight: 'straight-leg fit',
-    boot: 'boot-cut fit',
-    flare: 'flare-leg fit',
-    slim: 'slim fit',
-    relaxed: 'relaxed fit',
-    casual: 'casual',
-    skinny: 'skinny fit   ',
-    baggy: 'baggy fit',
-    'slim-boot': 'slim boot-cut fit'
+export const LegTypesInfos = {
+    'slim-boot': { key: 'slim boot-cut fit', color: enumColors.cyan2 },
+    straight: { key: 'straight leg fit', color: enumColors.lime2 },
+    boot: { key: 'boot-cut fit', color: enumColors.yellow2 },
+    flare: { key: 'flare leg fit', color: enumColors.orange2 },
+    slim: { key: 'slim fit', color: enumColors.rose2 },
+    relaxed: { key: 'relaxed fit', color: enumColors.slate2 },
+    casual: { key: 'casual', color: enumColors.purple2 },
+    skinny: { key: 'skinny fit', color: enumColors.sky2 },
+    baggy: { key: 'baggy fit', color: enumColors.green2 }
 };
+
+
+export const LegTypes = Object.fromEntries(Object.entries(LegTypesInfos).map(([k, v]) => [k, v.key] as [string, string]));
+export const LegTypesColors = Object.fromEntries(Object.entries(LegTypesInfos).map(([k, v]) => [k, v.color] as [string, string]));
 
 // {
 // 	"batwing": "batwing",
@@ -55,4 +47,3 @@ export const LegTypes: EnumMap<LegTypesKey> = {
 // 	"short": "short-sleeved",
 // 	"quarter": "3/4-sleeve"
 // }
-

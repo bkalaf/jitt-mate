@@ -1,4 +1,4 @@
-export const ItemConditions = {
+export const ItemConditionsInfos = {
     new: {
         value: 'new',
         label: 'New',
@@ -36,7 +36,7 @@ export const ItemConditions = {
         classes: 'bg-rose-500 text-white'
     }
 };
-export type ItemConditionsKey = keyof typeof ItemConditions;
 
-export const ItemConditionsEnumMap = Object.fromEntries(Object.entries(ItemConditions).map(([k, v]) => [k, v.label] as [string, string]));
-export const ItemConditionsColorMap = Object.fromEntries(Object.entries(ItemConditions).map(([k, v]) => [k, v.classes] as [string, string]));
+export const ItemConditions = Object.fromEntries(Object.entries(ItemConditionsInfos).map(([k, v]) => [k, v.label] as [string, string]));
+export const ItemConditionsColors = Object.fromEntries(Object.entries(ItemConditionsInfos).map(([k, v]) => [k, v.classes] as [string, string]));
+export const ItemConditionsSelectors = Object.fromEntries(Object.entries(ItemConditionsInfos).map(([k, v]) => [k, v.selector] as [string, string]));

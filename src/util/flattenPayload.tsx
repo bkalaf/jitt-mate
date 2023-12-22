@@ -2,7 +2,7 @@ import { setProperty } from '../common/object/setProperty';
 import { toOID } from '../dal/toOID';
 import { BSON } from 'realm';
 import { charRange } from '../common/array/charRange';
-import { is } from '../dal/is';
+import { is } from '../common/is';
 import { convertString } from './convertString';
 
 export function flattenPayload<T extends AnyObject>(values: T) {

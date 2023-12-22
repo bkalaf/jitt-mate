@@ -1,7 +1,7 @@
 // ///<reference path="./../global.d.ts" />
 import { toProperFromCamel } from '../common/text/toProperCase';
 import { taxonomy } from '../dal/enums/taxa';
-import { is } from '../dal/is';
+import { is } from '../common/is';
 
 type CBO = Exclude<ComboBoxOption, string>;
 

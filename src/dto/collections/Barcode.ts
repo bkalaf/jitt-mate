@@ -5,7 +5,7 @@ import { BarcodeTypesKey } from '../../dal/enums/barcodeTypes';
 import { IBarcode } from '../../dal/types';
 import { sum } from '../../common/math/sum';
 import { konst } from '../../common/functions/konst';
-import { unpad } from '../../dal/unpad';
+import { unpad } from '../../common/text/unpad';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { $$queryClient } from '../../components/App';
 
@@ -126,12 +126,14 @@ export class Barcode extends Realm.Object<IBarcode> implements IBarcode {
     }
     @wrapInTransactionDecorator()
     update(): Entity<IBarcode> {
+        console.group('Barcode.update');
         if (this.rawValue.length !== 13) {
             this.rawValue = this.rawValue.padStart(13, '0');
         }
         const [valid, type] = Barcode.classify(this.rawValue);
         this.valid = valid;
         this.type = type;
+        console.groupEnd();
         return this;
     }
     equalTo(value: string): boolean {
@@ -170,18 +172,18 @@ export class Barcode extends Realm.Object<IBarcode> implements IBarcode {
     rawValue = '';
     valid = false;
     type: Optional<BarcodeTypesKey>;
-    static ctor(value: string, callRealm = false) {
+    static ctor(value: string) {
         const [valid, type] = Barcode.classify(value);
         const result = {
             rawValue: value,
             type,
             valid
         } as CtorResult<IBarcode>;
-        if (callRealm) {
-            const db = window.$$store;
-            if (db == null) throw new Error('no realm');
-            return db.create<IBarcode>('barcode', result);
-        }
+        // if (callRealm) {
+        //     const db = window.$$store;
+        //     if (db == null) throw new Error('no realm');
+        //     return db.create<IBarcode>('barcode', result);
+        // }
         return result;
     }
     static ctorWithoutCheckdigit(value: string) {

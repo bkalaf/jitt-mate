@@ -5,10 +5,10 @@ import Realm from 'realm';
 import * as fs from 'graceful-fs';
 import * as Config from '../../config.json';
 import { normalizeNewLine } from '../../dal/normalizeNewLine';
-import { nextScan } from '../../dal/nextScan';
 import { ILocationSegment, IProduct, IRealmObject, IScan, ISku } from '../../dal/types';
 import { dateFromNow } from '../../common/date/dateFromNow';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
+import { ignore } from '../../common/functions/ignore';
 
 export const RESET_ALL = '029999999999';
 
@@ -34,13 +34,18 @@ export type Scans = LocationScan | InventoryItemScan | ProductUPCScan | ControlC
 //     discriminator: 'sku' | 'locationSegment' | 'reset-all' | 'product';
 //     value: ISku | ILocationSegment | IProduct;
 // }
+const nextScan = ignore as any;
+
 export const Scanning = {
     locationSegments: (realm: Realm) => {
-        return realm.objects<ILocationSegment>($db.locationSegment()).map((x) => ({
-            value: x,
-            discriminator: 'locationSegment',
-            barcode: x.barcode?.scanValue ?? '0'
-        } as LocationScan));
+        return realm.objects<ILocationSegment>($db.locationSegment()).map(
+            (x) =>
+                ({
+                    value: x,
+                    discriminator: 'locationSegment',
+                    barcode: x.barcode?.scanValue ?? '0'
+                } as LocationScan)
+        );
     },
     products: (realm: Realm) => {
         return realm
@@ -58,35 +63,41 @@ export const Scanning = {
             .reduce((pv, cv) => [...pv, ...cv], []);
     },
     skus: (realm: Realm) => {
-        return realm.objects<ISku>($db.sku()).map((x) => x.upcs.map((upc) => ({
-            value: x,
-            discriminator: 'sku',
-            barcode: upc?.scanValue
-        } as InventoryItemScan))).reduce((pv, cv) => [...pv, ...cv], []);
+        return realm
+            .objects<ISku>($db.sku())
+            .map((x) =>
+                x.upcs.map(
+                    (upc) =>
+                        ({
+                            value: x,
+                            discriminator: 'sku',
+                            barcode: upc?.scanValue
+                        } as InventoryItemScan)
+                )
+            )
+            .reduce((pv, cv) => [...pv, ...cv], []);
     },
     controls: () => {
         // [RESET_ALL, 'reset-all', undefined]
-        return [{
-            value: undefined,
-            discriminator: 'reset-all',
-            barcode: RESET_ALL
-        } as ControlCodeScan];
+        return [
+            {
+                value: undefined,
+                discriminator: 'reset-all',
+                barcode: RESET_ALL
+            } as ControlCodeScan
+        ];
     },
     barcodes: (realm: Realm) => {
         return Object.fromEntries(
             ([...Scanning.locationSegments(realm), ...Scanning.products(realm), ...Scanning.skus(realm), ...Scanning.controls()] as Scans[]).map(
-                ({
-                    discriminator,
-                    value,
-                    barcode
-                }) => [barcode, { discriminator, value }] as [string, { discriminator: Scans['discriminator'], value: Scans['value'] }]
+                ({ discriminator, value, barcode }) => [barcode, { discriminator, value }] as [string, { discriminator: Scans['discriminator']; value: Scans['value'] }]
             )
         );
     },
     getItem: (realm: Realm, bc: string) => {
         const result = Scanning.barcodes(realm)[bc];
         if (result == null) {
-            throw new Error(`barcode not found: ${bc}`)
+            throw new Error(`barcode not found: ${bc}`);
         }
         return [bc, result];
     },
@@ -115,7 +126,7 @@ export const Scanning = {
         checkTransaction(realm)(func);
     },
     processScanFile: (realm: Realm, fn: string) => {
-        const fullFileName = [Config.downloadsPath, fn].join('/');
+        const fullFileName = [Config.filesystem.downloadsFolder, fn].join('/');
         if (!fs.existsSync(fullFileName)) {
             throw new Error(`file does not exist: ${fullFileName}`);
         }
@@ -141,7 +152,9 @@ export class Scan extends Realm.Object<IScan> implements IScan, IRealmObject<ISc
     shelf: Optional<Entity<ILocationSegment>>;
     bin: Optional<Entity<ILocationSegment>>;
     timestamp: Date = dateFromNow();
-
+    get output(): string {
+        return [this.timestamp.toLocaleDateString(), [this.fixture?.name, this.shelf?.name, this.bin?.name].filter((x) => x != null).join('/')].filter((x) => x != null).join('@');
+    }
     static ctor(fixture?: ILocationSegment, shelf?: ILocationSegment, bin?: ILocationSegment) {
         return { timestamp: dateFromNow(), fixture, shelf, bin } as IScan;
     }

@@ -1,33 +1,20 @@
-export type LocationKinds = {
-    square: string;
-    'half-square': string;
-    'metro-rack': string;
-    'metro-shelf': string;
-    area: string;
-    'storage-tote': string;
-    'under-table': string;
-    'over-table': string;
-    closet: string;
-    stack: string;
-    box: string;
-    'dvd-bag': string;
-    'vhs-bag': string;
+import { enumColors } from './sleeveTypes';
+
+export const LocationKindsInfos = {
+    'storage-tote': { color: enumColors.rose2, key: 'storage-tote' },
+    square: { color: enumColors.orange2, key: 'square' },
+    'half-square': { color: enumColors.yellow2, key: 'half-square' },
+    'metro-rack': { color: enumColors.green2, key: 'metro-rack' },
+    'metro-shelf': { color: enumColors.cyan2, key: 'metro-shelf' },
+    area: { color: enumColors.fuchsia2, key: 'area' },
+    'under-table': { color: enumColors.slate2, key: 'under-table' },
+    'over-table': { color: enumColors.pink2, key: 'over-table' },
+    closet: { color: enumColors.amber2, key: 'closet' },
+    stack: { color: enumColors.lime2, key: 'stack' },
+    box: { color: enumColors.teal2, key: 'box' },
+    'dvd-bag': { color: enumColors.sky2, key: 'dvd-bag' },
+    'vhs-bag': { color: enumColors.indigo2, key: 'vhs-bag' }
 };
 
-export const LocationKinds = {
-    square: 'square',
-    'half-square': 'half-square',
-    'metro-rack': 'metro-rack',
-    'metro-shelf': 'metro-shelf',
-    area: 'area',
-    'storage-tote': 'storage-tote',
-    'under-table': 'under-table',
-    'over-table': 'over-table',
-    closet: 'closet',
-    stack: 'stack',
-    box: 'box',
-    'dvd-bag': 'dvd-bag',
-    'vhs-bag': 'vhs-bag'
-};
-
-export type LocationKindsKey = keyof LocationKinds;
+export const LocationKinds = Object.fromEntries(Object.entries(LocationKindsInfos).map(([k, v]) => [k, v.key] as [string, string]));
+export const LocationKindsColors = Object.fromEntries(Object.entries(LocationKindsInfos).map(([k, v]) => [k, v.color] as [string, string]));

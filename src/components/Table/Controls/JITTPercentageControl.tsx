@@ -1,7 +1,7 @@
 import { TextFieldElement, useFormContext } from 'react-hook-form-mui';
 import { useDependencies } from '../../../hooks/useDependencies';
 import { MRT_ColumnDef } from 'material-react-table';
-import { faDollarSign } from '@fortawesome/pro-solid-svg-icons';
+import { faDollarSign, faPercent } from '@fortawesome/pro-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Icon } from '@mui/material';
 
@@ -21,7 +21,7 @@ export function JITTPercentageControl(opts: { header?: string; max?: number; min
                     readOnly: opts.readOnly ?? false,
                     endAdornment: (
                         <Icon>
-                            <FontAwesomeIcon icon={faDollarSign} className='block object-contain w-5 h-5' />
+                            <FontAwesomeIcon icon={faPercent} className='block object-contain w-5 h-5' />
                         </Icon>
                     )
                 }}

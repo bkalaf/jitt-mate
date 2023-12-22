@@ -1,8 +1,8 @@
 import { BSON } from 'realm';
 import { dateFromNow } from '../../../common/date/dateFromNow';
-import { IProduct, IProductTaxonomy } from '../../../dal/types';
+import { IApparelDetails, IProduct, IProductTaxonomy, ISku } from '../../../dal/types';
 
-const apparelDetailsInit = async () => ({
+const apparelDetailsInit = async (): Promise<Serialized<IApparelDetails>> => ({
     backlineType: null,
     collarType: null,
     cuffType: null,
@@ -13,10 +13,16 @@ const apparelDetailsInit = async () => ({
     size: null,
     styleNo: null,
     cutNo: null,
-    pocketCount: 0,
+    // pocketCount: 0,
     measurements: {} as any,
     rn: null,
-    clothingCare: []
+    clothingCare: [],
+    apparelType: null,
+    chestFitType: null,
+    frontType: null,
+    gender: null,
+    itemGroup: null,
+    legType: null
 });
 const productTaxonomyInit = async (): Promise<Serialized<IProductTaxonomy>> => ({
     lock: false,
@@ -27,7 +33,26 @@ const productTaxonomyInit = async (): Promise<Serialized<IProductTaxonomy>> => (
     order: null,
     genus: null,
     species: null,
-    name: ''
+    name: '',
+    apparelType: null,
+    backlineType: null,
+    chestFitType: null,
+    bookType: null,
+    collarType: null,
+    cuffType: null,
+    gender: null,
+    frontType: null,
+    gameRating: null,
+    movieRating: null,
+    videoType: null,
+    itemGroup: null,
+    legType: null,
+    mediaType: null,
+    necklineType: null,
+    size: null,
+    sleeveType: null,
+    topAdornment: null,
+    waistType: null
 })
 export const $initialCollection: Record<string, () => Promise<unknown>> = {
     string: () => Promise.resolve(''),
@@ -211,18 +236,18 @@ export const $initialCollection: Record<string, () => Promise<unknown>> = {
             shelf: null
         });
     },
-    sku: () => {
-        return Promise.resolve({
+    sku: async (): Promise<Serialized<ISku>> => {
+        return {
             _id: new BSON.ObjectId(),
             defects: [],
             scans: [],
             upcs: [],
             hashTags: [],
             shipWeightPercent: null,
-            price: null,
+            price: 20,
             condition: 'good',
             skuPrinted: false,
             product: null
-        });
+        };
     }
 };

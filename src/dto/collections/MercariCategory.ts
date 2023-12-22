@@ -9,7 +9,7 @@ import { ItemGroups } from '../../dal/enums/itemGroups';
 import { Genders } from '../../dal/enums/genders';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { $$queryClient } from '../../components/App';
-import { mergeProductTaxonomy } from '../embedded/mergeProductTaxonomy';
+import { mergeProductTaxonomy } from '../../util/mergeProductTaxonomy';
 import { prependText } from '../../common/text/prependText';
 import { HashTag } from './HashTag';
 
@@ -34,13 +34,10 @@ export class MercariCategory extends Realm.Object<IMercariCategory> implements I
     get effectiveShipWeightPercent(): Optional<number> {
         return this.shipWeightPercent;
     }
-    get effectiveTaxon(): Optional<Entity<IProductTaxonomy>> {
-        return this.taxon;
-    }
     get allHashTags(): Entity<IHashTag>[] {
         return Array.from(this.hashTags.values()) as any;
     }
-    gender: Optional<keyof Genders>;
+    gender: Optional<keyof typeof Genders>;
     itemGroup: Optional<keyof ItemGroups>;
 
     @wrapInTransactionDecorator()

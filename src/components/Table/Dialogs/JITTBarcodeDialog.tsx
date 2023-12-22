@@ -1,5 +1,5 @@
 import { Dialog, DialogActions, DialogContent, DialogTitle, Divider } from '@mui/material';
-import { JITTIconButton } from '../clothingCareMeta';
+import { JITTIconButton } from '../JITTIconButton';
 import { faCancel, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
 import { useCallback, useEffect, useState } from 'react';
 import { FormContainer, TextFieldElement, useForm } from 'react-hook-form-mui';

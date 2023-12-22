@@ -5,7 +5,7 @@ import { AppBar, Avatar, Box, Button, Container, IconButton, Menu, MenuItem, Too
 import { useMenuAnchor } from '../hooks/useMenuAnchor';
 import { useRealmContext } from '../hooks/useRealmContext';
 import { useNavigate } from 'react-router';
-import { JITTIconButton } from './Table/clothingCareMeta';
+import { JITTIconButton } from './Table/JITTIconButton';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const logo = require('./../assets/logos/resized-logo.png');
 
@@ -27,7 +27,7 @@ export function TopAppBar({ pages, toggleLeftDrawer, settings }: { settings: [st
                         <Box className='flex h-12'>
                             <img src={logo} alt='Junk-in-the-Trunk, Inc logo' className='block object-scale-down' />
                         </Box>
-                        <JITTIconButton title='Go back' Icon={faBackward} color='error' className='w-6 h-6' onClick={() => navigate(-1)} />
+                        <JITTIconButton title='Go back' Icon={faBackward} color='important' className='w-6 h-6' onClick={() => navigate(-1)} />
                     </Box>
                     <Box className='flex flex-grow md:hidden'>
                         <Tooltip title='Expand the main menubar.'>

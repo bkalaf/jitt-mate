@@ -7,7 +7,7 @@ import { IClassifier, IMercariSubSubCategory, IHashTag, IProductTaxonomy } from 
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { surroundText } from '../../common/text/surroundText';
 import { $$queryClient } from '../../components/App';
-import { mergeProductTaxonomy } from '../embedded/mergeProductTaxonomy';
+import { mergeProductTaxonomy } from '../../util/mergeProductTaxonomy';
 import { HashTag } from './HashTag';
 
 export class Classifier extends Realm.Object<IClassifier> implements IClassifier {
@@ -32,9 +32,6 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
         return this.mercariSubSubCategory?.effectiveShipWeightPercent ?? this.shipWeightPercent;
     }
 
-    get effectiveTaxon(): OptionalEntity<IProductTaxonomy> {
-        return this.mercariSubSubCategory?.effectiveTaxon ?? this.taxon;
-    }
     static generateTitle(brandText: string, attributeText: string, descriptiveText?: string) {
         return '';
     }

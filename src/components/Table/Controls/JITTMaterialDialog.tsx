@@ -2,7 +2,7 @@ import { FormProvider, useForm } from 'react-hook-form-mui';
 import { MRT_ColumnDef, MRT_RowData } from 'material-react-table';
 import { IMaterialComposition } from '../../../dal/types';
 import { useCallback } from 'react';
-import { JITTIconButton } from '../clothingCareMeta';
+import { JITTIconButton } from '../JITTIconButton';
 import { faCancel, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
 import { Dialog, DialogActions, DialogContent } from '@mui/material';
 import { $metas } from '../metas';

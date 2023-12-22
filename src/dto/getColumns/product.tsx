@@ -1,8 +1,8 @@
 import { IBrand, IClassifier, IHashTag, IMaterialComposition, IProduct, IProductLine } from '../../dal/types';
-import { colorToName, colorToClasses } from '../../dal/enums/colors';
+import { aliasesToMainColors, aliasesToColorClasses } from '../../dal/enums/colors';
 import { Countries } from '../../dal/enums/countries';
 import { getProperty } from '../../components/Contexts/getProperty';
-import { is } from '../../dal/is';
+import { is } from '../../common/is';
 import { $metas } from '../../components/Table/metas';
 import { toDisableDependency } from '../../components/Table/toDependency';
 import { enableWhen } from './enableWhen';
@@ -76,7 +76,7 @@ export const productColumns = {
                 ),
                 $metas.string('descriptiveText', { maxLength: 100 }, false),
                 $metas.string('circa', { maxLength: 4 }, false),
-                $metas.enum('color', { enumMap: colorToName, colorMap: colorToClasses }, false),
+                $metas.enum('color', { enumMap: aliasesToMainColors, colorMap: aliasesToColorMap }, false),
                 {
                     header: 'Dimensions',
                     columns: [
@@ -98,7 +98,7 @@ export const productColumns = {
                                 precision: 2,
                                 uom: 'GB',
                                 header: 'Capacity (GB)',
-                                fn: (x: IProduct) => getValueDict('weightGrams', x.dimensions)
+                                fn: (x: IProduct) => getValueDict('capacityGB', x.dimensions)
                             },
                             true
                         ),
@@ -109,7 +109,7 @@ export const productColumns = {
                                 precision: 2,
                                 uom: 'in',
                                 header: 'Length (in)',
-                                fn: (x: IProduct) => getValueDict('weightGrams', x.dimensions)
+                                fn: (x: IProduct) => getValueDict('lengthInches', x.dimensions)
                             },
                             false
                         ),
@@ -120,7 +120,7 @@ export const productColumns = {
                                 precision: 2,
                                 uom: 'in',
                                 header: 'Diameter (in)',
-                                fn: (x: IProduct) => getValueDict('weightGrams', x.dimensions)
+                                fn: (x: IProduct) => getValueDict('diameterInches', x.dimensions)
                             },
                             false,
                             toDisableDependency('dimensions.widthInches', (x) => x != null && x !== 0)
@@ -132,7 +132,7 @@ export const productColumns = {
                                 precision: 2,
                                 uom: 'in',
                                 header: 'Width (in)',
-                                fn: (x: IProduct) => getValueDict('weightGrams', x.dimensions)
+                                fn: (x: IProduct) => getValueDict('widthInches', x.dimensions)
                             },
                             false,
                             toDisableDependency('dimensions.diameterInches', (x) => x != null && x !== 0)
@@ -144,7 +144,7 @@ export const productColumns = {
                                 precision: 2,
                                 uom: 'in',
                                 header: 'Height (in)',
-                                fn: (x: IProduct) => getValueDict('weightGrams', x.dimensions)
+                                fn: (x: IProduct) => getValueDict('heightInches', x.dimensions)
                             },
                             false,
                             toDisableDependency('dimensions.diameterInches', (x) => x != null && x !== 0)
@@ -156,7 +156,7 @@ export const productColumns = {
                                 precision: 1,
                                 uom: 'min',
                                 header: 'Runtime (min)',
-                                fn: (x: IProduct) => getValueDict('weightGrams', x.dimensions)
+                                fn: (x: IProduct) => getValueDict('runtimeMin', x.dimensions)
                             },
                             true,
                             enableWhen('taxon.phylum', 'videos')
@@ -168,7 +168,7 @@ export const productColumns = {
                                 precision: 2,
                                 uom: 'flOz',
                                 header: 'Volume (flOz)',
-                                fn: (x: IProduct) => getValueDict('weightGrams', x.dimensions)
+                                fn: (x: IProduct) => getValueDict('volumeFlOz', x.dimensions)
                             },
                             true,
                             enableWhen('taxon.phylum', 'videos')

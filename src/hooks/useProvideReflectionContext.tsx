@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useCallback, useState } from 'react';
 import { PropertySchema } from 'realm';
-import { normalizeSchemaProperty } from '../dal/normalizeSchemaProperty';
+import { normalizeSchemaProperty } from '../util/normalizeSchemaProperty';
 import { IReflectionContext, CollectionRegistrar, CollectionRegistrarValue } from '../components/Contexts/ReflectionContext';
 
 export function useProvideReflectionContext(): IReflectionContext {

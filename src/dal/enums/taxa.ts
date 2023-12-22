@@ -183,7 +183,6 @@ export const taxonomy = {
                     blazer: toNode('blazer'),
                     'sport-coat': toNode('sport-coat')
                 }),
-                swimwear: toNode('swimwear', {}),
                 'button-front': toNode('button-front', {
                     'button-down': toNode('button-down'),
                     'dress-shirt': toNode('dress-shirt'),
@@ -323,6 +322,7 @@ export const taxonomy = {
                 })
             }),
             activewear: toNode('activewear', {
+                swimwear: toNode('swimwear', {}),
                 'track-pants': toNode('track-pants'),
                 sweatshirt: toNode('sweatshirt'),
                 'track-suit': toNode('track-suit'),
@@ -352,12 +352,6 @@ export const taxonomy = {
             })
         }),
         women: toNode('women', {
-            swimwear: toNode('swimwear', {
-                'one-piece': toNode('one-piece'),
-                'two-piece': toNode('two-piece'),
-                'cover-up': toNode('cover-up'),
-                beachwear: toNode('beachwear')
-            }),
             tops: toNode('tops', {
                 'pull-over': toNode('shirts', {
                     'tee-shirt': toNode('tee-shirt'),
@@ -482,6 +476,12 @@ export const taxonomy = {
                 })
             }),
             activewear: toNode('activewear', {
+                swimwear: toNode('swimwear', {
+                    'one-piece': toNode('one-piece'),
+                    'two-piece': toNode('two-piece'),
+                    'cover-up': toNode('cover-up'),
+                    beachwear: toNode('beachwear')
+                }),
                 legging: toNode('legging'),
                 'track-pants': toNode('track-pants'),
                 sweatshirt: toNode('sweatshirt'),

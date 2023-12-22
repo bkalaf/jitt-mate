@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MRT_ColumnDef } from 'material-react-table';
 import { useDependencies } from '../../../hooks/useDependencies';
 import { Box, List } from '@mui/material';
-import { JITTIconButton } from '../clothingCareMeta';
+import { JITTIconButton } from '../JITTIconButton';
 import { faPlusSquare } from '@fortawesome/pro-solid-svg-icons';
 import { useToggler } from '../../../hooks/useToggler';
 import { JITTBarcodeDialog } from '../Dialogs/JITTBarcodeDialog';

@@ -1,5 +1,5 @@
 import { BSON } from 'realm';
-import { is } from './is';
+import { is } from '../common/is';
 
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

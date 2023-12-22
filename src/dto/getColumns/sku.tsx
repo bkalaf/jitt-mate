@@ -1,43 +1,38 @@
-import { createMRTColumnHelper } from 'material-react-table';
-import { IHashTag, ISku } from '../../dal/types';
-import { objectIdMeta } from '../../components/Table/metas/objectIdMeta';
+import { IHashTag, IProduct, IProductImage, IScan, ISku } from '../../dal/types';
 import { $metas } from '../../components/Table/metas';
-import { ItemConditions, ItemConditionsColorMap, ItemConditionsEnumMap } from '../../dal/enums/itemConditions';
-import { $db } from '../../dal/db';
-import { RHFM_ImageListCell } from '../../components/Table/RHFM_ImageListCell';
-
-const skuHelper = createMRTColumnHelper<ISku>();
+import { ItemConditionsColorMap, ItemConditionsEnumMap } from '../../dal/enums/itemConditions';
+import Realm from 'realm';
 
 export const skuColumns = {
     getColumns: (...pre: string[]): DefinedMRTColumns =>
         [
-            skuHelper.accessor('_id', objectIdMeta),
-            skuHelper.accessor('upcs', $metas.list('upcs', 'scanValue', 'sku', 'barcode', { header: 'UPCS' })),
-            skuHelper.accessor('product', {
-                ...$metas.lookup('product', 'product', 'summaryName', {
-                    header: 'Product'
-                })
-            }),
-            skuHelper.accessor('price', {
-                ...$metas.dollar('price', { header: 'Price' })
-            }),
-            skuHelper.accessor('condition', {
-                ...$metas.enum('condition', ItemConditionsEnumMap, { colorMap: ItemConditionsColorMap, header: 'Item Condition' })
-            }),
-            skuHelper.accessor('defects', $metas.list('defects', 'value', 'sku', 'string', { header: 'Defects' })),
-            skuHelper.accessor('skuPrinted', $metas.bool({ propertyName: 'skuPrinted', header: 'Printed' })),
-            skuHelper.accessor('scans', $metas.list('scans', 'output', 'sku', $db.scan() as RealmObjects, { header: 'Scans' })),
-            skuHelper.accessor('productImages', {
-                header: 'Images',
-                Cell: RHFM_ImageListCell as DefinedMRTColumn<ISku>['Cell'],
-                Edit: RHFM_ImageListControl<ISku>('productImages', 'sku', { header: 'Images' }) as DefinedMRTColumn<ISku>['Edit']
-            }),
-            skuHelper.accessor('shipWeightPercent', {
-                ...$metas.percent('shipWeightPercent', { header: 'Ship Weight %' })
-            }),
-            skuHelper.accessor('hashTags', {
-                ...$metas.set<ISku, IHashTag, 'hashTags'>('hashTags', 'name', 'sku', 'hashTag', { header: 'Hash Tags' })
-            }),
-            
+            $metas.oid,
+            $metas.barcode('upcs', { header: 'SKUS' }, false),
+            $metas.lookup<ISku, IProduct>(
+                'product',
+                {
+                    objectType: 'product',
+                    labelPropertyName: (x: IProduct) =>
+                        ([x.productLine?.brand?.name, x.brand?.name, x.taxon?.name, x.descriptiveText].filter((x) => x != null) as string[]).join('-').replaceAll(' ', '-').toLowerCase() as string
+                },
+                false
+            ),
+            $metas.dollar('price', { required: true, min: 0 }, false),
+            $metas.enum('condition', { enumMap: ItemConditionsEnumMap, colorMap: ItemConditionsColorMap }, false),
+            $metas.bool('skuPrinted', { header: 'Label Printed', defaultValue: false }, false),
+            $metas.list<ISku, string, 'defects'>('defects', { objectType: 'sku', ofObjectType: 'string', labelProperty: ({ data }: { data: string }) => data }, false),
+            $metas.list<ISku, IScan, 'scans'>('scans', { labelProperty: 'output', objectType: 'sku', ofObjectType: 'scan' }, false),
+            $metas.percent<ISku>('shipWeightPercent', { min: 1, max: 2 }, false),
+            $metas.set<ISku, IHashTag, 'hashTags'>('hashTags', 'brand', 'hashTag', 'name', {}, false),
+            $metas.image<ISku>(
+                (obj: Realm.Object<ISku> & ISku): DBBacklink<IProductImage> | null => {
+                    if (obj instanceof Realm.Object) {
+                        return obj.linkingObjects<IProductImage>('productImage', 'sku');
+                    }
+                    return null;
+                },
+                { id: 'productImages' },
+                false
+            )
         ].map((x) => ({ ...x, accessorKey: x.accessorKey ? [...pre, x.accessorKey].join('.') : undefined })) as DefinedMRTColumns
 };

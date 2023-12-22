@@ -6,12 +6,17 @@ import { $$ } from '../../common/comparator/areRealmObjectsEqual';
 import { daysDiffFromNow } from '../../common/date/daysDiffFromNow';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { $$queryClient } from '../../components/App';
+import { is } from '../../common/is';
 
 export class HashTag extends Realm.Object<IHashTag> implements IHashTag {
     @wrapInTransactionDecorator()
     static pruneList(list: DBSet<Entity<IHashTag>>) {
-        for (const hash of list.values()) {
-            hash.update();
+        if (is.dbSet(list)) {
+            for (const hash of list.values()) {
+                hash.update();
+            }
+        } else {
+            return;
         }
     }
     constructor(realm: Realm, args: any) {
@@ -51,6 +56,7 @@ export class HashTag extends Realm.Object<IHashTag> implements IHashTag {
 
     @wrapInTransactionDecorator()
     update(): Entity<IHashTag> {
+        console.group('hashTag.update');
         if (this.usage == null) this.usage = [] as any;
         if (this.usage.length <= 2) return this;
         const arr = Array.from(this.usage).map((x, ix) => [ix, x] as [number, IHashTagUsage]);
@@ -60,6 +66,7 @@ export class HashTag extends Realm.Object<IHashTag> implements IHashTag {
             .filter((x) => x !== mostRecentIndex && x !== maxCountIndex)
             .reverse()
             .forEach((x) => this.usage.remove(x));
+        console.groupEnd();
         return this;
     }
 
@@ -82,15 +89,5 @@ export class HashTag extends Realm.Object<IHashTag> implements IHashTag {
             usage: $db.hashTagUsage.list
         }
     };
-
-    @wrapInTransactionDecorator()
-    static ctor(name: string, count = 0) {
-        if (window.$$store == null) throw new Error('no stored realm');
-        const realm = window.$$store;
-        const result: Realm.Object<IHashTag> & IHashTag = realm.create<IHashTag>($db.hashTag(), { _id: new BSON.ObjectId(), name, usage: [HashTagUsage.ctor(count)] });
-       
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        return result!;
-    }
 
 }

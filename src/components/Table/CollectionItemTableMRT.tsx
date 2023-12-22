@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MRT_Row, MRT_RowData, MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import { IBarcode, IRealmEntity } from '../../dal/types';
 import { Row } from '@tanstack/react-table';

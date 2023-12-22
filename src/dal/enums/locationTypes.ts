@@ -1,4 +1,4 @@
-import { getAssoc } from './getAssoc';
+import { getAssoc } from '../../common/object/getAssoc';
 import { objectMap } from './objectMap';
 
 export const LocationTypesObj = {

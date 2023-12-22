@@ -2,12 +2,14 @@
 import { MRT_ColumnDef, MRT_RowData } from 'material-react-table';
 import { taxonomy } from '../../../dal/enums/taxa';
 import { createFrom } from '../../../common/array/createFrom';
-import { endsWith } from '../../../dal/endsWith';
+import { endsWith } from '../../../common/text/endsWith';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { AutocompleteElement } from 'react-hook-form-mui';
+import { AutocompleteElement, RadioButtonGroup } from 'react-hook-form-mui';
 import { IconButton, Stack, Tooltip } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/pro-solid-svg-icons';
+import { toProperFromCamel } from '../../../common/text/toProperCase';
+import { useDependencies } from '../../../hooks/useDependencies';
 
 export function getOptions(fullname: string) {
     const count = fullname.split('.').length;
@@ -26,14 +28,13 @@ export function getNodeLevel(name: string) {
     throw new Error(`could not get nodeLevel ${name}`);
 }
 export function RHFM_TaxonSelect<T extends MRT_RowData>(props: Parameters<Exclude<MRT_ColumnDef<T, string>['Edit'], undefined>>[0]) {
-    const name = props.column.columnDef.accessorKey ?? props.column.columnDef.id ?? 'n/a';
-    const header = props.column.columnDef.header;
+    const { name, label, control, classes, disabled, onBlur } = useDependencies(props as any, false);
     const nodeLevel = getNodeLevel(name);
     const context = useFormContext();
     console.info(`context`, context);
     if (context == null) throw new Error('no context');
     const nameParts = useWatch({
-        name: ['taxon.kingdom', 'taxon.phylum', 'taxon.klass', 'taxon.family', 'taxon.order', 'taxon.genus', 'taxon.species']
+        name: ['taxon.kingdom', 'taxon.phylum', 'taxon.klass', 'taxon.order', 'taxon.family', 'taxon.genus', 'taxon.species']
     });
     const fullname = nameParts.filter((x) => x != null && typeof x === 'string' && x.length > 0).join('.');
     const segments = getOptions(fullname);
@@ -43,12 +44,15 @@ export function RHFM_TaxonSelect<T extends MRT_RowData>(props: Parameters<Exclud
         materializedPath?.reduce((pv, cv) => {
             return Object.keys(pv).includes(cv) ? pv[cv] : {};
         }, taxonomy as Record<string, any>) ?? {}
-    ).map((value) => ({ id: value, label: value }));
+    )
+        .map((value) => ({ id: value, label: toProperFromCamel(value) }))
+        .sort((a, b) => a.label.localeCompare(b.label));
     const { getValues } = context;
-    const value = getValues(name)
+    const value = getValues(name);
     return (
         <Stack direction='row'>
-            <AutocompleteElement
+            <RadioButtonGroup name={name} label={label} control={control} options={options} row onChange={(newValue) => context.setValue(name, newValue)} disabled={disabled} emptyOptionLabel='(null)'/>
+            {/* <AutocompleteElement
                 name={name}
                 label={header}
                 control={context.control}
@@ -61,7 +65,7 @@ export function RHFM_TaxonSelect<T extends MRT_RowData>(props: Parameters<Exclud
                         context.setValue(name, value.id);
                     }
                 }}
-            />
+            /> */}
             {value != null && typeof value === 'string' && value.length > 0 && (
                 <Tooltip title='Clear value'>
                     <IconButton color='error' onClick={() => context.setValue(name, null)}>

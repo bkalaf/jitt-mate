@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { MRT_ColumnDef } from 'material-react-table';
 import { IBarcode } from '../../../dal/types';
-import { is } from '../../../dal/is';
-import { BarcodeTypes } from '../../../dal/enums/barcodeTypes';
+import { is } from '../../../common/is';
 import { JITTIndivBarcodeCell } from './JITTIndivBarcodeCell';
 
 export function BarcodeCell<T extends EntityBase>(props: Parameters<Exclude<MRT_ColumnDef<T, string>['Cell'], undefined>>[0]) {
@@ -23,17 +22,3 @@ export function BarcodeCell<T extends EntityBase>(props: Parameters<Exclude<MRT_
     );
 }
 
-export function convertBarcodeType(bc?: keyof BarcodeTypes): keyof BarcodeTypes {
-    switch (bc) {
-        case 'upcA':
-        case 'upcE':
-        case 'ean13':
-        case 'isbn10':
-        case 'isbn13':
-        case 'locator':
-        case 'sku':
-            return 'ean13';
-        case undefined:
-            throw new Error('no barcode type');
-    }
-}

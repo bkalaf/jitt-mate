@@ -5,7 +5,6 @@ import { BacklineTypes } from '../../../dal/enums/backlineTypes';
 import { CollarTypes } from '../../../dal/enums/collarTypes';
 import { Countries } from '../../../dal/enums/countries';
 import { CuffTypes } from '../../../dal/enums/cuffTypes';
-import { LocationKindsKey } from '../../../dal/enums/locationKinds';
 import { LocationLabelColorsKey } from '../../../dal/enums/locationLabelColors';
 import { LocationTypesObj } from '../../../dal/enums/locationTypes';
 import { NecklineTypes } from '../../../dal/enums/necklineTypes';
@@ -40,10 +39,24 @@ import {
     IMaterialComposition,
 } from '../../../dal/types';
 import { Barcode } from '../../../dto/collections/Barcode';
-import { Colors } from '../../../dal/enums/colors';
-import { ItemConditions } from '../../../dal/enums/itemConditions';
+import { ColorsInfos } from '../../../dal/enums/colors';
+import { ItemConditionsInfos } from '../../../dal/enums/itemConditions';
+import { ApparelTypes } from '../../../dal/enums/apparelType';
+import { BookTypes } from '../../../dal/enums/bookTypes';
+import { FrontTypes } from '../../../dal/enums/frontTypes';
+import { GameRatings } from '../../../dal/enums/gameRating';
+import { Genders } from '../../../dal/enums/genders';
+import { ItemGroups } from '../../../dal/enums/itemGroups';
+import { MediaTypes } from '../../../dal/enums/mediaTypes';
+import { MovieRatings } from '../../../dal/enums/movieRating';
+import { VideoTypes } from '../../../dal/enums/videoTypes';
+import { ChestFitAbbrevs, ChestFitTypesKey } from '../../../dal/enums/chestFitTypes';
+import { LegTypes } from '../../../dal/enums/legTypes';
 
-const unserializeUUID = (x?: string | BSON.UUID) => x == null ? undefined : x instanceof BSON.UUID ? x : typeof x === 'string' ? new BSON.UUID(x) : undefined;
+const unserializeUUID = (x?: string | BSON.UUID) => x == null ? new BSON.UUID().toHexString(true) : x instanceof BSON.UUID ? x.toHexString(true) : x;
+
+
+// x == null ? undefined : x instanceof BSON.UUID ? x : typeof x === 'string' ? new BSON.UUID(x.replaceAll('-', '')) : undefined;
 const unserializeInt = (x?: string | null | number) => (x == null ? undefined : typeof x === 'number' ? x : typeof x === 'string' ? parseInt(x, 10) : undefined);
 const unserializeNumber = (x?: string | null | number) => (x == null ? undefined : typeof x === 'number' ? x : typeof x === 'string' ? parseFloat(x) : undefined);
 
@@ -84,7 +97,7 @@ const toHashTagUsage: ConvertToRealmFunction<IHashTagUsage> = ({ from, count }: 
     from: typeof from === 'string' ? (from.length > 0 ? new Date(Date.parse(from)) : dateFromNow()) : from instanceof Date ? from : dateFromNow(),
     count: count != null ? (typeof count === 'number' ? count : typeof count === 'string' ? parseInt(count, 10) : 0) : 0
 });
-const toBarcode: ConvertToRealmFunction<IBarcode> = ({ rawValue }) => Barcode.ctor(rawValue, false) as any;
+const toBarcode: ConvertToRealmFunction<IBarcode> = ({ rawValue }) => Barcode.ctor(rawValue) as any;
 
 const toHashTag: ConvertToRealmFunction<IHashTag> = ({ _id, name, usage }) => ({
     _id: toNotNullOID(_id),
@@ -105,7 +118,36 @@ const toBrand: ConvertToRealmFunction<IBrand> = ({ _id, folder, hashTags, mercar
     parent: unserializedLookup<IBrand>('brand')(parent),
     hashTags: hashTags.map((x) => window.$$store?.objectForPrimaryKey<IHashTag>('hashTag', toOID(x))) as Entity<IHashTag>[]
 });
-const toProductTaxonomy: ConvertToRealmFunction<IProductTaxonomy> = ({ family, genus, kingdom, klass, order, name, lock, phylum, species }) => ({
+const toProductTaxonomy: ConvertToRealmFunction<IProductTaxonomy> = ({
+    family,
+    genus,
+    kingdom,
+    klass,
+    order,
+    name,
+    lock,
+    phylum,
+    species,
+    apparelType,
+    backlineType,
+    bookType,
+    chestFitType,
+    collarType,
+    cuffType,
+    frontType,
+    gameRating,
+    gender,
+    itemGroup,
+    legType,
+    mediaType,
+    movieRating,
+    necklineType,
+    size,
+    sleeveType,
+    topAdornment,
+    waistType,
+    videoType
+}) => ({
     kingdom: kingdom ?? undefined,
     phylum: phylum ?? undefined,
     klass: klass ?? undefined,
@@ -114,7 +156,26 @@ const toProductTaxonomy: ConvertToRealmFunction<IProductTaxonomy> = ({ family, g
     genus: genus ?? undefined,
     species: species ?? undefined,
     name: name ?? undefined,
-    lock: lock != null ? (typeof lock === 'boolean' ? lock : typeof lock === 'string' ? (lock === 'true' ? true : lock === 'false' ? false : undefined) : undefined) : undefined
+    lock: lock != null ? (typeof lock === 'boolean' ? lock : typeof lock === 'string' ? (lock === 'true' ? true : lock === 'false' ? false : undefined) : undefined) : undefined,
+    apparelType: (apparelType as keyof ApparelTypes) ?? undefined,
+    backlineType: (backlineType as keyof BacklineTypes) ?? undefined,
+    bookType: (bookType as keyof BookTypes) ?? undefined,
+    chestFitType: (chestFitType as ChestFitTypesKey) ?? undefined,
+    collarType: (collarType as keyof CollarTypes) ?? undefined,
+    cuffType: (cuffType as keyof typeof CuffTypes) ?? undefined,
+    frontType: (frontType as keyof typeof FrontTypes) ?? undefined,
+    gameRating: (gameRating as keyof GameRatings) ?? undefined,
+    gender: (gender as keyof typeof Genders) ?? undefined,
+    itemGroup: (itemGroup as keyof ItemGroups) ?? undefined,
+    mediaType: (mediaType as keyof MediaTypes) ?? undefined,
+    movieRating: (movieRating as keyof MovieRatings) ?? undefined,
+    videoType: (videoType as keyof VideoTypes) ?? undefined,
+    sleeveType: (sleeveType as keyof typeof SleeveTypes) ?? undefined,
+    necklineType: (necklineType as keyof NecklineTypes) ?? undefined,
+    size: size ?? undefined,
+    topAdornment: (topAdornment as keyof TopAdornments) ?? undefined,
+    waistType: (waistType as keyof typeof WaistTypes) ?? undefined,
+    legType: (legType as keyof typeof LegTypes) ?? undefined
 });
 const toMercariCategory: ConvertToRealmFunction<IMercariCategory> = ({ _id, hashTags, id, name, shipWeightPercent, taxon }) => ({
     _id: toNotNullOID(_id),
@@ -181,28 +242,40 @@ const toApparelDetails: ConvertToRealmFunction<IApparelDetails> = ({
     cutNo,
     measurements,
     necklineType,
-    pocketCount,
+    // pocketCount,
     size,
     sleeveType,
     topAdornment,
     waistType,
-    rn, 
+    rn,
     clothingCare,
-    styleNo
+    styleNo,
+    apparelType,
+    chestFitType,
+    frontType, 
+    gender,
+    itemGroup,
+    legType
 }) => ({
+    chestFitType: unserializeEnum<keyof typeof ChestFitAbbrevs>(chestFitType),
+    frontType: unserializeEnum<keyof typeof FrontTypes>(frontType),
+    gender: unserializeEnum<keyof typeof Genders>(gender),
+    itemGroup: unserializeEnum<keyof typeof ItemGroups>(itemGroup),
+    legType: unserializeEnum<keyof typeof LegTypes>(legType),
+    apparelType: unserializeEnum<keyof typeof ApparelTypes>(apparelType),
     backlineType: unserializeEnum<keyof BacklineTypes>(backlineType),
     collarType: unserializeEnum<keyof CollarTypes>(collarType),
-    cuffType: unserializeEnum<keyof CuffTypes>(cuffType),
+    cuffType: unserializeEnum<keyof typeof CuffTypes>(cuffType),
     necklineType: unserializeEnum<keyof NecklineTypes>(necklineType),
-    sleeveType: unserializeEnum<keyof SleeveTypes>(sleeveType),
+    sleeveType: unserializeEnum<keyof typeof SleeveTypes>(sleeveType),
     topAdornment: unserializeEnum<keyof TopAdornments>(topAdornment),
-    waistType: unserializeEnum<keyof WaistTypes>(waistType),
+    waistType: unserializeEnum<keyof typeof WaistTypes>(waistType),
     size: unserializeString(size),
     cutNo: unserializeString(cutNo),
-    pocketCount: unserializeInt(pocketCount) ?? 0,
+    // pocketCount: unserializeInt(pocketCount) ?? 0,
     measurements: Object.fromEntries(Object.entries(measurements ?? {}).map(([k, v]) => [k, unserializeNumber(v)] as [string, Optional<number>])) as any as IMeasurementDictionary,
     rn: unserializedLookup<IRn>('rn')(rn),
-    clothingCare: clothingCare.map(x => unserializeEnum<LaundryCareOptions>(x)) as any,
+    clothingCare: clothingCare.map((x) => unserializeEnum<LaundryCareOptions>(x)) as any,
     styleNo: unserializeString(styleNo)
 });
 export const toAddress: ConvertToRealmFunction<IAddress> = ({ city, country, line1, line2, postalCode, province }) => ({
@@ -283,12 +356,14 @@ const toProduct: ConvertToRealmFunction<IProduct> = ({
     taxon,
     upcs,
     apparelDetails
-}) => ({
+}) => {
+    console.log(`original folder`, folder);
+    return ({
     _id: toNotNullOID(_id),
     brand: $unserialize.lookup<IBrand>('brand')(brand),
     productLine: $unserialize.lookup<IProductLine>('productLine')(productLine),
     classifier: $unserialize.lookup<IClassifier>('classifier')(classifier),
-    folder: $unserialize.uuid(folder) ?? new BSON.UUID(),
+    folder: folder == null ? new BSON.UUID() : typeof folder === 'string' ? new BSON.UUID(folder) : folder instanceof BSON.UUID ? folder : undefined,
     modelNo: $unserialize.string(modelNo),
     styleNo: $unserialize.string(styleNo),
     circa: $unserialize.string(circa),
@@ -306,17 +381,17 @@ const toProduct: ConvertToRealmFunction<IProduct> = ({
     materials: materials ? Object.entries(materials).map(([name, parts]) => [name, toMaterialComposition(parts)]) : {},
     apparelDetails: toApparelDetails((apparelDetails ?? {}) as any) as any
 });
-const toSku: ConvertToRealmFunction<ISku> = ({ _barcode, _id, condition, defects, hashTags, price, product, scans, shipWeightPercent, skuPrinted, upcs }) => ({
+}
+const toSku: ConvertToRealmFunction<ISku> = ({ _id, condition, defects, hashTags, price, product, scans, shipWeightPercent, skuPrinted, upcs }) => ({
     _id: toNotNullOID(_id),
     defects: defects ?? [],
-    condition: $unserialize.enum<keyof typeof ItemConditions>(condition) ?? ('good' as const),
+    condition: $unserialize.enum<keyof typeof ItemConditionsInfos>(condition) ?? ('good' as const),
     hashTags: hashTags.map((x) => window.$$store?.objectForPrimaryKey<IHashTag>('hashTag', toOID(x))) as Entity<IHashTag>[],
     skuPrinted: $unserialize.bool(skuPrinted) ?? false,
     price: $unserialize.float(price) ?? 0,
     product: $unserialize.lookup<IProduct>('product')(product),
     shipWeightPercent: $unserialize.float(shipWeightPercent),
     upcs: (upcs ?? []).map(toBarcode) as Entity<IBarcode>[],
-    _barcode: _barcode ?? undefined,
     scans: (scans ?? []).map(toScan) as Entity<IScan>[]
 });
 export const $convertToRealm = {

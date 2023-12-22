@@ -84,6 +84,7 @@
     "localforage": "^1.10.0",
     "material-react-table": "^2.0.4",
     "mongodb": "^6.2.0",
+    "mui-file-input": "^4.0.3",
     "prettier": "2.7.1",
     "react": "^18.2.0",
     "react-barcodes": "^1.2.0",

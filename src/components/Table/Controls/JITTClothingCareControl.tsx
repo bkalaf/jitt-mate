@@ -8,7 +8,8 @@ import { useCallback } from 'react';
 import { catchError } from '../../catchError';
 import { useInvalidateRoute } from '../../../hooks/useInvalidateRoute';
 import { useCollectionRoute } from '../../../hooks/useCollectionRoute';
-import { ClothingCareIndividualKeys, ClothingCareSectionKeys, JITTIconButton, ClothingCareMapNoCategory } from '../clothingCareMeta';
+import { ClothingCareIndividualKeys, ClothingCareSectionKeys, ClothingCareMapNoCategory } from '../clothingCareMeta';
+import { JITTIconButton } from '../JITTIconButton';
 import { JITTClothingCareDialog } from '../Dialogs/JITTClothingCareDialog';
 
 export function JITTClothingCareControl<T extends MRT_RowData>(initialDisable = true, ...dependencies: IDependency[]) {

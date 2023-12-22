@@ -3,7 +3,6 @@ import { CustomItemField } from '../../dal/CustomItemField';
 import { Draft } from '../../dal/Draft';
 import { HashTag } from './HashTag';
 import { HashTagUsage } from '../embedded/HashTagUsage';
-import { Listing } from '../../dal/Listing';
 import { LocationSegment } from './LocationSegment';
 import { MercariBrand } from './MercariBrand';
 import { MercariCategory } from './MercariCategory';
@@ -11,7 +10,7 @@ import { MercariSubCategory } from './MercariSubCategory';
 import { MercariSubSubCategory } from './MercariSubSubCategory';
 import { BinaryFile, ProductImage } from './ProductImage';
 import { Scan } from '../embedded/Scan';
-import { Sku } from '../../dal/Sku';
+import { Sku } from './Sku';
 import * as Realm from 'realm';
 import { Barcode } from './Barcode';
 import { Address } from '../embedded/Address';
@@ -22,6 +21,8 @@ import { ProductLine } from './ProductLine';
 import { ApparelDetails } from '../embedded/ApparelDetails';
 import { MaterialComposition } from '../embedded/MaterialComposition';
 import { Product } from './Product';
+import { ShippingService } from '../embedded/ShippingService';
+import { SellingPrice } from '../embedded/SellingPrice';
 
 const $$schema: Realm.ObjectClass<any>[] = [
     Address,
@@ -34,7 +35,6 @@ const $$schema: Realm.ObjectClass<any>[] = [
     Draft,
     HashTag,
     HashTagUsage,
-    Listing,
     LocationSegment,
     MaterialComposition,
     MercariBrand,
@@ -47,6 +47,8 @@ const $$schema: Realm.ObjectClass<any>[] = [
     ProductTaxonomy,
     Rn,
     Scan,
+    SellingPrice,
+    ShippingService,
     Sku,
 ];
 

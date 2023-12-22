@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TextFieldElement } from 'react-hook-form-mui';
 import { useDependencies } from '../../../hooks/useDependencies';
 import { MRT_ColumnDef } from 'material-react-table';

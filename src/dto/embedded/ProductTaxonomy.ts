@@ -6,19 +6,36 @@ import { IProductTaxonomy } from '../../dal/types';
 import { $db } from '../../dal/db';
 import { taxonomy } from '../../dal/enums/taxa';
 import { darken, lighten, styled } from '@mui/material';
-import { is } from '../../dal/is';
+import { is } from '../../common/is';
 import { MRT_Row, MRT_TableInstance } from 'material-react-table';
-import { charRange } from '../../common/array/charRange';
 import { $families, $genuses, $kingdoms, $klasses, $orders, $phlyums } from '../../enums/kpcofgs';
 import { checkTransaction } from '../../util/checkTransaction';
 import { $$queryClient } from '../../components/App';
+import { ApparelTypes } from '../../dal/enums/apparelType';
+import { BacklineTypes } from '../../dal/enums/backlineTypes';
+import { BookTypes } from '../../dal/enums/bookTypes';
+import { MediaTypes } from '../../dal/enums/mediaTypes';
+import { NecklineTypes } from '../../dal/enums/necklineTypes';
+import { TopAdornments } from '../../dal/enums/topAdornments';
+import { VideoTypes } from '../../dal/enums/videoTypes';
+import { ChestFitAbbrevs } from '../../dal/enums/chestFitTypes';
+import { GameRatings } from '../../dal/enums/gameRating';
+import { MovieRatings } from '../../dal/enums/movieRating';
+import { CollarTypes } from '../../dal/enums/collarTypes';
+import { CuffTypes } from '../../dal/enums/cuffTypes';
+import { FrontTypes } from '../../dal/enums/frontTypes';
+import { Genders } from '../../dal/enums/genders';
+import { ItemGroups } from '../../dal/enums/itemGroups';
+import { LegTypes } from '../../dal/enums/legTypes';
+import { SleeveTypes } from '../../dal/enums/sleeveTypes';
+import { WaistTypes } from '../../dal/enums/waistTypes';
 
 export class ProductTaxonomy extends Realm.Object<IProductTaxonomy> implements IProductTaxonomy {
     constructor(realm: Realm, args: any) {
         super(realm, args);
         checkTransaction(realm)(() => {
             if (this.lock == null) this.lock = false;
-        })
+        });
         setImmediate(() =>
             Promise.resolve(this.update()).then(() => {
                 $$queryClient
@@ -31,32 +48,51 @@ export class ProductTaxonomy extends Realm.Object<IProductTaxonomy> implements I
                         });
                     });
             })
-        );    
-    }
-
-    static lookupEnumMap(...values: (string | undefined)[]) {
-        const [$kingdom, $phylum, $klass, $order, $family, $genus, $species] = [...values, ...[undefined, undefined, undefined, undefined, undefined, undefined]];
-        const $taxonomy = taxonomy as any as Record<string, Record<string, Record<string, Record<string, Record<string, Record<string, string>>>>>>;
-        return Object.fromEntries(
-            Object.entries(
-                $kingdom != null && $kingdom.length > 0
-                    ? $phylum != null && $phylum.length > 0
-                        ? $klass != null && $klass.length > 0
-                            ? $order != null && $order.length > 0
-                                ? $family != null && $family.length > 0
-                                    ? $genus != null && $genus.length > 0
-                                        ? $species != null && $species.length > 0
-                                            ? {}
-                                            : $taxonomy[$kingdom][$phylum][$klass][$order][$family][$genus]
-                                        : $taxonomy[$kingdom][$phylum][$klass][$order][$family]
-                                    : $taxonomy[$kingdom][$phylum][$klass][$order]
-                                : $taxonomy[$kingdom][$phylum][$klass]
-                            : $taxonomy[$kingdom][$phylum]
-                        : $taxonomy[$kingdom]
-                    : taxonomy
-            ).map(([k, v]) => [k, v != null ? (typeof v === 'function' ? v() : v) : undefined] as [string, string])
         );
     }
+    gameRating: Optional<keyof GameRatings>;
+    movieRating: Optional<keyof MovieRatings>;
+    apparelType: Optional<keyof ApparelTypes>;
+    backlineType: Optional<keyof BacklineTypes>;
+    chestFitType: Optional<keyof typeof ChestFitAbbrevs>;
+    collarType: Optional<keyof typeof CollarTypes>;
+    cuffType: Optional<keyof typeof CuffTypes>;
+    frontType: Optional<keyof typeof FrontTypes>;
+    gender: Optional<keyof typeof Genders>;
+    itemGroup: Optional<keyof typeof ItemGroups>;
+    legType: Optional<keyof typeof LegTypes>;
+    necklineType: Optional<keyof NecklineTypes>;
+    size: Optional<string>;
+    sleeveType: Optional<keyof typeof SleeveTypes>;
+    topAdornment: Optional<keyof TopAdornments>;
+    waistType: Optional<keyof typeof WaistTypes>;
+    bookType: Optional<keyof BookTypes>;
+    mediaType: Optional<keyof MediaTypes>;
+    videoType: Optional<keyof VideoTypes>;
+
+    // static lookupEnumMap(...values: (string | undefined)[]) {
+    //     const [$kingdom, $phylum, $klass, $order, $family, $genus, $species] = [...values, ...[undefined, undefined, undefined, undefined, undefined, undefined]];
+    //     const $taxonomy = taxonomy as any as Record<string, Record<string, Record<string, Record<string, Record<string, Record<string, string>>>>>>;
+    //     return Object.fromEntries(
+    //         Object.entries(
+    //             $kingdom != null && $kingdom.length > 0
+    //                 ? $phylum != null && $phylum.length > 0
+    //                     ? $klass != null && $klass.length > 0
+    //                         ? $order != null && $order.length > 0
+    //                             ? $family != null && $family.length > 0
+    //                                 ? $genus != null && $genus.length > 0
+    //                                     ? $species != null && $species.length > 0
+    //                                         ? {}
+    //                                         : $taxonomy[$kingdom][$phylum][$klass][$order][$family][$genus]
+    //                                     : $taxonomy[$kingdom][$phylum][$klass][$order][$family]
+    //                                 : $taxonomy[$kingdom][$phylum][$klass][$order]
+    //                             : $taxonomy[$kingdom][$phylum][$klass]
+    //                         : $taxonomy[$kingdom][$phylum]
+    //                     : $taxonomy[$kingdom]
+    //                 : taxonomy
+    //         ).map(([k, v]) => [k, v != null ? (typeof v === 'function' ? v() : v) : undefined] as [string, string])
+    //     );
+    // }
     kingdom: Optional<string>;
     phylum: Optional<string>;
     klass: Optional<string>;
@@ -67,7 +103,7 @@ export class ProductTaxonomy extends Realm.Object<IProductTaxonomy> implements I
     name: Optional<string>;
     lock: Optional<boolean> = false;
     get fullname(): string {
-        return [this.kingdom, this.phylum, this.klass, this.order, this.family, this.genus, this.species].filter(x => x != null).join('.')
+        return [this.kingdom, this.phylum, this.klass, this.order, this.family, this.genus, this.species].filter((x) => x != null).join('.');
     }
     update() {
         if (this.lock == null) this.lock = false;
@@ -93,10 +129,25 @@ export class ProductTaxonomy extends Realm.Object<IProductTaxonomy> implements I
             genus: $db.string.opt,
             species: $db.string.opt,
             name: $db.string.opt,
-            lock: { type: 'bool', optional: false, default: false }
+            lock: { type: 'bool', optional: false, default: false },
+            apparelType: $db.string.opt,
+            backlineType: $db.string.opt,
+            collarType: $db.string.opt,
+            cuffType: $db.string.opt,
+            frontType: $db.string.opt,
+            gender: $db.string.opt,
+            itemGroup: $db.string.opt,
+            legType: $db.string.opt,
+            necklineType: $db.string.opt,
+            size: $db.string.opt,
+            sleeveType: $db.string.opt,
+            topAdornment: $db.string.opt,
+            waistType: $db.string.opt,
+            bookType: $db.string.opt,
+            mediaType: $db.string.opt,
+            videoType: $db.string.opt
         }
     };
-
 }
 
 export type IComboBoxProps<T extends AnyObject> = {
@@ -133,13 +184,11 @@ function sorter(a: [string, string], b: [string, string]) {
     return pSort === 0 ? -b[1].localeCompare(a[1]) : pSort;
 }
 export const kingdoms = Object.keys(taxonomy);
-console.log(kingdoms);
 export const phylums = Object.entries(taxonomy)
     .map(([k, v]) => {
         return Object.keys(v).map((x) => [k, x] as [string, string]);
     })
     .reduce((pv, cv) => [...pv, ...cv], []);
-console.log(phylums.sort(sorter));
 export const klasses = Object.entries(taxonomy)
     .map(([k, v]) => {
         return Object.entries(v)
@@ -147,12 +196,6 @@ export const klasses = Object.entries(taxonomy)
             .reduce((pv, cv) => [...pv, ...cv], []);
     })
     .reduce((pv, cv) => [...pv, ...cv], []);
-console.log(klasses.sort(sorter));
-console.log(
-    Array.from(new Set(klasses.map((x) => x[1])).values())
-        .sort((a, b) => -b.localeCompare(a))
-        .filter((x) => x.split('').some((y) => charRange('A', 'Z').includes(y)))
-);
 
 export const order = Object.entries(taxonomy)
     .map(([k, v]) => {
@@ -166,12 +209,7 @@ export const order = Object.entries(taxonomy)
     })
     .reduce((pv, cv) => [...pv, ...cv], [])
     .reduce((pv, cv) => [...pv, ...cv], []);
-console.log(order.sort(sorter));
-console.log(
-    Array.from(new Set(order.map((x) => x[1])).values())
-        .sort((a, b) => -b.localeCompare(a))
-        .filter((x) => x.split('').some((y) => charRange('A', 'Z').includes(y)))
-);
+
 export const family = Object.entries(taxonomy)
     .map(([k, v]) => {
         return Object.entries(v).map(([k2, v2]) =>
@@ -187,12 +225,6 @@ export const family = Object.entries(taxonomy)
     .reduce((pv, cv) => [...pv, ...cv], [])
     .reduce((pv, cv) => [...pv, ...cv], [])
     .reduce((pv, cv) => [...pv, ...cv], []);
-console.log(family.sort(sorter));
-console.log(
-    Array.from(new Set(family.map((x) => x[1])).values())
-        .sort((a, b) => -b.localeCompare(a))
-        .filter((x) => x.split('').some((y) => charRange('A', 'Z').includes(y)))
-);
 
 export const genus = Object.entries(taxonomy)
     .map(([k, v]) => {
@@ -214,12 +246,6 @@ export const genus = Object.entries(taxonomy)
     .reduce((pv, cv) => [...pv, ...cv], [])
     .reduce((pv, cv) => [...pv, ...cv], [])
     .reduce((pv, cv) => [...pv, ...cv], []);
-console.log(genus.sort(sorter));
-console.log(
-    Array.from(new Set(genus.map((x) => x[1])).values())
-        .sort((a, b) => -b.localeCompare(a))
-        .filter((x) => x.split('').some((y) => charRange('A', 'Z').includes(y)))
-);
 
 export function getOptionLabel(option: ComboBoxOption) {
     return is.string(option) ? option : option.label;
@@ -256,12 +282,6 @@ export function getOptionDisabledTaxonomy(table: MRT_TableInstance<IProductTaxon
         }
     };
 }
-// const filterOpt = createFilterOptions<ComboBoxOption>({
-//     ignoreCase: true,
-//     ignoreAccents: true,
-//     matchFrom: 'start',
-//     stringify: (option) => (is.string(option) ? option : option.label)
-// });
 
 export function isOptionEqualTo(left: ComboBoxOption, right: ComboBoxOption) {
     return is.string(left) && is.string(right) ? left === right : is.string(left) || is.string(right) ? false : left.value === right.value && left.node === right.node;

@@ -1,6 +1,6 @@
 import { UseFormReturn } from 'react-hook-form-mui';
 import { MRT_Row, MRT_RowData } from 'material-react-table';
-import { is } from '../../../dal/is';
+import { is } from '../../../common/is';
 import { checkTransaction } from '../../../util/checkTransaction';
 import { toNotNullOID } from '../../../dal/toOID';
 

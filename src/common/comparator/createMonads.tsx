@@ -1,5 +1,6 @@
 import { distinctBy } from '../array/distinctBy';
-import { createComparable, createEqualTo } from './areRealmObjectsEqual';
+import { createComparable } from './createComparable';
+import { createEqualTo } from './createEqualTo';
 import { toSortingFunction } from './toSortingFunction';
 
 export function createMonads<T, U>(extract: (x: T) => U, comp: (x: U, y: U) => CompareResult = (x: any, y: any) => (x < y ? -1 : x > y ? 1 : 0)) {

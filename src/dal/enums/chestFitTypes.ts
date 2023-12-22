@@ -1,5 +1,4 @@
 import { Path } from 'react-hook-form-mui';
-import { objectMap } from './objectMap';
 import { mapObject } from './mapObject';
 import { getProperty } from '../../components/Contexts/getProperty';
 

@@ -13,7 +13,7 @@ export function lookupDefinition<T extends EntityBase, TLookup extends EntityBas
     }: {
         header?: string;
         objectType: RealmObjects;
-        labelPropertyName: Path<TLookup>;
+        labelPropertyName: Path<TLookup> | ((x: TLookup) => string);
         onChange?: (formContext: UseFormReturn<FieldValues>, db: Realm) => (ev: React.ChangeEvent, newValue: any) => void;
     },
     initialDisable = false,

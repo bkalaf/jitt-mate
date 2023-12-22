@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Popover } from '@mui/material';
 import { useState } from 'react';
 import { IBarcode } from '../../../dal/types';
 import { InnerBarcode } from './InnerBarcode';
-import { convertBarcodeType } from './BarcodeCell';
+import { convertBarcodeType } from './convertBarcodeType';
 
 export function JITTIndivBarcodeCell({ value }: { value: Optional<IBarcode>; }) {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);

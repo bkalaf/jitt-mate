@@ -1,6 +1,6 @@
 import { MRT_ColumnDef, MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import { Path, useFormContext } from 'react-hook-form-mui';
-import { is } from '../../../dal/is';
+import { is } from '../../../common/is';
 import { getProperty } from '../../Contexts/getProperty';
 import { useCallback, useMemo } from 'react';
 import { IconButton, List, ListItem, ListItemText, PaperProps, TableContainerProps, TableProps, Tooltip } from '@mui/material';
@@ -15,7 +15,7 @@ import { $metas } from '../metas';
 import { checkTransaction } from '../../../util/checkTransaction';
 import { useDependencies } from '../../../hooks/useDependencies';
 import { useReflectionContext } from '../../../hooks/useReflectionContext';
-import { removeProperty } from './removeProperty';
+import { removeProperty } from '../../../common/object/removeProperty';
 import { identity } from '../../../common/functions/identity';
 import { renderCreateModal } from './renderCreateModal';
 

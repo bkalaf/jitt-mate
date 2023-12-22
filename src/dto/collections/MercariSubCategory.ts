@@ -8,7 +8,7 @@ import { ApparelTypes } from '../../dal/enums/apparelType';
 import { ItemGroups } from '../../dal/enums/itemGroups';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { $$queryClient } from '../../components/App';
-import { mergeProductTaxonomy } from '../embedded/mergeProductTaxonomy';
+import { mergeProductTaxonomy } from '../../util/mergeProductTaxonomy';
 import { prependText } from '../../common/text/prependText';
 import { HashTag } from './HashTag';
 
@@ -79,9 +79,7 @@ export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implem
     get effectiveShipWeightPercent(): Optional<number> {
         return this.shipWeightPercent ?? this.parent?.effectiveShipWeightPercent;
     }
-    get effectiveTaxon(): OptionalEntity<IProductTaxonomy> {
-        return this.taxon ?? this.parent?.effectiveTaxon;
-    }
+
     get allHashTags(): Entity<IHashTag>[] {
         return [...(this.parent?.allHashTags ?? []), ...Array.from(this.hashTags.values() ?? [])];
     }

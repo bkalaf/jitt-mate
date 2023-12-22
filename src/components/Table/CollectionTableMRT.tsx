@@ -33,9 +33,9 @@ export function CollectionTableMRT<T extends MRT_RowData & EntityBase & IRealmEn
     ) : (
         <>
             <MaterialReactTable table={table} />
-            <div className='flex items-center justify-end w-full'>
+            {/* <div className='flex items-center justify-end w-full'>
                 <span className='inline-flex'>{new Date(dataUpdatedAt).toLocaleString()}</span>
-            </div>
+            </div> */}
         </>
     );
 }

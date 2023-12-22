@@ -98,7 +98,8 @@ export const $db: DB = {
     mercariSubCategory: toType('mercariSubCategory'),
     mercariSubSubCategory: toType('mercariSubSubCategory'),
     part: toType('part'),
-    price: toType('price'),
+    sellingPrice: toType('sellingPrice'),
+    shippingService: toType('shippingService'),
     product: toType('product'),
     productImage: toType('productImage'),
     productLine: toType('productLine'),
@@ -112,7 +113,7 @@ export const $db: DB = {
     storageFacility: toType('storageFacility'),
     task: toType('task'),
     operation: toType('operation')
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 } as any;
 
 $db.backlink = (name: keyof typeof $db, property: string) =>

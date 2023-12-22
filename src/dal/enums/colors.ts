@@ -1,8 +1,4 @@
 // ///<reference path="./../../global.d.ts" />
-import { convertToLookup } from './convertToLookup';
-import { linkedColor } from './mercariColor';
-import { unzip } from './unzip';
-
 export interface IColorInfo {
     name: string;
     aliases?: ColorInfo[];
@@ -10,25 +6,8 @@ export interface IColorInfo {
     classes?: string;
 }
 export type ColorInfo = IColorInfo | string;
-export interface Colors {
-    black: ColorInfo;
-    grey: ColorInfo;
-    white: ColorInfo;
-    beige: ColorInfo;
-    red: ColorInfo;
-    pink: ColorInfo;
-    purple: ColorInfo;
-    blue: ColorInfo;
-    green: ColorInfo;
-    yellow: ColorInfo;
-    orange: ColorInfo;
-    brown: ColorInfo;
-    gold: ColorInfo;
-    silver: ColorInfo;
-}
-export type ColorsKey = keyof Colors;
 
-export const Colors: Record<ColorsKey, ColorInfo> = {
+export const ColorsInfos = {
     black: {
         name: 'black',
         selector: 'itemColorId-1',
@@ -113,37 +92,18 @@ export const Colors: Record<ColorsKey, ColorInfo> = {
     }
 };
 
-type ColorInfoItem = { key: string; value: string };
+export type MainColors = keyof typeof ColorsInfos;
 
-function buildColorInfoMaps() {
-    const colors = Object.entries(Colors);
-    const colors2 = colors.map(([k, v]) => ({ ...(typeof v === 'string' ? { name: v } : v)}));
-    const { toClasses, toName, toSelector } = colors2.map(({ name, classes, aliases, selector }) => [...aliases as string[] ?? [], name].map(n => ({
-        toName: [name, n] as [string, string],
-        toClasses: [n, classes] as [string, string],
-        toSelector: [n, selector] as [string, string]
-    })).reduce(({ toClasses: pvToClasses, toSelector: pvToSelector, toName: pvToName }, { toClasses: cvToClasses, toSelector: cvToSelector, toName: cvToName }) => {
-        return {
-            toClasses: [...pvToClasses, cvToClasses],
-            toSelector: [...pvToSelector, cvToSelector],
-            toName: [...pvToName, cvToName]
-        }
-    }, { toClasses: [] as [string, string][], toSelector: [] as [string, string][], toName: [] as [string, string][]})).reduce(({ toClasses: pvToClasses, toSelector: pvToSelector, toName: pvToName }, { toClasses: cvToClasses, toSelector: cvToSelector, toName: cvToName }) => {
-        return {
-            toClasses: [...pvToClasses, ...cvToClasses],
-            toName: [...pvToName, ...cvToName],
-            toSelector: [...pvToSelector, ...cvToSelector]
-        }
-    }, { toClasses: [], toSelector: [], toName: [] });
-    return {
-        colorToName: Object.fromEntries(toName),
-        colorToClasses: Object.fromEntries(toClasses),
-        colorToSelector: Object.fromEntries(toSelector)
-    }
-}
-
-export const { colorToClasses, colorToName, colorToSelector } = buildColorInfoMaps();
-
+export const ColorsSelectors = Object.fromEntries(Object.entries(ColorsInfos).map(([k, v]) => [k, v.selector] as [MainColors, string]));
+export const aliasesToMainColors = Object.fromEntries(
+    Object.entries(ColorsInfos)
+        .map(([k, v]) => [k, ...('aliases' in v ? v.aliases : [])].map((c) => [c, k] as [string, string]))
+        .reduce((pv, cv) => [...pv, ...cv], [])
+);
+export const aliasesToSelectors = (x: string) => ColorsSelectors[aliasesToMainColors[x]]
+export const ColorsColors = Object.fromEntries(Object.entries(ColorsInfos).map(([k, v]) => [k, v.classes] as [MainColors, string]));
+export const aliasesToColorClasses = (x: string) => ColorsColors[aliasesToMainColors[x]];
+export const aliasesToColorMap = Object.fromEntries(Object.keys(aliasesToMainColors).map((k) => [k, aliasesToColorClasses(k)] as [string, string]));
 // console.log(JSON.stringify($colorNameMap, null, '\t'));
 // console.log(JSON.stringify($colorSelectorMap, null, '\t'));
 

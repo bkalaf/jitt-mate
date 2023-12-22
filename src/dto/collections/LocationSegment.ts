@@ -2,12 +2,13 @@ import Realm, { BSON } from 'realm';
 import { $db } from '../../dal/db';
 import { IBarcode, ILocationSegment } from '../../dal/types';
 import { LocationKinds } from '../../dal/enums/locationKinds';
-import { LocationLabelColorsKey, _LocationLabelColors } from '../../dal/enums/locationLabelColors';
+import { LocationLabelColorsKey } from '../../dal/enums/locationLabelColors';
 import { LocationTypesObj } from '../../dal/enums/locationTypes';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { $$queryClient } from '../../components/App';
 
 export class LocationSegment extends Realm.Object<ILocationSegment> implements ILocationSegment {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(realm: Realm, args: any) {
         super(realm, args);
         setImmediate(() =>
@@ -31,6 +32,7 @@ export class LocationSegment extends Realm.Object<ILocationSegment> implements I
 
     @wrapInTransactionDecorator()
     update() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if (this.upcs == null) this.upcs = [] as any;
         this.upcs.forEach(x => x.update());
         return this;
