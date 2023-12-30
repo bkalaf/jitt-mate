@@ -11,7 +11,8 @@ export const mercariCategoryColumns = {
 
                 $metas.percent<IMercariCategory>('shipWeightPercent', { min: 1, max: 2 }, false),
                 $metas.embed<IMercariCategory>('taxon', { getColumnsKey: 'productTaxonomy' }, false),
-                $metas.set<IMercariCategory, IHashTag, 'hashTags'>('hashTags', 'brand', 'hashTag', 'name', {}, false)
+                $metas.set<IMercariCategory, IHashTag, 'hashTags'>('hashTags', 'brand', 'hashTag', 'name', {}, false),
+                $metas.list('effectiveHashTags', { readOnly: true, header: 'All Tags', labelProperty: 'name', objectType: 'mercariCategory', ofObjectType: 'hashTag' }, false)
             ] as DefinedMRTColumns<IMercariCategory>
         ).map((x) =>
             x.columnDefType === 'group' ? x : x.accessorKey != null ? { ...x, accessorKey: [...pre, x.accessorKey].join('.') } : x.id != null ? { ...x, id: [...pre, x.id].join('.') } : x

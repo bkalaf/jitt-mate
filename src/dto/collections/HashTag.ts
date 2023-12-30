@@ -5,8 +5,8 @@ import { IHashTag, IHashTagUsage } from '../../dal/types';
 import { $$ } from '../../common/comparator/areRealmObjectsEqual';
 import { daysDiffFromNow } from '../../common/date/daysDiffFromNow';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
-import { $$queryClient } from '../../components/App';
 import { is } from '../../common/is';
+import { $$queryClient } from '../../components/$$queryClient';
 
 export class HashTag extends Realm.Object<IHashTag> implements IHashTag {
     @wrapInTransactionDecorator()

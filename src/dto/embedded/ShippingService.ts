@@ -1,5 +1,5 @@
 import { $db } from '../../dal/db';
-import { ShippingVersions, ShippingVersionsInfos } from '../../dal/enums/shippingVersions';
+import { ShippingVersionsKeys, ShippingVersionsInfos } from '../../dal/enums/shippingVersions';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { IShippingService, ISku } from '../../dal/types';
 
@@ -18,7 +18,7 @@ export class ShippingService extends Realm.Object<IShippingService> implements I
         }
         return this;
     }
-    static ctor(sku: ISku, maxWeightLbs = 0, versionDate: ShippingVersions = '09252023') {
+    static ctor(sku: ISku, maxWeightLbs = 0, versionDate: ShippingVersionsKeys = '09252023') {
         const shippingInfo = ShippingVersionsInfos[versionDate].find((x) => x.max >= (maxWeightLbs ?? 0) && x.min <= (maxWeightLbs ?? 0));
         console.log(`shippingService found`, this, shippingInfo);
 
@@ -48,7 +48,7 @@ export class ShippingService extends Realm.Object<IShippingService> implements I
             isMediaMail: { type: 'bool', optional: true, default: false }
         }
     };
-    versionDate: ShippingVersions = '09252023';
+    versionDate: ShippingVersionsKeys = '09252023';
     maxWeightLbs: Optional<number>;
     carrier: Optional<string>;
     carrierId: Optional<number>;

@@ -1,15 +1,13 @@
 import { $db } from '../../dal/db';
-import { Countries } from '../../dal/enums/countries';
-import { Provinces } from '../../dal/enums/provinces';
 import { IAddress } from '../../dal/types';
 
 export class Address extends Realm.Object<Address> implements IAddress {
     line1: Optional<string>;
     line2: Optional<string>;
     city: Optional<string>;
-    province: Optional<keyof Provinces>;
+    province: Optional<string>;
     postalCode: Optional<string>;
-    country?: Optional<keyof Countries>;
+    country?: Optional<string>;
     get output(): string {
         return [[this.line1, this.line2].filter(x => x != null).join('\n'), [this.cityState, this.country, this.postalCode].filter(x => x!= null).join(',')].join('\n');
     }

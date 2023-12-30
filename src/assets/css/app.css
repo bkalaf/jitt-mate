@@ -5,9 +5,9 @@
 @import './utilities.css';
 /* @import '../../../node_modules/@fortawesome/fontawesome-svg-core/styles.css'; */
 
-/* body {
-    font-family: 'Open Sans';
-} */
+body { 
+    font-family: 'Rubik'; 
+} 
 
 /* .active {
     @apply text-white border border-white bg-magenta;

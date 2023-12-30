@@ -1,6 +1,6 @@
-import { enumColors } from './sleeveTypes';
+import { enumColors } from './enumColors';
 
-export const GenderInfos = {
+export const GendersInfos = {
     mens: { key: 'mens', color: enumColors.sky2 },
     womens: { key: 'womens', color: enumColors.pink2 },
     boys: { key: 'boys', color: enumColors.cyan2 },
@@ -40,5 +40,9 @@ export const GenderInfos = {
 //     }
 // };
 
-export const Genders = Object.fromEntries(Object.entries(GenderInfos).map(([k, v]) => [k, v.key] as [string, string]));
-export const GendersColors = Object.fromEntries(Object.entries(GenderInfos).map(([k, v]) => [k, v.color] as [string, string]));
+// export const Genders = Object.fromEntries(Object.entries(GendersInfos).map(([k, v]) => [k, v.key] as [string, string]));
+// export const GendersColors = Object.fromEntries(Object.entries(GendersInfos).map(([k, v]) => [k, v.color] as [string, string]));
+
+export type GendersKeys = keyof typeof GendersInfos;
+export const GendersEnumMap = Object.fromEntries(Object.entries(GendersInfos).map(([k, v]) => [k, v.key] as [GendersKeys, string])) as Record<GendersKeys, string>;
+export const GendersColorMap = Object.fromEntries(Object.entries(GendersInfos).map(([k, v]) => [k, v.color] as [GendersKeys, string])) as Record<GendersKeys, string>;

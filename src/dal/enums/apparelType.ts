@@ -1,75 +1,4 @@
-export type ApparelTypes = {
-    // active: string;
-    athletic: string;
-    ['button-down']: string;
-    bath: string;
-    blazer: string;
-    blouse: string;
-    boot: string;
-    boxer: string;
-    bra: string;
-    cami: string;
-    cap: string;
-    cargo: string;
-    dress: string;
-    'f/f': string;
-    flannel: string;
-    fleece: string;
-    glove: string;
-    graphic: string;
-    'h/h': string;
-    hand: string;
-    hat: string;
-    hoodie: string;
-    jacket: string;
-    jeans: string;
-    khaki: string;
-    leggings: string;
-    loafer: string;
-    'denim-shorts': string;
-    mitten: string;
-    neg: string;
-    'o/a': string;
-    oxford: string;
-    'p/o': string;
-    'pj-b': string;
-    'pj-t': string;
-    polo: string;
-    sandal: string;
-    scarf: string;
-    'short-shorts': string;
-    shorts: string;
-    skirt: string;
-    shirt: string;
-    sleep: string;
-    sneaker: string;
-    sock: string;
-    stiletto: string;
-    suit: string;
-    sweat: string;
-    't/t': string;
-    tee: string;
-    tie: string;
-    towel: string;
-    trench: string;
-    trouser: string;
-    tube: string;
-    'u/w': string;
-    'w/c': string;
-    wind: string;
-    // 'button-down': string;
-    'wash-cloth': string;
-    underwear: string;
-    'tank-top': string;
-    pj: string;
-    'pull-over': string;
-    'over-alls': string;
-    'high-heel': string;
-    'flip-flop': string;
-    lingerie: string;
-};
-export type ApparelTypesKey = keyof ApparelTypes;
-export const ApparelTypes: EnumMap<ApparelTypesKey> = {
+export const ApparelTypesInfos = {
     // active: 'activewear',
     athletic: 'athletic shoes',
     'button-down': 'button-down',
@@ -82,6 +11,8 @@ export const ApparelTypes: EnumMap<ApparelTypesKey> = {
     cami: 'camisole',
     cap: 'baseball-cap',
     cargo: 'cargo pants',
+    casual: 'casual pants',
+    chinos: 'chinos',
     dress: 'dress',
     'f/f': 'flip-flop',
     flannel: 'flannel',
@@ -138,3 +69,5 @@ export const ApparelTypes: EnumMap<ApparelTypesKey> = {
     'flip-flop': 'flip-flop',
     lingerie: 'lingerie'
 };
+
+export type ApparelTypesKeys = keyof typeof ApparelTypesInfos;

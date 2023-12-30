@@ -22,6 +22,7 @@ import { Path, TextareaAutosizeElement } from 'react-hook-form-mui';
 import { useDependencies } from '../../../hooks/useDependencies';
 import { MRT_ColumnDef, MRT_RowData } from 'material-react-table';
 import { radioDefinition } from './radioDefinition';
+import { singleSelectDefinition } from './singleSelectDefinition';
 
 export function JITTTextBlockControl(
     {
@@ -44,7 +45,9 @@ export function JITTTextBlockControl(
                 classes={classes}
                 disabled={disabled}
                 label={label}
-                onBlur={onBlur}
+                onChange={(ev) => {
+                    onBlur({ target: { value: ev.target.value, name }} as any);
+                }}
                 control={control}
                 minRows={minRows ?? 3}
                 maxRows={maxRows ?? 10}
@@ -105,6 +108,7 @@ export const $metas = {
     percent: percentageDefinition,
     radio: radioDefinition,
     set: setDefinition,
+    singleSelect: singleSelectDefinition,
     string: stringDefinition,
     textBlock: textBlockDefinition
 };

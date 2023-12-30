@@ -7,7 +7,7 @@ import { sum } from '../../common/math/sum';
 import { konst } from '../../common/functions/konst';
 import { unpad } from '../../common/text/unpad';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
-import { $$queryClient } from '../../components/App';
+import { $$queryClient } from '../../components/$$queryClient';
 
 export class Barcode extends Realm.Object<IBarcode> implements IBarcode {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

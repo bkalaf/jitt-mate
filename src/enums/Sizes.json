@@ -1,5 +1,5 @@
 {
-    "cup-size": {
+    "women-bust": {
         "32A": { "key": "32A", "name": "32A", "selector": "itemSizeId-170" },
         "34A": { "key": "34A", "name": "34A", "selector": "itemSizeId-171" },
         "36A": { "key": "36A", "name": "36A", "selector": "itemSizeId-172" },
@@ -112,7 +112,7 @@
         "48E": { "key": "48E", "name": "48E (48DD US)", "selector": "itemSizeId-287" },
         "48F": { "key": "48F", "name": "48F (48DDD US)", "selector": "itemSizeId-288" }
     },
-    "dress-sizes": {
+    "women-dresses": {
         "0": { "key": "0", "name": "0", "selector": "itemSizeId-18" },
         "2": { "key": "2", "name": "2", "selector": "itemSizeId-20" },
         "4": { "key": "4", "name": "4", "selector": "itemSizeId-21" },
@@ -130,129 +130,129 @@
         "XL": { "key": "XL", "name": "XL", "selector": "itemSizeId-26" },
         "2XL": { "key": "2XL", "name": "2XL", "selector": "itemSizeId-27" }
     },
-    "waist-inches": {
+    "inches": {
         "23": {
             "key": "23",
-            "name": "23 in",
+            "name": "23\"",
             "selector": "itemSizeId-14"
         },
         "24": {
             "key": "24",
-            "name": "24 in",
+            "name": "24\"",
             "selector": "itemSizeId-15"
         },
         "25": {
             "key": "25",
-            "name": "25 in",
+            "name": "25\"",
             "selector": "itemSizeId-16"
         },
         "26": {
             "key": "26",
-            "name": "26 in",
+            "name": "26\"",
             "selector": "itemSizeId-17"
         },
         "27": {
             "key": "27",
-            "name": "27 in",
+            "name": "27\"",
             "selector": "itemSizeId-18"
         },
         "28": {
             "key": "28",
-            "name": "28 in",
+            "name": "28\"",
             "selector": "itemSizeId-19"
         },
         "29": {
             "key": "29",
-            "name": "29 in",
+            "name": "29\"",
             "selector": "itemSizeId-20"
         },
         "30": {
             "key": "30",
-            "name": "30 in",
+            "name": "30\"",
             "selector": "itemSizeId-21"
         },
         "31": {
             "key": "31",
-            "name": "31 in",
+            "name": "31\"",
             "selector": "itemSizeId-22"
         },
         "32": {
             "key": "32",
-            "name": "32 in",
+            "name": "32\"",
             "selector": "itemSizeId-23"
         },
         "33": {
             "key": "33",
-            "name": "33 in",
+            "name": "33\"",
             "selector": "itemSizeId-24"
         },
         "34": {
             "key": "34",
-            "name": "34 in",
+            "name": "34\"",
             "selector": "itemSizeId-25"
         },
         "36": {
             "key": "36",
-            "name": "36 in",
+            "name": "36\"",
             "selector": "itemSizeId-26"
         },
         "38": {
             "key": "38",
-            "name": "38 in",
+            "name": "38\"",
             "selector": "itemSizeId-27"
         },
         "40": {
             "key": "40",
-            "name": "40 in",
+            "name": "40\"",
             "selector": "itemSizeId-28"
         },
         "42": {
             "key": "42",
-            "name": "42 in",
+            "name": "42\"",
             "selector": "itemSizeId-29"
         },
         "44": {
             "key": "44",
-            "name": "44 in",
+            "name": "44\"",
             "selector": "itemSizeId-30"
         },
         "46": {
             "key": "46",
-            "name": "46 in",
+            "name": "46\"",
             "selector": "itemSizeId-31"
         },
         "48": {
             "key": "48",
-            "name": "48 in",
+            "name": "48\"",
             "selector": "itemSizeId-32"
         },
         "50": {
             "key": "50",
-            "name": "50 in",
+            "name": "50\"",
             "selector": "itemSizeId-33"
         },
         "52": {
             "key": "52",
-            "name": "52 in",
+            "name": "52\"",
             "selector": "itemSizeId-34"
         },
         "54": {
             "key": "54",
-            "name": "54 in",
+            "name": "54\"",
             "selector": "itemSizeId-327"
         },
         "56": {
             "key": "56",
-            "name": "56 in",
+            "name": "56\"",
             "selector": "itemSizeId-328"
         },
         "58+": {
             "key": "58+",
-            "name": "58+ in",
+            "name": "58+\"",
             "selector": "itemSizeId-329"
         }
     },
-    "chest-char": {
+    "men-suits": {
         "38S": { "key": "38S", "name": "38S", "selector": "itemSizeId-35" },
         "40S": { "key": "40S", "name": "40S", "selector": "itemSizeId-36" },
         "42S": { "key": "42S", "name": "42S", "selector": "itemSizeId-37" },
@@ -288,7 +288,7 @@
         "34R": { "key": "34R", "name": "34R", "selector": "itemSizeId-330" },
         "35R": { "key": "35R", "name": "35R", "selector": "itemSizeId-331" }
     },
-    "shoe-size-men": {
+    "men-footwear": {
         "12.5": { "key": "12.5", "name": "12.5 (45.5)", "selector": "itemSizeId-77" },
         "13": { "key": "13", "name": "13 (46)", "selector": "itemSizeId-78" },
         "13.5": { "key": "13.5", "name": "13.5 (46.5)", "selector": "itemSizeId-79" },
@@ -317,7 +317,7 @@
         "19": { "key": "19", "name": "19 (50.5)", "selector": "itemSizeId-338" },
         "20": { "key": "20", "name": "20 (51)", "selector": "itemSizeId-339" }
     },
-    "shoe-size-women": {
+    "women-footwear": {
         "5": { "key": "5", "name": "5 (35.5)", "selector": "itemSizeId-62" },
         "5.5": { "key": "5.5", "name": "5.5 (36)", "selector": "itemSizeId-63" },
         "6": { "key": "6", "name": "6 (36.5)", "selector": "itemSizeId-64" },
@@ -340,7 +340,7 @@
         "13.5": { "key": "13.5", "name": "13.5 (44)", "selector": "itemSizeId-325" },
         "14+": { "key": "14+", "name": "14 & Up (44.5)", "selector": "itemSizeId-326" }
     },
-    "letter-sizes": {
+    "letter": {
         "XXS": {
             "key": "XXS",
             "name": "XXS (00)",
@@ -592,7 +592,7 @@
             "selector": "itemSizeId-355"
         }
     },
-    "women-qualified-letter-sizes": {
+    "women-letter": {
         "XXS": {
             "key": "XXS",
             "name": "XXS (00)",
@@ -844,7 +844,7 @@
             "selector": "itemSizeId-355"
         }
     },
-    "men-qualified-letter-sizes": {
+    "men-letter": {
         "XS": { "key": "XS", "name": "XS (30-32)", "selector": "itemSizeId-8" },
         "S": { "key": "S", "name": "S (34-36)", "selector": "itemSizeId-9" },
         "M": { "key": "M", "name": "M (38-40)", "selector": "itemSizeId-10" },
@@ -867,7 +867,7 @@
         "B3X": { "key": "B3X", "name": "Big 3X", "selector": "itemSizeId-347" },
         "B4X": { "key": "B4X", "name": "Big 4X", "selector": "itemSizeId-348" }
     },
-    "age-months": {
+    "youth": {
         "2XL": {
             "key": "2XL",
             "name": "2XL (18)",

@@ -1,6 +1,4 @@
 import { IBrand, IClassifier, IHashTag, IMaterialComposition, IProduct, IProductLine } from '../../dal/types';
-import { aliasesToMainColors, aliasesToColorClasses } from '../../dal/enums/colors';
-import { Countries } from '../../dal/enums/countries';
 import { getProperty } from '../../components/Contexts/getProperty';
 import { is } from '../../common/is';
 import { $metas } from '../../components/Table/metas';
@@ -9,23 +7,23 @@ import { enableWhen } from './enableWhen';
 import { UseFormReturn, FieldValues } from 'react-hook-form';
 import { checkTransaction } from '../../util/checkTransaction';
 
-export function has(name: string) {
-    return function (obj?: Record<string, any>) {
-        if (obj != null && is.dbSet(obj)) {
-            return obj.has(name);
-        }
-        return Object.getOwnPropertyNames(obj ?? {}).includes(name);
-    };
-}
-export function entityHas<T extends AnyObject>(propertyName: string, name: string) {
-    return function (obj?: T) {
-        if (obj != null) {
-            const value = getProperty(propertyName)(obj) ?? {};
-            return has(name)(value);
-        }
-        return false;
-    };
-}
+// export function has(name: string) {
+//     return function (obj?: Record<string, any>) {
+//         if (obj != null && is.dbSet(obj)) {
+//             return obj.has(name);
+//         }
+//         return Object.getOwnPropertyNames(obj ?? {}).includes(name);
+//     };
+// }
+// export function entityHas<T extends AnyObject>(propertyName: string, name: string) {
+//     return function (obj?: T) {
+//         if (obj != null) {
+//             const value = getProperty(propertyName)(obj) ?? {};
+//             return has(name)(value);
+//         }
+//         return false;
+//     };
+// }
 export function getValueDict(name: string, dict: DBDictionary<any> | Record<string, any>) {
     if (is.dbDictionary(dict)) {
         return dict.toJSON()[name] ?? null;
@@ -76,7 +74,7 @@ export const productColumns = {
                 ),
                 $metas.string('descriptiveText', { maxLength: 100 }, false),
                 $metas.string('circa', { maxLength: 4 }, false),
-                $metas.enum('color', { enumMap: aliasesToMainColors, colorMap: aliasesToColorMap }, false),
+                $metas.singleSelect('color', {}, false),
                 {
                     header: 'Dimensions',
                     columns: [
@@ -85,7 +83,7 @@ export const productColumns = {
                             {
                                 min: 0,
                                 precision: 2,
-                                uom: 'in',
+                                uom: 'g',
                                 header: 'Weight (g)',
                                 fn: (x: IProduct) => getValueDict('weightGrams', x.dimensions)
                             },
@@ -206,7 +204,7 @@ export const productColumns = {
                 // }),
 
                 $metas.list<IProduct, string, 'features'>('features', { objectType: 'product', ofObjectType: 'string', labelProperty: ({ data }: { data: string }) => data }, false),
-                $metas.flags('flags', { flags: ['isAthletic', 'isCollectible', 'isDecorative', 'isGraphic', 'isMediaMail', 'isMissingTags', 'isRare', 'isVintage'] }, false),
+                $metas.flags('flags', { flags: ['isCollectible', 'isDecorative', 'isMissingTags', 'isRare', 'isVintage'] }, false),
                 $metas.string('folder', { fn: (x: IProduct) => x.folder?.toHexString(true) ?? null, readOnly: true }, false),
                 $metas.dictionary<IProduct, IMaterialComposition, 'materials', 'toOutput'>('materials', {
                     objectType: 'product',
@@ -216,12 +214,14 @@ export const productColumns = {
                 }),
                 $metas.string('modelNo', { header: 'Model #' }, false),
                 $metas.string('notes', { maxLength: 200 }, false),
-                $metas.enum('origin', { enumMap: Countries }, false),
+                $metas.singleSelect('origin', { enumType: 'country' }, false),
                 $metas.string('styleNo', { header: 'Style #' }, false),
-                $metas.embed<IProduct>('apparelDetails', { getColumnsKey: 'apparelDetails' }, true, enableWhen('taxon.kingdom', 'apparel')),
+                $metas.embed<IProduct>('apparelDetails', { getColumnsKey: 'apparelDetails' }, true, enableWhen('effectiveKingdom', 'apparel')),
                 $metas.percent<IProduct>('shipWeightPercent', { min: 1, max: 2 }, false),
-                $metas.embed<IProduct>('taxon', { getColumnsKey: 'productTaxonomy' }, false),
-                $metas.set<IProduct, IHashTag, 'hashTags'>('hashTags', 'brand', 'hashTag', 'name', {}, false)
+                $metas.percent('effectiveShipWeightPercent', { readOnly: true, min: 1, max: 2 }, false),
+                // $metas.embed<IProduct>('taxon', { getColumnsKey: 'productTaxonomy' }, false),
+                $metas.set<IProduct, IHashTag, 'hashTags'>('hashTags', 'brand', 'hashTag', 'name', {}, false),
+                $metas.list('effectiveHashTags', { readOnly: true, header: 'All Tags', labelProperty: 'name', objectType: 'product', ofObjectType: 'hashTag' }, false)
             ] as DefinedMRTColumns<IProduct>
         ).map((x) =>
             x.columnDefType === 'group' ? x : x.accessorKey != null ? { ...x, accessorKey: [...pre, x.accessorKey].join('.') } : x.id != null ? { ...x, id: [...pre, x.id].join('.') } : x

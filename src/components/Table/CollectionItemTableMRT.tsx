@@ -3,6 +3,7 @@ import { MRT_Row, MRT_RowData, MaterialReactTable, useMaterialReactTable } from 
 import { IBarcode, IRealmEntity } from '../../dal/types';
 import { Row } from '@tanstack/react-table';
 import { useMUIItemReactTable } from '../../hooks/useMUIItemReactTable';
+import { JITTCollectionContextProvider } from '../Contexts/JITTCollectionContext';
 
 export function CollectionItemTableMRT<T extends MRT_RowData & EntityBase & IRealmEntity<T>>(props: {
     type?: 'object' | 'list' | 'dictionary' | 'set';
@@ -18,7 +19,7 @@ export function CollectionItemTableMRT<T extends MRT_RowData & EntityBase & IRea
     const table = useMaterialReactTable({
         ...options,
         sortingFns: {
-            sortBarcode: (rowA: Row<{ barcode: IBarcode; }>, rowB: Row<{ barcode: IBarcode; }>) => {
+            sortBarcode: (rowA: Row<{ barcode: IBarcode }>, rowB: Row<{ barcode: IBarcode }>) => {
                 const bcA = parseInt(rowA.original.barcode.rawValue, 10);
                 const bcB = parseInt(rowB.original.barcode.rawValue, 10);
                 return bcA < bcB ? -1 : bcA > bcB ? 1 : 0;
@@ -26,12 +27,5 @@ export function CollectionItemTableMRT<T extends MRT_RowData & EntityBase & IRea
         }
     } as any);
     console.log(`CollectionTableMRT.options`, table.options);
-    return (
-        <>
-            <MaterialReactTable table={table} />
-            <div className='flex items-center justify-end w-full'>
-                <span className='inline-flex'>{new Date(dataUpdatedAt).toLocaleString()}</span>
-            </div>
-        </>
-    );
+    return <MaterialReactTable table={table} />;
 }

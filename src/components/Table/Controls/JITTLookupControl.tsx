@@ -7,6 +7,7 @@ import { MRT_ColumnDef, MRT_RowData } from 'material-react-table';
 import { createFilterOptions } from '@mui/material';
 import { fromOID } from '../../../dal/fromOID';
 import { handleLabelProperty } from './handleLabelProperty';
+import { useJITTCollectionContext } from '../../Contexts/useJITTCollectionContext';
 
 export function JITTLookupControl<T extends MRT_RowData, TLookup extends EntityBase>(
     {
@@ -40,6 +41,7 @@ export function JITTLookupControl<T extends MRT_RowData, TLookup extends EntityB
         });
         const { classes, disabled, onBlur, ...spread } = useDependencies(props, initialDisable, ...dependencies);
         const formContext = useFormContext();
+        const { matchFromStart } = useJITTCollectionContext();
         return (
             isLoading ? <></> : <AutocompleteElement
                 loading={isLoading}
@@ -57,9 +59,9 @@ export function JITTLookupControl<T extends MRT_RowData, TLookup extends EntityB
                     filterOptions: createFilterOptions({
                         ignoreCase: true,
                         ignoreAccents: true,
-                        limit: 50,
+                        limit: 150,
                         trim: true,
-                        matchFrom: 'any'
+                        matchFrom: matchFromStart ? 'start' : 'any'
                     }),
                     onChange: (ev, newValue) => {
                         onBlur({ ...ev, target: { value: newValue } } as any);

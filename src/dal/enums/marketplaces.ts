@@ -1,4 +1,4 @@
-import { enumColors } from './sleeveTypes';
+import { enumColors } from './enumColors';
 
 export const MarketplacesInfos = {
     ebay: { key: 'ebay.com', color: enumColors.yellow2 },
@@ -6,5 +6,6 @@ export const MarketplacesInfos = {
     poshmark: { key: 'poshmark.com', color: enumColors.rose2 }
 }
 
-export const Marketplaces = Object.fromEntries(Object.entries(MarketplacesInfos).map(([k, v]) => [k, v.key] as [string, string]));
-export const MarketplacesColors = Object.fromEntries(Object.entries(MarketplacesInfos).map(([k, v]) => [k, v.color] as [string, string]));
+export type MarketplacesKeys = keyof typeof MarketplacesInfos;
+export const MarketplacesEnumMap = Object.fromEntries(Object.entries(MarketplacesInfos).map(([k, v]) => [k, v.key] as [MarketplacesKeys, string])) as Record<MarketplacesKeys, string>;
+export const MarketplacesColorMap = Object.fromEntries(Object.entries(MarketplacesInfos).map(([k, v]) => [k, v.color] as [MarketplacesKeys, string])) as Record<MarketplacesKeys, string>;

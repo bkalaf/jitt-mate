@@ -1,4 +1,4 @@
-import { enumColors } from './sleeveTypes';
+import { enumColors } from './enumColors';
 
 export const LegTypesInfos = {
     'slim-boot': { key: 'slim boot-cut fit', color: enumColors.cyan2 },
@@ -9,12 +9,14 @@ export const LegTypesInfos = {
     relaxed: { key: 'relaxed fit', color: enumColors.slate2 },
     casual: { key: 'casual', color: enumColors.purple2 },
     skinny: { key: 'skinny fit', color: enumColors.sky2 },
-    baggy: { key: 'baggy fit', color: enumColors.green2 }
+    baggy: { key: 'baggy fit', color: enumColors.green2 },
+    bell: { key: 'bell-bottom', color: enumColors.red2 }
 };
 
+export type LegTypesKeys = keyof typeof LegTypesInfos;
+export const LegTypesEnumMap = Object.fromEntries(Object.entries(LegTypesInfos).map(([k, v]) => [k, v.key] as [LegTypesKeys, string])) as Record<LegTypesKeys, string>;
+export const LegTypesColorMap = Object.fromEntries(Object.entries(LegTypesInfos).map(([k, v]) => [k, v.color] as [LegTypesKeys, string])) as Record<LegTypesKeys, string>;
 
-export const LegTypes = Object.fromEntries(Object.entries(LegTypesInfos).map(([k, v]) => [k, v.key] as [string, string]));
-export const LegTypesColors = Object.fromEntries(Object.entries(LegTypesInfos).map(([k, v]) => [k, v.color] as [string, string]));
 
 // {
 // 	"batwing": "batwing",

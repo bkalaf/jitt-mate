@@ -1,4 +1,1322 @@
 {
+    "enums": {
+        "province": {
+            "AR": {
+                "key": "AR",
+                "text": "Arkansas"
+            },
+            "AK": {
+                "key": "AK",
+                "text": "Alaska"
+            },
+            "AL": {
+                "key": "AL",
+                "text": "Alabama"
+            },
+            "AZ": {
+                "key": "AZ",
+                "text": "Arizona"
+            },
+            "CA": {
+                "key": "CA",
+                "text": "California"
+            },
+            "CO": {
+                "key": "CO",
+                "text": "Colorado"
+            },
+            "CT": {
+                "key": "CT",
+                "text": "Connecticut"
+            },
+            "DE": {
+                "key": "DE",
+                "text": "Deleware"
+            },
+            "FL": {
+                "key": "FL",
+                "text": "Florida"
+            },
+            "GA": {
+                "key": "GA",
+                "text": "Georgia"
+            },
+            "HI": {
+                "key": "HI",
+                "text": "Hawaii"
+            },
+            "IA": {
+                "key": "IA",
+                "text": "Iowa"
+            },
+            "ID": {
+                "key": "ID",
+                "text": "Idaho"
+            },
+            "IL": {
+                "key": "IL",
+                "text": "Illinois"
+            },
+            "IN": {
+                "key": "IN",
+                "text": "Indiana"
+            },
+            "KS": {
+                "key": "KS",
+                "text": "Kansas"
+            },
+            "KY": {
+                "key": "KY",
+                "text": "Kentucky"
+            },
+            "LA": {
+                "key": "LA",
+                "text": "Louisiana"
+            },
+            "MA": {
+                "key": "MA",
+                "text": "Massachusettes"
+            },
+            "ME": {
+                "key": "ME",
+                "text": "Maine"
+            },
+            "MT": {
+                "key": "MT",
+                "text": "Montana"
+            },
+            "MN": {
+                "key": "MN",
+                "text": "Minnesota"
+            },
+            "MO": {
+                "key": "MO",
+                "text": "Missouri"
+            },
+            "MI": {
+                "key": "MI",
+                "text": "Michigan"
+            },
+            "MD": {
+                "key": "MD",
+                "text": "Maryland"
+            },
+            "MS": {
+                "key": "MS",
+                "text": "Mississippi"
+            },
+            "NV": {
+                "key": "NV",
+                "text": "Nevada"
+            },
+            "NE": {
+                "key": "NE",
+                "text": "Nebraska"
+            },
+            "NH": {
+                "key": "NH",
+                "text": "New Hampshire"
+            },
+            "NY": {
+                "key": "NY",
+                "text": "New York"
+            },
+            "NM": {
+                "key": "NM",
+                "text": "New Mexico"
+            },
+            "NJ": {
+                "key": "NJ",
+                "text": "New Jersey"
+            },
+            "NC": {
+                "key": "NC",
+                "text": "North Carolina"
+            },
+            "ND": {
+                "key": "ND",
+                "text": "North Dakota"
+            },
+            "OH": {
+                "key": "OH",
+                "text": "Ohio"
+            },
+            "OK": {
+                "key": "OK",
+                "text": "Oklahoma"
+            },
+            "OR": {
+                "key": "OR",
+                "text": "Oregon"
+            },
+            "PA": {
+                "key": "PA",
+                "text": "Pennsylvania"
+            },
+            "RI": {
+                "key": "RI",
+                "text": "Rhode Island"
+            },
+            "SD": {
+                "key": "SD",
+                "text": "South Dakota"
+            },
+            "SC": {
+                "key": "SC",
+                "text": "South Carolina"
+            },
+            "TN": {
+                "key": "TN",
+                "text": "Tennessee"
+            },
+            "TX": {
+                "key": "TX",
+                "text": "Texas"
+            },
+            "UT": {
+                "key": "UT",
+                "text": "Utah"
+            },
+            "VA": {
+                "key": "VA",
+                "text": "Virginia"
+            },
+            "VT": {
+                "key": "VT",
+                "text": "Vermont"
+            },
+            "WV": {
+                "key": "WV",
+                "text": "West Virginia"
+            },
+            "WY": {
+                "key": "WY",
+                "text": "Wyoming"
+            },
+            "WI": {
+                "key": "WI",
+                "text": "Wisconsin"
+            },
+            "WA": {
+                "key": "WA",
+                "text": "Washington"
+            },
+            "DC": {
+                "key": "DC",
+                "text": "District of Columbia"
+            },
+            "ON": {
+                "key": "ON",
+                "text": "Ontario"
+            },
+            "QC": {
+                "key": "QC",
+                "text": "Quebec"
+            },
+            "MB": {
+                "key": "MB",
+                "text": "Manitoba"
+            },
+            "NL": {
+                "key": "NL",
+                "text": "Newfoundland and Labrador"
+            },
+            "BC": {
+                "key": "BC",
+                "text": "British Columbia"
+            },
+            "YT": {
+                "key": "YT",
+                "text": "Yukon"
+            },
+            "NT": {
+                "key": "NT",
+                "text": "Northwest Territory"
+            },
+            "PE": {
+                "key": "PE",
+                "text": "Prince Edward Island"
+            },
+            "NS": {
+                "key": "NS",
+                "text": "Nova Scotia"
+            },
+            "AB": {
+                "key": "AB",
+                "text": "Alberta"
+            },
+            "SK": {
+                "key": "SK",
+                "text": "Sasketchewan"
+            },
+            "NU": {
+                "key": "NU",
+                "text": "Nunavut"
+            },
+            "NB": {
+                "key": "NB",
+                "text": "New Brunswick"
+            },
+            "PR": {
+                "key": "PR",
+                "text": "Puerto Rico"
+            }
+        },
+        "country": {
+            "AF": {
+                "key": "AF",
+                "text": "Afghanistan"
+            },
+            "AX": {
+                "key": "AX",
+                "text": "Åland Islands"
+            },
+            "AL": {
+                "key": "AL",
+                "text": "Albania"
+            },
+            "DZ": {
+                "key": "DZ",
+                "text": "Algeria"
+            },
+            "AS": {
+                "key": "AS",
+                "text": "American Samoa"
+            },
+            "AD": {
+                "key": "AD",
+                "text": "Andorra"
+            },
+            "AO": {
+                "key": "AO",
+                "text": "Angola"
+            },
+            "AI": {
+                "key": "AI",
+                "text": "Anguilla"
+            },
+            "AQ": {
+                "key": "AQ",
+                "text": "Antarctica"
+            },
+            "AG": {
+                "key": "AG",
+                "text": "Antigua and Barbuda"
+            },
+            "AR": {
+                "key": "AR",
+                "text": "Argentina"
+            },
+            "AM": {
+                "key": "AM",
+                "text": "Armenia"
+            },
+            "AW": {
+                "key": "AW",
+                "text": "Aruba"
+            },
+            "AU": {
+                "key": "AU",
+                "text": "Australia"
+            },
+            "AT": {
+                "key": "AT",
+                "text": "Austria"
+            },
+            "AZ": {
+                "key": "AZ",
+                "text": "Azerbaijan"
+            },
+            "BS": {
+                "key": "BS",
+                "text": "Bahamas"
+            },
+            "BH": {
+                "key": "BH",
+                "text": "Bahrain"
+            },
+            "BD": {
+                "key": "BD",
+                "text": "Bangladesh"
+            },
+            "BB": {
+                "key": "BB",
+                "text": "Barbados"
+            },
+            "BY": {
+                "key": "BY",
+                "text": "Belarus"
+            },
+            "BE": {
+                "key": "BE",
+                "text": "Belgium"
+            },
+            "BZ": {
+                "key": "BZ",
+                "text": "Belize"
+            },
+            "BJ": {
+                "key": "BJ",
+                "text": "Benin"
+            },
+            "BM": {
+                "key": "BM",
+                "text": "Bermuda"
+            },
+            "BT": {
+                "key": "BT",
+                "text": "Bhutan"
+            },
+            "BO": {
+                "key": "BO",
+                "text": "Bolivia"
+            },
+            "BQ": {
+                "key": "BQ",
+                "text": "Bonaire, Sint Eustatius and Saba"
+            },
+            "BA": {
+                "key": "BA",
+                "text": "Bosnia and Herzegovina"
+            },
+            "BW": {
+                "key": "BW",
+                "text": "Botswana"
+            },
+            "BV": {
+                "key": "BV",
+                "text": "Bouvet Island"
+            },
+            "BR": {
+                "key": "BR",
+                "text": "Brazil"
+            },
+            "IO": {
+                "key": "IO",
+                "text": "British Indian Ocean Territory"
+            },
+            "BN": {
+                "key": "BN",
+                "text": "Brunei Darussalam"
+            },
+            "BG": {
+                "key": "BG",
+                "text": "Bulgaria"
+            },
+            "BF": {
+                "key": "BF",
+                "text": "Burkina Faso"
+            },
+            "BI": {
+                "key": "BI",
+                "text": "Burundi"
+            },
+            "CV": {
+                "key": "CV",
+                "text": "Cabo Verde"
+            },
+            "KH": {
+                "key": "KH",
+                "text": "Cambodia"
+            },
+            "CM": {
+                "key": "CM",
+                "text": "Cameroon"
+            },
+            "CA": {
+                "key": "CA",
+                "text": "Canada"
+            },
+            "KY": {
+                "key": "KY",
+                "text": "Cayman Islands"
+            },
+            "CF": {
+                "key": "CF",
+                "text": "Central African Republic"
+            },
+            "TD": {
+                "key": "TD",
+                "text": "Chad"
+            },
+            "CL": {
+                "key": "CL",
+                "text": "Chile"
+            },
+            "CN": {
+                "key": "CN",
+                "text": "China"
+            },
+            "CX": {
+                "key": "CX",
+                "text": "Christmas Island"
+            },
+            "CC": {
+                "key": "CC",
+                "text": "Cocos (Keeling) Islands"
+            },
+            "CO": {
+                "key": "CO",
+                "text": "Colombia"
+            },
+            "KM": {
+                "key": "KM",
+                "text": "Comoros"
+            },
+            "CD": {
+                "key": "CD",
+                "text": "Congo"
+            },
+            "CG": {
+                "key": "CG",
+                "text": "Congo"
+            },
+            "CK": {
+                "key": "CK",
+                "text": "Cook Islands"
+            },
+            "CR": {
+                "key": "CR",
+                "text": "Costa Rica"
+            },
+            "CI": {
+                "key": "CI",
+                "text": "Côte d'Ivoire"
+            },
+            "HR": {
+                "key": "HR",
+                "text": "Croatia"
+            },
+            "CU": {
+                "key": "CU",
+                "text": "Cuba"
+            },
+            "CW": {
+                "key": "CW",
+                "text": "Curaçao"
+            },
+            "CY": {
+                "key": "CY",
+                "text": "Cyprus"
+            },
+            "CZ": {
+                "key": "CZ",
+                "text": "Czechia"
+            },
+            "DK": {
+                "key": "DK",
+                "text": "Denmark"
+            },
+            "DJ": {
+                "key": "DJ",
+                "text": "Djibouti"
+            },
+            "DM": {
+                "key": "DM",
+                "text": "Dominica"
+            },
+            "DO": {
+                "key": "DO",
+                "text": "Dominican Republic"
+            },
+            "EC": {
+                "key": "EC",
+                "text": "Ecuador"
+            },
+            "EG": {
+                "key": "EG",
+                "text": "Egypt"
+            },
+            "SV": {
+                "key": "SV",
+                "text": "El Salvador"
+            },
+            "GQ": {
+                "key": "GQ",
+                "text": "Equatorial Guinea"
+            },
+            "ER": {
+                "key": "ER",
+                "text": "Eritrea"
+            },
+            "EE": {
+                "key": "EE",
+                "text": "Estonia"
+            },
+            "SZ": {
+                "key": "SZ",
+                "text": "Eswatini"
+            },
+            "ET": {
+                "key": "ET",
+                "text": "Ethiopia"
+            },
+            "FK": {
+                "key": "FK",
+                "text": "Falkland Islands"
+            },
+            "FO": {
+                "key": "FO",
+                "text": "Faroe Islands"
+            },
+            "FJ": {
+                "key": "FJ",
+                "text": "Fiji"
+            },
+            "FI": {
+                "key": "FI",
+                "text": "Finland"
+            },
+            "FR": {
+                "key": "FR",
+                "text": "France"
+            },
+            "GF": {
+                "key": "GF",
+                "text": "French Guiana"
+            },
+            "PF": {
+                "key": "PF",
+                "text": "French Polynesia"
+            },
+            "TF": {
+                "key": "TF",
+                "text": "French Southern Territories"
+            },
+            "GA": {
+                "key": "GA",
+                "text": "Gabon"
+            },
+            "GM": {
+                "key": "GM",
+                "text": "Gambia"
+            },
+            "GE": {
+                "key": "GE",
+                "text": "Georgia"
+            },
+            "DE": {
+                "key": "DE",
+                "text": "Germany"
+            },
+            "GH": {
+                "key": "GH",
+                "text": "Ghana"
+            },
+            "GI": {
+                "key": "GI",
+                "text": "Gibraltar"
+            },
+            "GR": {
+                "key": "GR",
+                "text": "Greece"
+            },
+            "GL": {
+                "key": "GL",
+                "text": "Greenland"
+            },
+            "GD": {
+                "key": "GD",
+                "text": "Grenada"
+            },
+            "GP": {
+                "key": "GP",
+                "text": "Guadeloupe"
+            },
+            "GU": {
+                "key": "GU",
+                "text": "Guam"
+            },
+            "GT": {
+                "key": "GT",
+                "text": "Guatemala"
+            },
+            "GG": {
+                "key": "GG",
+                "text": "Guernsey"
+            },
+            "GN": {
+                "key": "GN",
+                "text": "Guinea"
+            },
+            "GW": {
+                "key": "GW",
+                "text": "Guinea-Bissau"
+            },
+            "GY": {
+                "key": "GY",
+                "text": "Guyana"
+            },
+            "HT": {
+                "key": "HT",
+                "text": "Haiti"
+            },
+            "HM": {
+                "key": "HM",
+                "text": "Heard Island and McDonald Islands"
+            },
+            "VA": {
+                "key": "VA",
+                "text": "Holy See"
+            },
+            "HN": {
+                "key": "HN",
+                "text": "Honduras"
+            },
+            "HK": {
+                "key": "HK",
+                "text": "Hong Kong"
+            },
+            "HU": {
+                "key": "HU",
+                "text": "Hungary"
+            },
+            "IS": {
+                "key": "IS",
+                "text": "Iceland"
+            },
+            "IN": {
+                "key": "IN",
+                "text": "India"
+            },
+            "ID": {
+                "key": "ID",
+                "text": "Indonesia"
+            },
+            "IR": {
+                "key": "IR",
+                "text": "Iran"
+            },
+            "IQ": {
+                "key": "IQ",
+                "text": "Iraq"
+            },
+            "IE": {
+                "key": "IE",
+                "text": "Ireland"
+            },
+            "IM": {
+                "key": "IM",
+                "text": "Isle of Man"
+            },
+            "IL": {
+                "key": "IL",
+                "text": "Israel"
+            },
+            "IT": {
+                "key": "IT",
+                "text": "Italy"
+            },
+            "JM": {
+                "key": "JM",
+                "text": "Jamaica"
+            },
+            "JP": {
+                "key": "JP",
+                "text": "Japan"
+            },
+            "JE": {
+                "key": "JE",
+                "text": "Jersey"
+            },
+            "JO": {
+                "key": "JO",
+                "text": "Jordan"
+            },
+            "KZ": {
+                "key": "KZ",
+                "text": "Kazakhstan"
+            },
+            "KE": {
+                "key": "KE",
+                "text": "Kenya"
+            },
+            "KI": {
+                "key": "KI",
+                "text": "Kiribati"
+            },
+            "KP": {
+                "key": "KP",
+                "text": "North Korea"
+            },
+            "KR": {
+                "key": "KR",
+                "text": "South Korea"
+            },
+            "KW": {
+                "key": "KW",
+                "text": "Kuwait"
+            },
+            "KG": {
+                "key": "KG",
+                "text": "Kyrgyzstan"
+            },
+            "LA": {
+                "key": "LA",
+                "text": "Laos"
+            },
+            "LV": {
+                "key": "LV",
+                "text": "Latvia"
+            },
+            "LB": {
+                "key": "LB",
+                "text": "Lebanon"
+            },
+            "LS": {
+                "key": "LS",
+                "text": "Lesotho"
+            },
+            "LR": {
+                "key": "LR",
+                "text": "Liberia"
+            },
+            "LY": {
+                "key": "LY",
+                "text": "Libya"
+            },
+            "LI": {
+                "key": "LI",
+                "text": "Liechtenstein"
+            },
+            "LT": {
+                "key": "LT",
+                "text": "Lithuania"
+            },
+            "LU": {
+                "key": "LU",
+                "text": "Luxembourg"
+            },
+            "MO": {
+                "key": "MO",
+                "text": "Macao [s]"
+            },
+            "MK": {
+                "key": "MK",
+                "text": "North Macedonia"
+            },
+            "MG": {
+                "key": "MG",
+                "text": "Madagascar"
+            },
+            "MW": {
+                "key": "MW",
+                "text": "Malawi"
+            },
+            "MY": {
+                "key": "MY",
+                "text": "Malaysia"
+            },
+            "MV": {
+                "key": "MV",
+                "text": "Maldives"
+            },
+            "ML": {
+                "key": "ML",
+                "text": "Mali"
+            },
+            "MT": {
+                "key": "MT",
+                "text": "Malta"
+            },
+            "MH": {
+                "key": "MH",
+                "text": "Marshall Islands"
+            },
+            "MQ": {
+                "key": "MQ",
+                "text": "Martinique"
+            },
+            "MR": {
+                "key": "MR",
+                "text": "Mauritania"
+            },
+            "MU": {
+                "key": "MU",
+                "text": "Mauritius"
+            },
+            "YT": {
+                "key": "YT",
+                "text": "Mayotte"
+            },
+            "MX": {
+                "key": "MX",
+                "text": "Mexico"
+            },
+            "FM": {
+                "key": "FM",
+                "text": "Micronesia"
+            },
+            "MD": {
+                "key": "MD",
+                "text": "Moldova"
+            },
+            "MC": {
+                "key": "MC",
+                "text": "Monaco"
+            },
+            "MN": {
+                "key": "MN",
+                "text": "Mongolia"
+            },
+            "ME": {
+                "key": "ME",
+                "text": "Montenegro"
+            },
+            "MS": {
+                "key": "MS",
+                "text": "Montserrat"
+            },
+            "MA": {
+                "key": "MA",
+                "text": "Morocco"
+            },
+            "MZ": {
+                "key": "MZ",
+                "text": "Mozambique"
+            },
+            "MM": {
+                "key": "MM",
+                "text": "Myanmar"
+            },
+            "NA": {
+                "key": "NA",
+                "text": "Namibia"
+            },
+            "NR": {
+                "key": "NR",
+                "text": "Nauru"
+            },
+            "NP": {
+                "key": "NP",
+                "text": "Nepal"
+            },
+            "NL": {
+                "key": "NL",
+                "text": "Netherlands"
+            },
+            "NC": {
+                "key": "NC",
+                "text": "New Caledonia"
+            },
+            "NZ": {
+                "key": "NZ",
+                "text": "New Zealand"
+            },
+            "NI": {
+                "key": "NI",
+                "text": "Nicaragua"
+            },
+            "NE": {
+                "key": "NE",
+                "text": "Niger"
+            },
+            "NG": {
+                "key": "NG",
+                "text": "Nigeria"
+            },
+            "NU": {
+                "key": "NU",
+                "text": "Niue"
+            },
+            "NF": {
+                "key": "NF",
+                "text": "Norfolk Island"
+            },
+            "MP": {
+                "key": "MP",
+                "text": "Northern Mariana Islands"
+            },
+            "NO": {
+                "key": "NO",
+                "text": "Norway"
+            },
+            "OM": {
+                "key": "OM",
+                "text": "Oman"
+            },
+            "PK": {
+                "key": "PK",
+                "text": "Pakistan"
+            },
+            "PW": {
+                "key": "PW",
+                "text": "Palau"
+            },
+            "PS": {
+                "key": "PS",
+                "text": "Palestine"
+            },
+            "PA": {
+                "key": "PA",
+                "text": "Panama"
+            },
+            "PG": {
+                "key": "PG",
+                "text": "Papua New Guinea"
+            },
+            "PY": {
+                "key": "PY",
+                "text": "Paraguay"
+            },
+            "PE": {
+                "key": "PE",
+                "text": "Peru"
+            },
+            "PH": {
+                "key": "PH",
+                "text": "Philippines"
+            },
+            "PN": {
+                "key": "PN",
+                "text": "Pitcairn"
+            },
+            "PL": {
+                "key": "PL",
+                "text": "Poland"
+            },
+            "PT": {
+                "key": "PT",
+                "text": "Portugal"
+            },
+            "PR": {
+                "key": "PR",
+                "text": "Puerto Rico"
+            },
+            "QA": {
+                "key": "QA",
+                "text": "Qatar"
+            },
+            "RE": {
+                "key": "RE",
+                "text": "Réunion"
+            },
+            "RO": {
+                "key": "RO",
+                "text": "Romania"
+            },
+            "RU": {
+                "key": "RU",
+                "text": "Russia"
+            },
+            "RW": {
+                "key": "RW",
+                "text": "Rwanda"
+            },
+            "BL": {
+                "key": "BL",
+                "text": "Saint Barthélemy"
+            },
+            "SH": {
+                "key": "SH",
+                "text": "Saint Helena, Ascension and Tristan da Cunha"
+            },
+            "KN": {
+                "key": "KN",
+                "text": "Saint Kitts and Nevis"
+            },
+            "LC": {
+                "key": "LC",
+                "text": "Saint Lucia"
+            },
+            "MF": {
+                "key": "MF",
+                "text": "Saint Martin"
+            },
+            "PM": {
+                "key": "PM",
+                "text": "Saint Pierre and Miquelon"
+            },
+            "VC": {
+                "key": "VC",
+                "text": "Saint Vincent and the Grenadines"
+            },
+            "WS": {
+                "key": "WS",
+                "text": "Samoa"
+            },
+            "SM": {
+                "key": "SM",
+                "text": "San Marino"
+            },
+            "ST": {
+                "key": "ST",
+                "text": "Sao Tome and Principe"
+            },
+            "SA": {
+                "key": "SA",
+                "text": "Saudi Arabia"
+            },
+            "SN": {
+                "key": "SN",
+                "text": "Senegal"
+            },
+            "RS": {
+                "key": "RS",
+                "text": "Serbia"
+            },
+            "SC": {
+                "key": "SC",
+                "text": "Seychelles"
+            },
+            "SL": {
+                "key": "SL",
+                "text": "Sierra Leone"
+            },
+            "SG": {
+                "key": "SG",
+                "text": "Singapore"
+            },
+            "SX": {
+                "key": "SX",
+                "text": "Sint Maarten"
+            },
+            "SK": {
+                "key": "SK",
+                "text": "Slovakia"
+            },
+            "SI": {
+                "key": "SI",
+                "text": "Slovenia"
+            },
+            "SB": {
+                "key": "SB",
+                "text": "Solomon Islands"
+            },
+            "SO": {
+                "key": "SO",
+                "text": "Somalia"
+            },
+            "ZA": {
+                "key": "ZA",
+                "text": "South Africa"
+            },
+            "GS": {
+                "key": "GS",
+                "text": "South Georgia and the South Sandwich Islands"
+            },
+            "SS": {
+                "key": "SS",
+                "text": "South Sudan"
+            },
+            "ES": {
+                "key": "ES",
+                "text": "Spain"
+            },
+            "LK": {
+                "key": "LK",
+                "text": "Sri Lanka"
+            },
+            "SD": {
+                "key": "SD",
+                "text": "Sudan"
+            },
+            "SR": {
+                "key": "SR",
+                "text": "Suriname"
+            },
+            "SJ": {
+                "key": "SJ",
+                "text": "Svalbard and Jan Mayen"
+            },
+            "SE": {
+                "key": "SE",
+                "text": "Sweden"
+            },
+            "CH": {
+                "key": "CH",
+                "text": "Switzerland"
+            },
+            "SY": {
+                "key": "SY",
+                "text": "Syria"
+            },
+            "TW": {
+                "key": "TW",
+                "text": "Taiwan"
+            },
+            "TJ": {
+                "key": "TJ",
+                "text": "Tajikistan"
+            },
+            "TZ": {
+                "key": "TZ",
+                "text": "Tanzania"
+            },
+            "TH": {
+                "key": "TH",
+                "text": "Thailand"
+            },
+            "TL": {
+                "key": "TL",
+                "text": "Timor-Leste"
+            },
+            "TG": {
+                "key": "TG",
+                "text": "Togo"
+            },
+            "TK": {
+                "key": "TK",
+                "text": "Tokelau"
+            },
+            "TO": {
+                "key": "TO",
+                "text": "Tonga"
+            },
+            "TT": {
+                "key": "TT",
+                "text": "Trinidad and Tobago"
+            },
+            "TN": {
+                "key": "TN",
+                "text": "Tunisia"
+            },
+            "TR": {
+                "key": "TR",
+                "text": "Turkey"
+            },
+            "TM": {
+                "key": "TM",
+                "text": "Turkmenistan"
+            },
+            "TC": {
+                "key": "TC",
+                "text": "Turks and Caicos Islands"
+            },
+            "TV": {
+                "key": "TV",
+                "text": "Tuvalu"
+            },
+            "UG": {
+                "key": "UG",
+                "text": "Uganda"
+            },
+            "UA": {
+                "key": "UA",
+                "text": "Ukraine"
+            },
+            "AE": {
+                "key": "AE",
+                "text": "United Arab Emirates"
+            },
+            "GB": {
+                "key": "GB",
+                "text": "United Kingdom"
+            },
+            "UM": {
+                "key": "UM",
+                "text": "United States Minor Outlying Islands"
+            },
+            "US": {
+                "key": "US",
+                "text": "United States"
+            },
+            "UY": {
+                "key": "UY",
+                "text": "Uruguay"
+            },
+            "UZ": {
+                "key": "UZ",
+                "text": "Uzbekistan"
+            },
+            "VU": {
+                "key": "VU",
+                "text": "Vanuatu"
+            },
+            "VE": {
+                "key": "VE",
+                "text": "Venezuela"
+            },
+            "VN": {
+                "key": "VN",
+                "text": "Vietnam"
+            },
+            "VG": {
+                "key": "VG",
+                "text": "Virgin Islands (British)"
+            },
+            "VI": {
+                "key": "VI",
+                "text": "Virgin Islands (U.S.)"
+            },
+            "WF": {
+                "key": "WF",
+                "text": "Wallis and Futuna"
+            },
+            "EH": {
+                "key": "EH",
+                "text": "Western Sahara"
+            },
+            "YE": {
+                "key": "YE",
+                "text": "Yemen"
+            },
+            "ZM": {
+                "key": "ZM",
+                "text": "Zambia"
+            },
+            "ZW": {
+                "key": "ZW",
+                "text": "Zimbabwe"
+            }
+        },
+        "kingdom": {
+            "apparel": { "key": "apparel", "text": "apparel", "color": "rose2" }
+        },
+        "genus": {
+            "athletic": { "key": "athletic", "text": "athletic", "color": "yellow2" },
+            "graphic": { "key": "graphic", "text": "graphic", "color": "yellow2" }
+        },
+        "family": {
+            "baggy": { "key": "baggy", "text": "baggy", "color": "indigo2" },
+            "blouse": { "key": "blouse", "text": "blouse", "color": "indigo2" },
+            "boot-cut": { "key": "boot-cut", "text": "boot-cut", "color": "indigo2" },
+            "button-down": { "key": "button-down", "text": "button-down", "color": "indigo2" },
+            "camisoles": { "key": "camisoles", "text": "camisoles", "color": "indigo2" },
+            "cargo": { "key": "cargo", "text": "cargo", "color": "indigo2" },
+            "casual": { "key": "casual", "text": "casual", "color": "indigo2" },
+            "chino": { "key": "chino", "text": "chino", "color": "indigo2" },
+            "denim": { "key": "denim", "text": "denim", "color": "indigo2" },
+            "flannel": { "key": "flannel", "text": "flannel", "color": "indigo2" },
+            "flare": { "key": "flare", "text": "flare", "color": "indigo2" },
+            "fleece": { "key": "fleece", "text": "fleece", "color": "indigo2" },
+            "hoodie": { "key": "hoodie", "text": "hoodie", "color": "indigo2" },
+            "leggings": { "key": "leggings", "text": "leggings", "color": "indigo2" },
+            "oxford-shirt": { "key": "oxford-shirt", "text": "oxford-shirt", "color": "indigo2" },
+            "pajama-top": { "key": "pajama-top", "text": "pajama-top", "color": "indigo2" },
+            "polo": { "key": "polo", "text": "polo", "color": "indigo2" },
+            "relaxed-fit": { "key": "relaxed-fit", "text": "relaxed-fit", "color": "indigo2" },
+            "short-shorts": { "key": "short-shorts", "text": "short-shorts", "color": "indigo2" },
+            "skinny": { "key": "skinny", "text": "skinny", "color": "indigo2" },
+            "slim-boot-cut": { "key": "slim-boot-cut", "text": "slim-boot-cut", "color": "indigo2" },
+            "slim-fit": { "key": "slim-fit", "text": "slim-fit", "color": "indigo2" },
+            "straight-fit": { "key": "straight-fit", "text": "straight-fit", "color": "indigo2" },
+            "sweat-shirt": { "key": "sweat-shirt", "text": "sweat-shirt", "color": "indigo2" },
+            "tank-top": { "key": "tank-top", "text": "tank-top", "color": "indigo2" },
+            "tee-shirt": { "key": "tee-shirt", "text": "tee-shirt", "color": "indigo2" },
+            "trenchcoat": { "key": "trenchcoat", "text": "trenchcoat", "color": "indigo2" },
+            "tube-top": { "key": "tube-top", "text": "tube-top", "color": "indigo2" }
+        },
+        "order": {
+            "button-front": { "key": "button-front", "text": "button-front", "color": "orange2" },
+            "jeans": { "key": "jeans", "text": "jeans", "color": "orange2" },
+            "shorts": { "key": "shorts", "text": "shorts", "color": "orange2" },
+            "pull-over": { "key": "pull-over", "text": "pull-over", "color": "orange2" },
+            "jackets": { "key": "jackets", "text": "jackets", "color": "orange2" },
+            "pants": { "key": "pants", "text": "pants", "color": "orange2" },
+            "activewear": { "key": "activewear", "text": "activewear", "color": "orange2" },
+            "pajamas": { "key": "pajamas", "text": "pajamas", "color": "orange2" }
+        },
+        "klass": {
+            "tops": { "key": "tops", "text": "tops", "color": "lime2" },
+            "bottoms": { "key": "bottoms", "text": "bottoms", "color": "lime2" },
+            "sleepwear": { "key": "sleepwear", "text": "sleepwear", "color": "lime2" }
+        },
+        "phylum": {
+            "men": { "key": "men", "text": "men", "color": "cyan2" },
+            "women": { "key": "women", "text": "women", "color": "cyan2" }
+        }
+    },
     "barcodes": {
         "current": {
             "sku": 510,
@@ -41,10 +1359,7 @@
     "missingRemoveBG": "/home/bobby/Desktop/missing-remove-bg",
     "UI": {
         "button": {
-            "icon&label": [
-                "icon",
-                "label"
-            ]
+            "icon&label": ["icon", "label"]
         }
     },
     "localForage": {

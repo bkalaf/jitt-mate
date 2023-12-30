@@ -1,4 +1,5 @@
-import { enumColors } from './sleeveTypes';
+import { LocationKinds } from './../../../dist/jitt/jitt/src/dal/enums/locationKinds.d';
+import { enumColors } from './enumColors';
 
 export const LocationKindsInfos = {
     'storage-tote': { color: enumColors.rose2, key: 'storage-tote' },
@@ -16,5 +17,6 @@ export const LocationKindsInfos = {
     'vhs-bag': { color: enumColors.indigo2, key: 'vhs-bag' }
 };
 
-export const LocationKinds = Object.fromEntries(Object.entries(LocationKindsInfos).map(([k, v]) => [k, v.key] as [string, string]));
-export const LocationKindsColors = Object.fromEntries(Object.entries(LocationKindsInfos).map(([k, v]) => [k, v.color] as [string, string]));
+export type LocationKindsKeys = keyof typeof LocationKindsInfos;
+export const LocationKindsEnumMap = Object.fromEntries(Object.entries(LocationKindsInfos).map(([k, v]) => [k, v.key] as [LocationKindsKeys, string])) as Record<LocationKindsKeys, string>;
+export const LocationKindsColorMap = Object.fromEntries(Object.entries(LocationKindsInfos).map(([k, v]) => [k, v.color] as [LocationKindsKeys, string])) as Record<LocationKindsKeys, string>;

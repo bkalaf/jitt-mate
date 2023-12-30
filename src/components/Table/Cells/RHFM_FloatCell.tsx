@@ -8,7 +8,7 @@ export function RHFM_FloatCell<T extends MRT_RowData>(precision: 0 | 1 | 2 | 3 |
         const value = props.cell.getValue() ?? 0;
         console.log(`value`, value);
         return <span>
-            {value ? [(value as number)?.toFixed(precision), uom].filter((x) => x != null).join(' ') : null}
+            {value ? [(value as number)?.toFixed(precision), uom].filter((x) => x != null).join('') : null}
         </span>
     }
     console.log('RHFM_FloatCell')

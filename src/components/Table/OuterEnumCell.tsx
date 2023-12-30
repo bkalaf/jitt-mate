@@ -1,16 +1,20 @@
 import { Chip } from '@mui/material';
+import { konst } from '../../common/functions/konst';
+import { MRT_Row, MRT_RowData } from 'material-react-table';
+import { getProperty } from '../Contexts/getProperty';
 
-// function DBListCell<T extends EntityBase>(props: MRT_ColumnDefFunctionParams<'Cell', Optional<DBList<any>>, T>) {
-//     const value = props.cell.getValue() as Optional<DBList<any>>;
-//     return (value?.length ?? 0).toFixed(0);
-// }
-export function OuterEnumCell(enumMap: EnumMap | ((x: string) => string), colorMap?: EnumMap | ((x: string) => string)) {
+export function useHandleEnumMapOrFunctionCell(row: MRT_Row<MRT_RowData>, enumMap?: EnumMapOrFunction) {
+    const [propertyName, func] = Array.isArray(enumMap) ? enumMap : [undefined, konst(enumMap ?? {}) as (value: string) => EnumMap<string, string>];
+    const value = propertyName ? getProperty(propertyName)(row.original) : undefined;
+    return func(value);
+}
+export function OuterEnumCell(enumMap: EnumMapOrFunction, colorMap?: EnumMapOrFunction) {
     return function EnumCell<T extends EntityBase>(props: MRT_ColumnDefFunctionParams<'Cell', Optional<string>, T>) {
         const value = props.cell.getValue() as Optional<string>;
-        const output = value != null ? handleEnumMap(enumMap)(value) : value;
-        const colors = value != null && colorMap != null ? handleEnumMap(colorMap)(value) : '';
+        const eMap = useHandleEnumMapOrFunctionCell(props.row, enumMap);
+        const cMap = useHandleEnumMapOrFunctionCell(props.row, colorMap)
+        const output = value != null ? eMap[value] : value;
+        const colors = value != null && colorMap != null ? cMap[value] : '';
         return value != null ? <Chip className={colors} label={output}></Chip> : null;
     };
 }
-
-export const handleEnumMap = (enumMap: EnumMap | ((x: string) => string)) => (value: string) => typeof enumMap === 'function' ? enumMap(value) : enumMap[value];

@@ -6,6 +6,6 @@ export function handleLabelProperty<TLookup>(labelProperty: Path<TLookup> | ((x:
         if (labelProperty != null && typeof labelProperty === 'function') {
             return labelProperty(obj);
         }
-        return obj[labelProperty];
+        return obj[labelProperty as any as keyof TLookup] as any;
     };
 }

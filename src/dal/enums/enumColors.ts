@@ -1,0 +1,87 @@
+// export type SleeveTypes = {
+//     batwing: string;
+//     bell: string;
+//     bishop: string;
+//     bracelet: string;
+//     butterfly: string;
+//     button: string;
+//     cape: string;
+//     circular: string;
+//     cowl: string;
+//     drop: string;
+//     french: string;
+//     juliet: string;
+//     kimono: string;
+//     lantern: string;
+//     layer: string;
+//     less: string;
+//     long: string;
+//     marie: string;
+//     mutton: string;
+//     off: string;
+//     peasant: string;
+//     petal: string;
+//     poet: string;
+//     puffed: string;
+//     raglan: string;
+//     rollup: string;
+//     shirt: string;
+//     short: string;
+//     quarter: string;
+// };
+export const enumColors = {
+    amber1: 'bg-amber-300 text-black',
+    amber2: 'bg-amber-600 text-white',
+    amber3: 'bg-amber-900 text-white',
+    blue1: 'bg-blue-300 text-black',
+    blue2: 'bg-blue-600 text-white',
+    blue3: 'bg-blue-900 text-white',
+    cyan1: 'bg-cyan-300 text-black',
+    cyan2: 'bg-cyan-600 text-white',
+    cyan3: 'bg-cyan-900 text-white',
+    fuchsia1: 'bg-fuchsia-300 text-black',
+    fuchsia2: 'bg-fuchsia-600 text-white',
+    fuchsia3: 'bg-fuchsia-900 text-white',
+    green1: 'bg-green-300 text-black',
+    green2: 'bg-green-600 text-white',
+    green3: 'bg-green-900 text-white',
+    indigo1: 'bg-indigo-300 text-black',
+    indigo2: 'bg-indigo-600 text-white',
+    indigo3: 'bg-indigo-900 text-white',
+    lime1: 'bg-lime-300 text-black',
+    lime2: 'bg-lime-600 text-white',
+    lime3: 'bg-lime-900 text-white',
+    neutral1: 'bg-neutral-300 text-black',
+    neutral2: 'bg-neutral-600 text-white',
+    neutral3: 'bg-neutral-900 text-white',
+    orange1: 'bg-orange-300 text-black',
+    orange2: 'bg-orange-600 text-white',
+    orange3: 'bg-orange-900 text-white',
+    pink1: 'bg-pink-300 text-black',
+    pink2: 'bg-pink-600 text-white',
+    pink3: 'bg-pink-900 text-white',
+    purple1: 'bg-purple-300 text-black',
+    purple2: 'bg-purple-600 text-white',
+    purple3: 'bg-purple-900 text-white',
+    red1: 'bg-red-300 text-black',
+    red2: 'bg-red-600 text-white',
+    red3: 'bg-red-900 text-white',
+    rose1: 'bg-rose-300 text-black',
+    rose2: 'bg-rose-600 text-white',
+    rose3: 'bg-rose-900 text-white',
+    sky1: 'bg-sky-300 text-black',
+    sky2: 'bg-sky-600 text-white',
+    sky3: 'bg-sky-900 text-white',
+    slate1: 'bg-slate-300 text-black',
+    slate2: 'bg-slate-600 text-white',
+    slate3: 'bg-slate-900 text-white',
+    teal1: 'bg-teal-300 text-black',
+    teal2: 'bg-teal-600 text-white',
+    teal3: 'bg-teal-900 text-white',
+    yellow1: 'bg-yellow-300 text-black',
+    yellow2: 'bg-yellow-600 text-white',
+    yellow3: 'bg-yellow-900 text-white',
+    zinc1: 'bg-zinc-300 text-black',
+    zinc2: 'bg-zinc-600 text-white',
+    zinc3: 'bg-zinc-900 text-white'
+};

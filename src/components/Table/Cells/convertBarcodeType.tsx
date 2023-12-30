@@ -1,4 +1,4 @@
-import { BarcodeTypes } from '../../../dal/enums/barcodeTypes';
+import { BarcodeTypesInfos } from '../../../dal/enums/barcodeTypes';
 
 
 export function convertBarcodeType(bc?: keyof BarcodeTypes): keyof BarcodeTypes {

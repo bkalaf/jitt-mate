@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { checkTransaction } from '../util/checkTransaction';
-import { $$queryClient } from '../components/App';
 import * as Realm from 'realm';
 import { MRT_Row, MRT_RowData } from 'material-react-table';
 import { useFormContext } from 'react-hook-form-mui';
 import { getProperty } from '../components/Contexts/getProperty';
 import { ignore } from '../common/functions/ignore';
 import { $convertToRealm } from '../components/Table/creators/$convertToRealm';
+import { $$queryClient } from '../components/$$queryClient';
 
 export function updateRecordProperty<T extends MRT_RowData>(db: Realm, collection: string,  context: ReturnType<typeof useFormContext>) {
     return async function ({ propertyNames, row }: { propertyNames: string[]; row: MRT_Row<T> }) {

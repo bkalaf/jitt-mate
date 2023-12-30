@@ -1,65 +1,15 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// ///< reference path="./../../global.d.ts" />
 import Realm, { BSON } from 'realm';
 import { $db } from '../../dal/db';
 import { IClassifier, IMercariSubSubCategory, IHashTag, IProductTaxonomy } from '../../dal/types';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { surroundText } from '../../common/text/surroundText';
-import { $$queryClient } from '../../components/App';
-import { mergeProductTaxonomy } from '../../util/mergeProductTaxonomy';
 import { HashTag } from './HashTag';
+import { $$queryClient } from '../../components/$$queryClient';
+import { effective } from './effective';
+import { distinctBy } from '../../common/array/distinctBy';
+import { fromOID } from '../../dal/fromOID';
 
 export class Classifier extends Realm.Object<IClassifier> implements IClassifier {
-    constructor(realm: Realm, args: any) {
-        super(realm, args);
-        setImmediate(() =>
-            Promise.resolve(this.update()).then(() => {
-                $$queryClient
-                    .invalidateQueries({
-                        queryKey: [Classifier.schema.name]
-                    })
-                    .then(() => {
-                        $$queryClient.refetchQueries({
-                            queryKey: [Classifier.schema.name]
-                        });
-                    });
-            })
-        );
-    }
-
-    get effectiveShipWeightPercent(): Optional<number> {
-        return this.mercariSubSubCategory?.effectiveShipWeightPercent ?? this.shipWeightPercent;
-    }
-
-    static generateTitle(brandText: string, attributeText: string, descriptiveText?: string) {
-        return '';
-    }
-    static generateName(classifier: IClassifier) {
-        const { family, genus, kingdom, phylum, klass, order, species } = classifier.taxon ?? {};
-        const extra = classifier.shortname ? surroundText(' (')(')')(classifier.shortname) : '';
-        return [kingdom, phylum, klass, order, family, genus, species, classifier.athletic]
-            .filter((x) => x != null && x.length > 0)
-            .join('-')
-            .concat(extra);
-    }
-    get categoryID(): Optional<string> {
-        return this.mercariSubSubCategory?.categoryID;
-    }
-    get subCategoryID(): Optional<string> {
-        return this.mercariSubSubCategory?.subCategoryID;
-    }
-    get subSubCategoryID(): Optional<string> {
-        return this.mercariSubSubCategory?.id;
-    }
-    get allHashTags(): Entity<IHashTag>[] {
-        return [...(this.mercariSubSubCategory?.allHashTags ?? []), ...Array.from(this.hashTags.values() ?? [])];
-    }
-
-    get athletic(): Optional<string> {
-        return this.isAthletic ? 'athletic' : undefined;
-    }
-
     @wrapInTransactionDecorator()
     update() {
         if (this.taxon == null) this.taxon = { lock: false } as any;
@@ -93,52 +43,106 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
         if (this.hashTags) {
             HashTag.pruneList(this.hashTags);
         }
-        if (this.isAthletic == null) this.isAthletic = false;
-        const merged = mergeProductTaxonomy(this.taxon, this.mercariSubSubCategory?.taxon);
-        if (merged) {
-            this.taxon = merged as any;
-        }
         const newName = Classifier.generateName(this);
         if (newName != null && newName.length > 0) {
             this.name = newName;
         }
-
         return this;
     }
-    _id: BSON.ObjectId = new BSON.ObjectId();
-    taxon: Optional<Entity<IProductTaxonomy>>;
-    shipWeightPercent: Optional<number>;
-    name = '';
-    shortname: Optional<string>;
-    isAthletic = false;
-    mercariSubSubCategory: OptionalEntity<IMercariSubSubCategory>;
-    hashTags!: DBSet<Entity<IHashTag>>;
-    notes: Optional<string>;
-    get isMediaMail(): boolean {
-        return this.taxon?.kingdom === 'media';
+    constructor(realm: Realm, args: any) {
+        super(realm, args);
+        setImmediate(() =>
+            Promise.resolve(this.update()).then(() => {
+                $$queryClient
+                    .invalidateQueries({
+                        queryKey: [Classifier.schema.name]
+                    })
+                    .then(() => {
+                        $$queryClient.refetchQueries({
+                            queryKey: [Classifier.schema.name]
+                        });
+                    });
+            })
+        );
     }
-
+    static generateName(classifier: IClassifier) {
+        const { family, genus, kingdom, phylum, klass, order, species } = classifier.taxon ?? {};
+        const extra = classifier.shortname ? surroundText(' (')(')')(classifier.shortname) : '';
+        return [kingdom, phylum, klass, order, family, genus, species, classifier.isAthletic ? 'athletic' : undefined]
+            .filter((x) => x != null && x.length > 0)
+            .join('-')
+            .concat(extra);
+    }
+    get effectiveFamily() {
+        return effective<IProductTaxonomy, string>('family', this.taxon, this.mercariSubSubCategory?.taxon);
+    }
+    get effectiveKingdom() {
+        return effective<IProductTaxonomy, string>('kingdom', this.taxon, this.mercariSubSubCategory?.taxon);
+    }
+    get effectivePhylum() {
+        return effective<IProductTaxonomy, string>('phylum', this.taxon, this.mercariSubSubCategory?.taxon);
+    }
+    get effectiveKlass() {
+        return effective<IProductTaxonomy, string>('klass', this.taxon, this.mercariSubSubCategory?.taxon);
+    }
+    get effectiveOrder() {
+        return effective<IProductTaxonomy, string>('order', this.taxon, this.mercariSubSubCategory?.taxon);
+    }
+    get effectiveSpecies() {
+        return effective<IProductTaxonomy, string>('species', this.taxon, this.mercariSubSubCategory?.taxon);
+    }
+    get effectiveGenus() {
+        return effective<IProductTaxonomy, string>('genus', this.taxon, this.mercariSubSubCategory?.taxon);
+    }
+    get effectiveShipWeightPercent() {
+        return this.shipWeightPercent ?? this.mercariSubSubCategory?.effectiveShipWeightPercent;
+    }
+    get isAthletic() {
+        return this.checkTaxa('athletic');
+    }
+    get isGraphic() {
+        return this.checkTaxa('graphic');
+    }
+    get isMediaMail() {
+        return this.checkTaxa('media') && ['books', 'videos', 'audio'].some(this.checkTaxa);
+    }
+    get categoryID(): Optional<string> {
+        return this.mercariSubSubCategory?.categoryID;
+    }
+    get subCategoryID(): Optional<string> {
+        return this.mercariSubSubCategory?.subCategoryID;
+    }
+    get subSubCategoryID(): Optional<string> {
+        return this.mercariSubSubCategory?.id;
+    }
+    get effectiveHashTags(): Entity<IHashTag>[] {
+        return distinctBy<Entity<IHashTag>>((x) => (y) => fromOID(x._id) === fromOID(y._id))([...(this.mercariSubSubCategory?.effectiveHashTags ?? []), ...this.hashTags.values()]);
+    }
+    checkTaxa(item: string) {
+        return [this.effectiveKingdom, this.effectivePhylum, this.effectiveKlass, this.effectiveOrder, this.effectiveFamily, this.effectiveGenus, this.effectiveSpecies, this?.shortname].includes(
+            item
+        );
+    }
+    _id: BSON.ObjectId = new BSON.ObjectId();
+    hashTags!: DBSet<Entity<IHashTag>>;
+    mercariSubSubCategory: OptionalEntity<IMercariSubSubCategory>;
+    name = '';
+    notes: Optional<string>;
+    shipWeightPercent: Optional<number>;
+    shortname: Optional<string>;
+    taxon: Optional<Entity<IProductTaxonomy>>;
     static schema: Realm.ObjectSchema = {
         name: $db.classifier(),
         primaryKey: '_id',
         properties: {
             _id: $db.objectId,
-            name: $db.string.empty,
-            mercariSubSubCategory: $db.mercariSubSubCategory.opt,
-            apparelType: $db.string.opt,
-            gender: $db.string.opt,
-            legType: $db.string.opt,
-            apparelGroup: $db.string.opt,
-            itemGroup: $db.string.opt,
             hashTags: $db.hashTag.set,
-            topAdornment: $db.string.opt,
-            isAthletic: $db.bool.false,
-            sleeveType: $db.string.opt,
-            sizingType: $db.string.opt,
-            taxon: $db.productTaxonomy.opt,
-            shortname: $db.string.opt,
+            mercariSubSubCategory: $db.mercariSubSubCategory.opt,
+            name: $db.string.empty,
+            notes: $db.string.opt,
             shipWeightPercent: { type: $db.float() as any, optional: true },
-            notes: $db.string.opt
+            shortname: $db.string.opt,
+            taxon: $db.productTaxonomy.opt
         }
     };
 }

@@ -1,7 +1,7 @@
 import { ListItem, ListItemText } from '@mui/material';
 import { JITTIconButton } from '../JITTIconButton';
 import { InnerBarcode } from '../Cells/InnerBarcode';
-import { BarcodeTypes } from '../../../dal/enums/barcodeTypes';
+import { BarcodeTypesInfos } from '../../../dal/enums/barcodeTypes';
 import { faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { IBarcode } from '../../../dal/types';
 

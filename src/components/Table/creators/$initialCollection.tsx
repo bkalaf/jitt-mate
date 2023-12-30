@@ -47,7 +47,7 @@ const productTaxonomyInit = async (): Promise<Serialized<IProductTaxonomy>> => (
     videoType: null,
     itemGroup: null,
     legType: null,
-    mediaType: null,
+    mediaFormatType: null,
     necklineType: null,
     size: null,
     sleeveType: null,
@@ -169,7 +169,7 @@ export const $initialCollection: Record<string, () => Promise<unknown>> = {
     product: async (): Promise<Serialized<IProduct>> => ({
         _id: new BSON.ObjectId(),
         folder: new BSON.UUID(),
-        apparelDetails: await apparelDetailsInit(),
+        apparelDetails: await apparelDetailsInit() as any,
         brand: null,
         circa: null,
         classifier: null,

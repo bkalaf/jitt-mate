@@ -10,25 +10,26 @@ import { is } from '../../common/is';
 import { MRT_Row, MRT_TableInstance } from 'material-react-table';
 import { $families, $genuses, $kingdoms, $klasses, $orders, $phlyums } from '../../enums/kpcofgs';
 import { checkTransaction } from '../../util/checkTransaction';
-import { $$queryClient } from '../../components/App';
-import { ApparelTypes } from '../../dal/enums/apparelType';
-import { BacklineTypes } from '../../dal/enums/backlineTypes';
-import { BookTypes } from '../../dal/enums/bookTypes';
-import { MediaTypes } from '../../dal/enums/mediaTypes';
-import { NecklineTypes } from '../../dal/enums/necklineTypes';
-import { TopAdornments } from '../../dal/enums/topAdornments';
-import { VideoTypes } from '../../dal/enums/videoTypes';
-import { ChestFitAbbrevs } from '../../dal/enums/chestFitTypes';
-import { GameRatings } from '../../dal/enums/gameRating';
-import { MovieRatings } from '../../dal/enums/movieRating';
-import { CollarTypes } from '../../dal/enums/collarTypes';
-import { CuffTypes } from '../../dal/enums/cuffTypes';
-import { FrontTypes } from '../../dal/enums/frontTypes';
-import { Genders } from '../../dal/enums/genders';
-import { ItemGroups } from '../../dal/enums/itemGroups';
-import { LegTypes } from '../../dal/enums/legTypes';
-import { SleeveTypes } from '../../dal/enums/sleeveTypes';
-import { WaistTypes } from '../../dal/enums/waistTypes';
+import { BacklineTypesInfos, BacklineTypesKeys } from '../../dal/enums/backlineTypes';
+import { BookTypesInfos, BookTypesKeys } from '../../dal/enums/bookTypes';
+import { NecklineTypesInfos, NecklineTypesKeys } from '../../dal/enums/necklineTypes';
+import { MovieRatingsInfos, MovieRatingsKeys } from '../../dal/enums/movieRating';
+import { CollarTypesInfos, CollarTypesKeys } from '../../dal/enums/collarTypes';
+import { CuffTypesInfos, CuffTypesKeys } from '../../dal/enums/cuffTypes';
+import { FrontTypesInfos, FrontTypesKeys } from '../../dal/enums/frontTypes';
+import { ItemGroupsInfos, ItemGroupsKeys } from '../../dal/enums/itemGroups';
+import { LegTypesInfos, LegTypesKeys } from '../../dal/enums/legTypes';
+import { SleeveTypesInfos, SleeveTypesKeys } from '../../dal/enums/sleeveTypes';
+import { WaistTypesInfos, WaistTypesKeys } from '../../dal/enums/waistTypes';
+import { $$queryClient } from '../../components/$$queryClient';
+import { GendersInfos, GendersKeys } from '../../dal/enums/genders';
+import { GameRatingsKeys } from '../../dal/enums/gameRating';
+import { ApparelTypesKeys } from '../../dal/enums/apparelType';
+import { ChestFitTypesKeys } from '../../dal/enums/chestFitTypes';
+import { TopAdornmentsKeys } from '../../dal/enums/topAdornments';
+import { MediaFormatTypesKeys } from '../../dal/enums/mediaFormatTypes';
+import { VideoTypesKeys } from '../../dal/enums/videoTypes';
+import { SizeGroupsKeys } from '../../enums/sizes';
 
 export class ProductTaxonomy extends Realm.Object<IProductTaxonomy> implements IProductTaxonomy {
     constructor(realm: Realm, args: any) {
@@ -50,25 +51,26 @@ export class ProductTaxonomy extends Realm.Object<IProductTaxonomy> implements I
             })
         );
     }
-    gameRating: Optional<keyof GameRatings>;
-    movieRating: Optional<keyof MovieRatings>;
-    apparelType: Optional<keyof ApparelTypes>;
-    backlineType: Optional<keyof BacklineTypes>;
-    chestFitType: Optional<keyof typeof ChestFitAbbrevs>;
-    collarType: Optional<keyof typeof CollarTypes>;
-    cuffType: Optional<keyof typeof CuffTypes>;
-    frontType: Optional<keyof typeof FrontTypes>;
-    gender: Optional<keyof typeof Genders>;
-    itemGroup: Optional<keyof typeof ItemGroups>;
-    legType: Optional<keyof typeof LegTypes>;
-    necklineType: Optional<keyof NecklineTypes>;
-    size: Optional<string>;
-    sleeveType: Optional<keyof typeof SleeveTypes>;
-    topAdornment: Optional<keyof TopAdornments>;
-    waistType: Optional<keyof typeof WaistTypes>;
-    bookType: Optional<keyof BookTypes>;
-    mediaType: Optional<keyof MediaTypes>;
-    videoType: Optional<keyof VideoTypes>;
+    // gameRating: Optional<GameRatingsKeys>;
+    // movieRating: Optional<MovieRatingsKeys>;
+    // apparelType: Optional<ApparelTypesKeys>;
+    // backlineType: Optional<BacklineTypesKeys>;
+    // chestFitType: Optional<ChestFitTypesKeys>;
+    // collarType: Optional<CollarTypesKeys>;
+    // cuffType: Optional<CuffTypesKeys>;
+    // frontType: Optional<FrontTypesKeys>;
+    // gender: Optional<GendersKeys>;
+    // itemGroup: Optional<ItemGroupsKeys>;
+    // legType: Optional<LegTypesKeys>;
+    // necklineType: Optional<NecklineTypesKeys>;
+    // size: Optional<string>;
+    // sizeGroup: Optional<SizeGroupsKeys>;
+    // sleeveType: Optional<SleeveTypesKeys>;
+    // topAdornment: Optional<TopAdornmentsKeys>;
+    // waistType: Optional<WaistTypesKeys>;
+    // bookType: Optional<BookTypesKeys>;
+    // mediaFormatType: Optional<MediaFormatTypesKeys>;
+    // videoType: Optional<VideoTypesKeys>;
 
     // static lookupEnumMap(...values: (string | undefined)[]) {
     //     const [$kingdom, $phylum, $klass, $order, $family, $genus, $species] = [...values, ...[undefined, undefined, undefined, undefined, undefined, undefined]];
@@ -130,22 +132,23 @@ export class ProductTaxonomy extends Realm.Object<IProductTaxonomy> implements I
             species: $db.string.opt,
             name: $db.string.opt,
             lock: { type: 'bool', optional: false, default: false },
-            apparelType: $db.string.opt,
-            backlineType: $db.string.opt,
-            collarType: $db.string.opt,
-            cuffType: $db.string.opt,
-            frontType: $db.string.opt,
-            gender: $db.string.opt,
-            itemGroup: $db.string.opt,
-            legType: $db.string.opt,
-            necklineType: $db.string.opt,
-            size: $db.string.opt,
-            sleeveType: $db.string.opt,
-            topAdornment: $db.string.opt,
-            waistType: $db.string.opt,
-            bookType: $db.string.opt,
-            mediaType: $db.string.opt,
-            videoType: $db.string.opt
+            // apparelType: $db.string.opt,
+            // backlineType: $db.string.opt,
+            // collarType: $db.string.opt,
+            // cuffType: $db.string.opt,
+            // frontType: $db.string.opt,
+            // gender: $db.string.opt,
+            // itemGroup: $db.string.opt,
+            // legType: $db.string.opt,
+            // necklineType: $db.string.opt,
+            // size: $db.string.opt,
+            // sizeGroup: $db.string.opt,
+            // sleeveType: $db.string.opt,
+            // topAdornment: $db.string.opt,
+            // waistType: $db.string.opt,
+            // bookType: $db.string.opt,
+            // mediaType: $db.string.opt,
+            // videoType: $db.string.opt
         }
     };
 }

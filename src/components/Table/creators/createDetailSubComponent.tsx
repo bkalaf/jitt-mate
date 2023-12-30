@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { MRT_Row, MRT_TableInstance } from 'material-react-table';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { $$queryClient } from '../../App';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
@@ -11,6 +10,7 @@ import Box from '@mui/material/Box';
 import React, { useCallback, useState } from 'react';
 import { toProperFromCamel } from '../../../common/text/toProperCase';
 import { CollectionTableMRT } from '../CollectionTableMRT';
+import { $$queryClient } from '../../$$queryClient';
 
 export function createDetailSubComponent(infos: FieldInfo[]) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

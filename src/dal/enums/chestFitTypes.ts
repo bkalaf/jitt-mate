@@ -1,24 +1,18 @@
-import { Path } from 'react-hook-form-mui';
-import { mapObject } from './mapObject';
-import { getProperty } from '../../components/Contexts/getProperty';
-
-export const ChestFitLookup = {
+export const ChestFitTypesInfos = {
     R: {
-        abbrev: 'R',
-        text: 'regular'
+        key: 'R',
+        label: '(R)egular'
     },
     L: {
-        abbrev: 'L',
-        text: 'long'
+        key: 'L',
+        label: '(L)ong'
     },
     S: {
-        abbrev: 'S',
-        text: 'short'
+        key: 'S',
+        label: '(S)hort'
     }
-}
-export function createFromLookup<T extends AnyObject, TValue, TKey extends string>(obj: Record<TKey, T>, ...keys: Path<T>[]) {
-    return keys.map(k => mapObject(obj)((o: T) => getProperty(k)(o) as TValue)) as Record<TKey, TValue>[]
-}
+};
 
-export type ChestFitTypesKey = keyof typeof ChestFitLookup;
-export const [ChestFitAbbrevs, ChestFitTypes] = createFromLookup<{ abbrev: string, text: string },string, ChestFitTypesKey>(ChestFitLookup, 'abbrev', 'text');
+export type ChestFitTypesKeys = keyof typeof ChestFitTypesInfos;
+export const ChestFitTypesKeyEnumMap = Object.fromEntries(Object.entries(ChestFitTypesInfos).map(([k, v]) => [k, v.key] as [ChestFitTypesKeys, string])) as Record<ChestFitTypesKeys, string>;
+export const ChestFitTypesKeyLabelMap = Object.fromEntries(Object.entries(ChestFitTypesInfos).map(([k, v]) => [k, v.label] as [ChestFitTypesKeys, string])) as Record<ChestFitTypesKeys, string>;

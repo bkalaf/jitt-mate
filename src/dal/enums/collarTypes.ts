@@ -1,4 +1,4 @@
-import { enumColors } from './sleeveTypes';
+import { enumColors } from './enumColors';
 
 export const CollarTypesInfos = {
     'button-down': { key: 'button-down-collar', color: enumColors.cyan2 },
@@ -9,6 +9,6 @@ export const CollarTypesInfos = {
     'wing-tip': { key: 'wing-tip-collar', color: enumColors.slate2 }
 };
 
-
-export const CollarTypes = Object.fromEntries(Object.entries(CollarTypesInfos).map(([k, v]) => [k, v.key] as [string, string]));
-export const CollarTypesColors = Object.fromEntries(Object.entries(CollarTypesInfos).map(([k, v]) => [k, v.color] as [string, string]));
+export type CollarTypesKeys = keyof typeof CollarTypesInfos;
+export const CollarTypesEnumMap = Object.fromEntries(Object.entries(CollarTypesInfos).map(([k, v]) => [k, v.key] as [CollarTypesKeys, string])) as Record<CollarTypesKeys, string>;
+export const CollarTypesColorMap = Object.fromEntries(Object.entries(CollarTypesInfos).map(([k, v]) => [k, v.color] as [CollarTypesKeys, string])) as Record<CollarTypesKeys, string>;

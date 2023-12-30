@@ -1,6 +1,4 @@
 import { IAddress } from '../../dal/types';
-import { Countries } from '../../dal/enums/countries';
-import { Provinces } from '../../dal/enums/provinces';
 import { $metas } from '../../components/Table/metas';
 import { toEnableDependency } from '../../components/Table/toDependency';
 
@@ -15,8 +13,8 @@ export const addressColumns = {
                 toEnableDependency([...pre, 'line1'].join('.'), (x: string) => x != null && x.length > 0)
             ),
             $metas.string<IAddress>('city', { maxLength: 50 }, false),
-            $metas.enum<IAddress>('province', { enumMap: Provinces, header: 'Province/State' }, false),
-            $metas.enum<IAddress>('country', { enumMap: Countries }, false),
+            $metas.singleSelect('province', { enumType: 'province' }, false),
+            $metas.singleSelect('country', { enumType: 'country' }, false),
             $metas.string<IAddress>('postalCode', { pattern: /^[0-9]{5}(-?[0-9]{4})?$/, patternMsg: 'Input must be in the form 01234 or 01234-1232.' })
         ]
         ).map((x) => (x.columnDefType === 'group' ? x : x.accessorKey != null ? { ...x,

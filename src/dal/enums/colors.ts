@@ -1,109 +1,108 @@
 // ///<reference path="./../../global.d.ts" />
 export interface IColorInfo {
-    name: string;
-    aliases?: ColorInfo[];
-    selector?: string;
-    classes?: string;
+    key: string;
+    aliases?: string[];
+    selector: string;
+    color: string;
 }
-export type ColorInfo = IColorInfo | string;
-
 export const ColorsInfos = {
     black: {
-        name: 'black',
+        key: 'black',
         selector: 'itemColorId-1',
-        classes: 'bg-black text-white border-white',
+        color: 'bg-black text-white border-white',
         aliases: ['charcoal']
     },
     grey: {
-        name: 'grey',
-        classes: 'bg-neutral-500 text-white bg-black',
+        key: 'grey',
+        color: 'bg-neutral-500 text-white bg-black',
         selector: 'itemColorId-2',
         aliases: ['gray']
     },
     white: {
-        name: 'white',
-        classes: 'bg-white text-black border-black',
+        key: 'white',
+        color: 'bg-white text-black border-black',
         selector: 'itemColorId-3',
         aliases: ['cream', 'eggshell']
     },
     beige: {
-        name: 'beige',
+        key: 'beige',
         selector: 'itemColorId-4',
-        classes: 'bg-orange-300 text-white border-black',
+        color: 'bg-orange-300 text-white border-black',
         aliases: ['tan']
     },
     red: {
-        name: 'red',
+        key: 'red',
         selector: 'itemColorId-5',
-        classes: 'bg-red-500 text-white border-black',
+        color: 'bg-red-500 text-white border-black',
         aliases: ['burgundy', 'rose', 'crimson', 'scarlet']
     },
     pink: {
-        name: 'pink',
+        key: 'pink',
         selector: 'itemColorId-6',
-        classes: 'bg-pink-500 text-white border-black',
+        color: 'bg-pink-500 text-white border-black',
         aliases: ['magenta', 'fuchsia']
     },
     purple: {
-        name: 'purple',
+        key: 'purple',
         selector: 'itemColorId-7',
-        classes: 'bg-purple-500 text-white border-black',
+        color: 'bg-purple-500 text-white border-black',
         aliases: ['violet']
     },
     blue: {
-        name: 'blue',
+        key: 'blue',
         selector: 'itemColorId-8',
-        classes: 'bg-sky-500 text-white border-black',
+        color: 'bg-sky-500 text-white border-black',
         aliases: ['cyan', 'aqua', 'teal', 'navy', 'denim', 'light-blue']
     },
     green: {
-        name: 'green',
+        key: 'green',
         selector: 'itemColorId-9',
-        classes: 'bg-emerald-500 text-white border-black',
+        color: 'bg-emerald-500 text-white border-black',
         aliases: ['lime', 'emerald', 'dark-green', 'forest-green', 'sea-green']
     },
     yellow: {
-        name: 'yellow',
+        key: 'yellow',
         selector: 'itemColorId-10',
-        classes: 'bg-yellow-500 text-black border-black',
+        color: 'bg-yellow-500 text-black border-black',
         aliases: []
     },
     orange: {
-        name: 'orange',
+        key: 'orange',
         selector: 'itemColorId-11',
-        classes: 'bg-orange-500 text-white border-black',
+        color: 'bg-orange-500 text-white border-black',
         aliases: ['amber', 'copper']
     },
     brown: {
-        name: 'brown',
-        classes: 'bg-orange-800 text-white border-black',
+        key: 'brown',
+        color: 'bg-orange-800 text-white border-black',
         selector: 'itemColorId-12'
     },
     gold: {
-        name: 'gold',
+        key: 'gold',
         selector: 'itemColorId-13',
-        classes: 'bg-yellow-700 text-white border-black',
+        color: 'bg-yellow-700 text-white border-black',
         aliases: ['goldenrod']
     },
     silver: {
-        name: 'silver',
-        classes: 'bg-neutral-800 text-white border-black',
+        key: 'silver',
+        color: 'bg-neutral-800 text-white border-black',
         selector: 'itemColorId-14'
     }
 };
 
-export type MainColors = keyof typeof ColorsInfos;
+export type CoreColorsKeys = keyof typeof ColorsInfos;
 
-export const ColorsSelectors = Object.fromEntries(Object.entries(ColorsInfos).map(([k, v]) => [k, v.selector] as [MainColors, string]));
-export const aliasesToMainColors = Object.fromEntries(
+export const MainColorsSelectorsMap = Object.fromEntries(Object.entries(ColorsInfos).map(([k, v]) => [k, v.selector] as [CoreColorsKeys, string]));
+export const AliasColorsMainColorMap = Object.fromEntries(
     Object.entries(ColorsInfos)
         .map(([k, v]) => [k, ...('aliases' in v ? v.aliases : [])].map((c) => [c, k] as [string, string]))
         .reduce((pv, cv) => [...pv, ...cv], [])
 );
-export const aliasesToSelectors = (x: string) => ColorsSelectors[aliasesToMainColors[x]]
-export const ColorsColors = Object.fromEntries(Object.entries(ColorsInfos).map(([k, v]) => [k, v.classes] as [MainColors, string]));
-export const aliasesToColorClasses = (x: string) => ColorsColors[aliasesToMainColors[x]];
-export const aliasesToColorMap = Object.fromEntries(Object.keys(aliasesToMainColors).map((k) => [k, aliasesToColorClasses(k)] as [string, string]));
+export const aliasesToSelectors = (x: string) => MainColorsSelectorsMap[AliasColorsMainColorMap[x]]
+export const MainColorsColorsMap = Object.fromEntries(Object.entries(ColorsInfos).map(([k, v]) => [k, v.color] as [CoreColorsKeys, string]));
+export const aliasesToColorClasses = (x: string) => MainColorsColorsMap[AliasColorsMainColorMap[x]];
+export const AliasColorsColorMap = Object.fromEntries(Object.keys(AliasColorsMainColorMap).map((k) => [k, aliasesToColorClasses(k)] as [string, string]));
+
 // console.log(JSON.stringify($colorNameMap, null, '\t'));
 // console.log(JSON.stringify($colorSelectorMap, null, '\t'));
 

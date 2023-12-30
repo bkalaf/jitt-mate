@@ -1,7 +1,7 @@
 import { endsWith } from './endsWith';
 import { flip } from '../flip';
 import { not } from '../not';
-import { ifAny } from '../../dal/enums/ifAny';
+import { ifAny } from '../array/ifAny';
 
 export function isIn<T>(...arr: T[]) {
     return function (item: T) {

@@ -38,16 +38,20 @@ export function useTableConstants<T extends MRT_RowData>() {
                     ({
                         // className: 'odd:bg-zinc-300 aria-selected:bg-rose-500 ring ring-transparent hover:ring-rose-500',
                         classes: {
-                            root: 'border border-black divide-x divide-black data-row-even:bg-sky-400 data-row-even:text-black data-row-odd:bg-neutral-300 data-row-odd:text-black hover:ring-rose-500',
-                            selected: 'bg-rose-400'
+                            root: 'border border-black divide-x divide-black data-row-even:bg-sky-200 data-row-even:text-black data-row-odd:bg-neutral-200 data-row-odd:text-black  hover:bg-yellow-400 data-row-odd:hover:bg-yellow-400 aria-selected:bg-rose-400'
                         },
                         'aria-selected': Object.keys(params.table.getSelectedRowModel().rowsById).includes(params.row.id),
                         'data-row': params.row.index % 2 === 0 ? 'even' : 'odd'
                         // Object.entries(params.table.getState().rowSelection).filter(([k, v]) => v).map(([k]) => k).includes(params.row.id)
                     } as TableRowProps),
                 muiTableBodyCellProps: {
-                    className: 'whitespace-pre'
-                },
+                    className: 'whitespace-pre divide divide-black border border-black',
+                    sx: {
+                        alignContent: 'center',
+                        justifyContent: 'start',
+                        backgroundColor: 'inherit'
+                    }
+                } as MRT_TableOptions<any>['muiTableBodyCellProps'],
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 muiTableHeadCellProps: (params: Parameters<Extract<Exclude<MRT_TableOptions<any>['muiTableHeadCellProps'], undefined>, (...args: any[]) => any>>[0]) => ({
                     'aria-sort': params.column.getIsSorted() ? params.column.getIsSorted() : undefined,

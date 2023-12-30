@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { MRT_Row, MRT_RowData, MaterialReactTable, useMaterialReactTable } from 'material-react-table';
-import { IBarcode, IRealmEntity } from '../../dal/types';
+import { IBarcode, IRealmEntity, ISku } from '../../dal/types';
 import { useMUIReactTable } from '../../hooks/useMUIReactTable';
 import { Row } from '@tanstack/react-table';
 import { Outlet, useParams } from 'react-router';
+import { useEffect } from 'react';
+import { JITTCollectionContextProvider } from '../Contexts/JITTCollectionContext';
 
 export function CollectionTableMRT<T extends MRT_RowData & EntityBase & IRealmEntity<T>>(props: {
     type?: 'object' | 'list' | 'dictionary' | 'set';
@@ -28,14 +30,13 @@ export function CollectionTableMRT<T extends MRT_RowData & EntityBase & IRealmEn
     } as any);
     console.log(`CollectionTableMRT.options`, table.options);
     const params = useParams();
-    return Object.getOwnPropertyNames(params).includes('oid') ? (
-        <Outlet />
-    ) : (
-        <>
-            <MaterialReactTable table={table} />
-            {/* <div className='flex items-center justify-end w-full'>
-                <span className='inline-flex'>{new Date(dataUpdatedAt).toLocaleString()}</span>
-            </div> */}
-        </>
-    );
+    useEffect(() => {
+        if (params.collection === 'sku') {
+            (options.data as ISku[]).map((item) => {
+                console.log(`title`, item.product?.apparelDetails.generateTitle());
+                console.log(`narrative`, item.product?.apparelDetails.generateNarrative());
+            });
+        }
+    }, [options.data, params.collection]);
+    return Object.getOwnPropertyNames(params).includes('oid') ? <Outlet /> : <MaterialReactTable table={table} />;
 }

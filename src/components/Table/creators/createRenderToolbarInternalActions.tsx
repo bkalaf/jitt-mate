@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { MRT_Row, MRT_ShowHideColumnsButton, MRT_TableInstance, MRT_ToggleDensePaddingButton, MRT_ToggleFullScreenButton, createRow } from 'material-react-table';
+import { MRT_Row, MRT_ShowHideColumnsButton, MRT_ToggleDensePaddingButton, MRT_ToggleFullScreenButton, createRow } from 'material-react-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBoltLightning, faDumpsterFire, faFilterSlash, faFilters, faMagnifyingGlass, faMagnifyingGlassMinus, faRectangleBarcode, faRedoAlt, faSquarePlus } from '@fortawesome/pro-solid-svg-icons';
+import { faBoltLightning, faDumpsterFire, faFilterSlash, faFilters, faLeftRight, faLeftToLine, faMagnifyingGlass, faMagnifyingGlassMinus, faRedoAlt, faSquarePlus } from '@fortawesome/pro-solid-svg-icons';
 import { IconButton } from '@mui/material';
 import { useCallback } from 'react';
 import { BSON } from 'mongodb';
@@ -9,11 +9,6 @@ import { is } from '../../../common/is';
 import { useReflectionContext } from '../../../hooks/useReflectionContext';
 import { usePersistedState } from '../../../hooks/usePersistedState';
 import { JITTIconButton } from '../JITTIconButton';
-import { IBarcode, IUPC } from '../../../dal/types';
-import { checkTransaction } from '../../../util/checkTransaction';
-import { useLocalRealm } from '../../../hooks/useLocalRealm';
-import { UseFormReturn, FieldValues } from 'react-hook-form';
-import { ignore } from '../../../common/functions/ignore';
 import { pullNextUPC } from './pullNextUPC';
 
 export const $pullNext = {
@@ -34,6 +29,8 @@ export function createRenderToolbarInternalActions<T extends AnyObject>(outerPro
     type?: 'list' | 'dictionary' | 'set' | 'object';
     state: ReturnType<typeof usePersistedState>['state'];
     handlers: ReturnType<typeof usePersistedState>['handlers'];
+    matchFromStart: boolean;
+    toggleMatchFromStart: () => void;
 }) {
     const { showColumnFilters, showGlobalFilter } = outerProps.state;
     const { onShowColumnFiltersChange, onShowGlobalFilterChange } = outerProps.handlers;
@@ -79,6 +76,8 @@ export function createRenderToolbarInternalActions<T extends AnyObject>(outerPro
                     </IconButton>
                 )}
 
+                <JITTIconButton title='Create draft' color='primary' onClick={ignore} type='button' Icon={faDraft} />
+
                 <IconButton color='warning' className='flex' title='Update a record' onClick={() => outerProps.onClickLightning(props.table)} disabled={noRowsSelected}>
                     <FontAwesomeIcon icon={faBoltLightning} className='inline-block object-cover' />
                 </IconButton>
@@ -93,6 +92,13 @@ export function createRenderToolbarInternalActions<T extends AnyObject>(outerPro
                     Icon={showColumnFilters ? faFilterSlash : faFilters}
                     color={showColumnFilters ? 'error' : 'secondary'}
                     onClick={toggleShowColumnFilters}
+                    type='button'
+                />
+                <JITTIconButton 
+                    title='Toggle matching location'
+                    Icon={outerProps.matchFromStart ? faLeftRight : faLeftToLine} 
+                    color='caution'
+                    onClick={outerProps.toggleMatchFromStart}
                     type='button'
                 />
                 <MRT_ShowHideColumnsButton table={props.table} />

@@ -1,8 +1,8 @@
 import Realm, { BSON } from 'realm';
 import { $db, IListing, OptObj } from './db';
 import { IDraft, IHashTag, ISellingPrice, ISku } from './types';
-import { ItemConditions, ItemConditionsSelectors } from './enums/itemConditions';
-import { aliasesToMainColors, aliasesToSelectors } from './enums/colors';
+import { ItemConditionsInfos, ItemConditionsSelectors } from './enums/itemConditions';
+import { AliasColorsMainColorMap, aliasesToSelectors } from './enums/colors';
 
 export const MAX_IMAGE_SIZE = 10485760;
 
@@ -273,7 +273,7 @@ export class Draft extends Realm.Object<IDraft> implements IDraft {
     }
     hashTags: DBList<IHashTag> = [] as any;
     get allHashTags(): IHashTag[] {
-        return [...new Set([...this.hashTags.values(), ...(this.sku.product?.allHashTags ?? [])]).values()];
+        return [...new Set([...this.hashTags.values(), ...(this.sku.product?.effectiveHashTags ?? [])]).values()];
     }
     get lengthInches(): Optional<number> {
         return this.sku?.product?.dimensions?.lengthInches;
@@ -305,14 +305,14 @@ export class Draft extends Realm.Object<IDraft> implements IDraft {
         const totalOz = Math.ceil((this.packagedWeightPoundsOunces - Math.floor(this.packagedWeightPoundsOunces)) * 16);
         return totalOz === 16 ? 0 : totalOz;
     }
-    get itemCondition(): keyof typeof ItemConditions {
+    get itemCondition(): keyof typeof ItemConditionsInfos {
         return this.sku?.condition;
     }
     get itemConditionId(): string {
-        return ItemConditionsSelectors[this.itemCondition ?? 'good'];
+        return ItemConditionsSelectors[this.itemCondition as keyof typeof ItemConditionsInfos ?? 'good'];
     }
     get aliasColor(): Optional<string> {
-        return this.sku?.product?.color ? aliasesToMainColors[this.sku?.product?.color] : undefined;
+        return this.sku?.product?.color ? AliasColorsMainColorMap[this.sku?.product?.color] : undefined;
     }
     get aliasId(): Optional<string> {
         return this.sku?.product?.color ? aliasesToSelectors(this.sku?.product?.color) : undefined;

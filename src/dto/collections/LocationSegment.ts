@@ -1,11 +1,11 @@
 import Realm, { BSON } from 'realm';
 import { $db } from '../../dal/db';
 import { IBarcode, ILocationSegment } from '../../dal/types';
-import { LocationKinds } from '../../dal/enums/locationKinds';
+import { LocationKindsInfos } from '../../dal/enums/locationKinds';
 import { LocationLabelColorsKey } from '../../dal/enums/locationLabelColors';
 import { LocationTypesObj } from '../../dal/enums/locationTypes';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
-import { $$queryClient } from '../../components/App';
+import { $$queryClient } from '../../components/$$queryClient';
 
 export class LocationSegment extends Realm.Object<ILocationSegment> implements ILocationSegment {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -44,7 +44,7 @@ export class LocationSegment extends Realm.Object<ILocationSegment> implements I
     // @basicTextboxDecorator()
     notes: Optional<string>;
     // @basicEnumDecorator({ enumMap: LocationKinds })
-    kind: Optional<keyof LocationKinds>;
+    kind: Optional<keyof typeof LocationKindsInfos>;
     _id: BSON.ObjectId = new BSON.ObjectId();
     // barcode: Optional<IBarcode>;
     name = '';

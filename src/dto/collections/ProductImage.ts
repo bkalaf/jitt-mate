@@ -7,7 +7,7 @@ import { IBinaryFile, IProductImage, ISku } from '../../dal/types';
 import { checkForFolder } from '../../common/fs/checkForFolder';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { checkTransaction } from '../../util/checkTransaction';
-import { $$queryClient } from '../../components/App';
+import { $$queryClient } from '../../components/$$queryClient';
 
 export class BinaryFile<T extends 'original' | 'remove-bg'> extends Realm.Object<IBinaryFile<T>> implements IBinaryFile<T> {
     mimeType!: string;
@@ -48,7 +48,7 @@ function getRemoveBGFilename(fullpath: string) {
 function getDestinationPath(sku: OptionalEntity<ISku>) {
     const basePath = Config.productImages.imageRoot;
     if (sku == null) throw new Error('no sku');
-    const brandFolder = sku.product?.productLine?.brand?.folder ?? sku.product?.brand?.folder ?? 'no-brand';
+    const brandFolder = sku.product?.effectiveBrandFolder ?? 'no-brand';
     const productFolder = sku.product?.folder.toHexString(true);
     const skuFolder = sku.barcode?.scanValue;
     if (productFolder == null || skuFolder == null) throw new Error(`missing product or sku folder: ${productFolder} sku: ${skuFolder}`);

@@ -4,13 +4,13 @@ import { flattenPayload } from '../util/flattenPayload';
 import { checkTransaction } from '../util/checkTransaction';
 import { toNotNullOID } from '../dal/toOID';
 import { BSON } from 'realm';
-import { $$queryClient } from '../components/App';
 import { collections } from '../components/Table/collections';
 import { is } from '../common/is';
 import { IProduct, IRealmEntity, ISku } from '../dal/types';
 import { createDetailSubComponent } from '../components/Table/creators/createDetailSubComponent';
 import { $initialCollection } from '../components/Table/creators/$initialCollection';
 import { $convertToRealm } from '../components/Table/creators/$convertToRealm';
+import { $$queryClient } from '../components/$$queryClient';
 
 export type TableTypeObject<TResult extends MRT_RowData> = {
     persistedName: string;

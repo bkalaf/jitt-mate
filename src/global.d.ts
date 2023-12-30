@@ -322,12 +322,14 @@ declare global {
                 : { [P in DBProperties<T> as `${P}`]: Serialized<T[P], false> }
             : { [P in DBProperties<T> as `${P}`]: Serialized<T[P], false> }
         : never;
+    export type EnumMapOrFunction = EnumMap | [propertyName: string, func: (value: string) => EnumMap];
+
     export type Serialized<T, TRoot = true> = undefined extends T ? _Serialized<T, TRoot> | null : _Serialized<T, TRoot>;
     export type Unserialized<T extends AnyObject> = {
         [P in DBProperties<T>]: T[P] extends DBList<infer R> ? R[] : T[P] extends DBSet<infer R> ? R[] : T[P] extends DBDictionary<infer R> ? Record<string, R> : T[P];
     };
     export type BarcodeSubmitter = (formContext: UseFormReturn) => (index: number) => (value: string) => void;
-    export type CtorResult<T extends AnyObject> = Pick<T, DBProperties<T>>
+    export type CtorResult<T extends AnyObject> = Pick<T, DBProperties<T>>;
 
     export type ConvertToRealmFunction<T extends AnyObject> = (payload: _Serialized<T, true>) => Unserialized<T>;
     export interface SymbolConstructor {
@@ -354,7 +356,6 @@ declare module '@tanstack/table-core' {
         scope: TableScope;
         objectType?: ['list' | 'dictionary' | 'set', string];
         propertyName?: string;
-        createOnBlur?: ({ row }: { row: MRT_Row<any> }) => () => void;
     }
 }
 

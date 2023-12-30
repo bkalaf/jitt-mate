@@ -1,15 +1,9 @@
-import { getAssoc } from '../../common/object/getAssoc';
-import { objectMap } from './objectMap';
+export const LocationTypesInfos = {
+    fixture: { key: 'fixture', color: 'bg-indigo-600 text-white' },
+    shelf: { key: 'shelf', color: 'bg-rose-600 text-white' },
+    bin: { key: 'bin', color: 'bg-yellow-600 text-black' }
+};
 
-export const LocationTypesObj = {
-    fixture: { text: 'fixture', color: 'bg-indigo-600 text-white' },
-    shelf: { text: 'shelf', color: 'bg-rose-600 text-white'},
-    bin: { text: 'bin', color: 'bg-yellow-600 text-black'}
-}
-
-export const LocationTypes = objectMap(getAssoc<{ text: string }, 'text'>('text', ''))(LocationTypesObj);
-export const LocationTypesColors = objectMap(getAssoc<{ color: string }, 'color'>('color', ''))(LocationTypesObj);
-
-
-export type LocationTypes = typeof LocationTypes;
-
+export type LocationTypesKeys = keyof typeof LocationTypesInfos;
+export const LocationTypesEnumMap = Object.fromEntries(Object.entries(LocationTypesInfos).map(([k, v]) => [k, v.key] as [LocationTypesKeys, string])) as Record<LocationTypesKeys, string>;
+export const LocationTypesColorMap = Object.fromEntries(Object.entries(LocationTypesInfos).map(([k, v]) => [k, v.color] as [LocationTypesKeys, string])) as Record<LocationTypesKeys, string>;

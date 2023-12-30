@@ -2,16 +2,16 @@
 import { MRT_Row } from 'material-react-table';
 import { CircularProgress, DialogActions, DialogContent, DialogTitle, Divider, IconButton, Tooltip } from '@mui/material';
 import { toProperFromCamel } from '../../../common/text/toProperCase';
-import { useMutation } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 import { FormProvider, useForm } from 'react-hook-form-mui';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCancel, faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
 import { ignore } from '../../../common/functions/ignore';
-import { updateRecordProperty } from '../../../hooks/updateRecord';
 import { useInvalidator } from '../../../hooks/useInvalidator';
 import { useLocalRealm } from '../../../hooks/useLocalRealm';
 import { OnBlurContext } from './OnBlurContext';
+import { checkTransaction } from '../../../util/checkTransaction';
+import { setProperty } from '../../../common/object/setProperty';
 
 export function toEditFormInitializer<T extends AnyObject>(row: MRT_Row<T>) {
     return () => Promise.resolve(row.original.toJSON() as T);
@@ -27,42 +27,40 @@ export function createRenderEditRowDialogContentRHF<T extends AnyObject>(collect
             reValidateMode: 'onChange' as const,
             defaultValues: initializer
         });
-        const { dirtyFields } = formContext.formState;
-        const propertyNames = Object.entries(dirtyFields)
-            .filter((x) => x[1])
-            .map((x) => x[0]);
-        console.log(`dirtyProperties`, propertyNames);
+        // const { dirtyFields } = formContext.formState;
+        // const propertyNames = handleDirtyProp(dirtyFields);
         const onSubmit = formContext.handleSubmit((data: any) => {
-            console.log(`onSuccess.data`, data);
-            return mutateAsync(
-                { propertyNames, row: props.row },
-                {
-                    onSuccess: () => {
-                        props.table.setEditingRow(null);
-                    }
-                }
-            );
+            // console.log(`onSuccess.data`, data);
+            props.table.setEditingRow(null);
         });
         const { onSuccess } = useInvalidator(collection);
-        const { mutateAsync } = useMutation({
-            mutationFn: updateRecordProperty<T>(db, collection, formContext as any),
-            onSuccess: () => {
-                onSuccess();
-            }
-        });
+
         const { isSaving } = props.table.getState();
         const onBlur = useCallback(
-            (name: string) => () => {
-                mutateAsync({ propertyNames: [name], row: props.row });
+            (name: string) => (ev: { target: { value: any, name: string }}) => {
+                // mutateAsync({ propertyNames: [name], row: props.row });
                 // const row = props.row;
                 // console.log('props.row', props.row, 'ev.target.value', ev.target.value);
                 // const value = formContext.watch(name as any);
                 // console.log('watchedvalue', value);
                 // row._valuesCache[name as keyof typeof row._valuesCache] = value;
                 // props.table.setEditingRow(row);
+                console.log(`onBlur`, props.row.original, name, ev.target.name, ev.target.value);
+                checkTransaction(db)(() => eval(`props.row.original.${name} = ev.target.value;`));
+                setTimeout(()=> onSuccess(), 500);
             },
-            [mutateAsync, props.row]
+            [db, onSuccess, props.row.original]
         );
+        // useEffect(() => {
+        //     const obj = props.row.original as unknown as Realm.Object<T> & T;
+        //     const listener = ((collections, changes) => {
+        //         console.log(`modified: ${changes.changedProperties.join(', ')}, deleted: ${changes.deleted}`);
+        //     }) as Realm.ObjectChangeCallback<T>
+        //     obj.addListener(listener);
+        //     return () => {
+        //         obj.removeListener(listener);
+        //     }
+        // }, [props.row.original]);
         return (
             <OnBlurContext.Provider value={onBlur}>
                 <FormProvider

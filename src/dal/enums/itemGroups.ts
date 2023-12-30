@@ -1,4 +1,4 @@
-import { enumColors } from './sleeveTypes';
+import { enumColors } from './enumColors';
 
 export const ItemGroupsInfos = {
     apparel: { key: 'apparel', color: enumColors.sky2 },
@@ -7,5 +7,7 @@ export const ItemGroupsInfos = {
     jewelry: { key: 'jewelry', color: enumColors.yellow2 }
 };
 
-export const ItemGroups = Object.fromEntries(Object.entries(ItemGroupsInfos).map(([k, v]) => [k, v.key] as [string, string]));
-export const ItemGroupsColors = Object.fromEntries(Object.entries(ItemGroupsInfos).map(([k, v]) => [k, v.color] as [string, string]));
+export type ItemGroupsKeys = keyof typeof ItemGroupsInfos;
+export const ItemGroupsEnumMap = Object.fromEntries(Object.entries(ItemGroupsInfos).map(([k, v]) => [k, v.key] as [ItemGroupsKeys, string])) as Record<ItemGroupsKeys, string>;
+export const ItemGroupsColorMap = Object.fromEntries(Object.entries(ItemGroupsInfos).map(([k, v]) => [k, v.color] as [ItemGroupsKeys, string])) as Record<ItemGroupsKeys, string>;
+

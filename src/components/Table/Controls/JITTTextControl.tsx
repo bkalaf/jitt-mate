@@ -17,6 +17,14 @@ export const JITTTextControl = (
                 margin='dense'
                 required={required ?? false}
                 aria-readonly={readOnly ?? false}
+                onChange={(ev: React.ChangeEvent<HTMLInputElement>) => {
+                    spread.onBlur(ev as any);
+                }}
+                name={spread.name}
+                control={spread.control}
+                label={spread.label}
+                disabled={spread.disabled}
+                classes={spread.classes}
                 validation={{
                     required: required ?? false ? 'This field is required.' : undefined,
                     maxLength: maxLength
@@ -38,7 +46,6 @@ export const JITTTextControl = (
                           }
                         : undefined
                 }}
-                {...spread}
             />
         );
     };

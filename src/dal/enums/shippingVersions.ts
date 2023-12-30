@@ -8,4 +8,4 @@ export const ShippingVersionsInfos = {
     '01182023': Shipping01182023
 };
 
-export type ShippingVersions = keyof typeof ShippingVersionsInfos;
+export type ShippingVersionsKeys = keyof typeof ShippingVersionsInfos;

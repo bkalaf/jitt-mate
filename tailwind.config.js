@@ -20,8 +20,8 @@ module.exports = {
     },
     theme: {
         data: {
-            row-even: 'row="even"',
-            row-odd: 'row="odd"',
+            'row-even': 'row="even"',
+            'row-odd': 'row="odd"',
             active: 'active="true"',
             file: 'discriminator="file"',
             folder: 'discriminator="folder"',

@@ -3,8 +3,8 @@ import { $db } from '../../dal/db';
 import { IBarcode, IHashTag, ILocationSegment, IProduct, IScan, ISku } from '../../dal/types';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { Scan } from '../embedded/Scan';
-import { $$queryClient } from '../../components/App';
 import { pullNextUPC } from '../../components/Table/creators/pullNextUPC';
+import { $$queryClient } from '../../components/$$queryClient';
 
 export class Sku extends Realm.Object<ISku> implements ISku {
     @wrapInTransactionDecorator()
@@ -129,8 +129,8 @@ export class Sku extends Realm.Object<ISku> implements ISku {
     }
     
     hashTags!: DBSet<Entity<IHashTag>>;
-    get allHashTags(): Entity<IHashTag>[] {
-        return this.product?.allHashTags ?? [];
+    get effectiveHashTags(): Entity<IHashTag>[] {
+        return this.product?.effectiveHashTags ?? [];
     }
     upcs!: DBList<Entity<IBarcode>>;
     get barcode(): OptionalEntity<IBarcode> {

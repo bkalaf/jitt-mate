@@ -18,6 +18,8 @@ import { updateRecord } from './updateRecord';
 import { createDetailSubComponent } from '../components/Table/creators/createDetailSubComponent';
 import { BSON } from 'realm';
 import { useNonPersistedState } from './useNonPersistedState';
+import { useToggler } from './useToggler';
+import { useJITTCollectionContext } from '../components/Contexts/useJITTCollectionContext';
 
 export function useMUIItemReactTable<T extends MRT_RowData>({
     type, parentRow
@@ -38,6 +40,7 @@ export function useMUIItemReactTable<T extends MRT_RowData>({
             return Promise.resolve([db.objectForPrimaryKey(collection, new BSON.ObjectId(oid))]);
         }
     });
+    const { matchFromStart, toggleMatchFromStart } = useJITTCollectionContext()
     const getCanInsertDelete = () => false;
     const {
         deleteOne, invalidator, columns, toGetRowCanExpand, getRowId,
@@ -87,11 +90,14 @@ export function useMUIItemReactTable<T extends MRT_RowData>({
         parentRow,
         type: 'object',
         state,
-        handlers
+        handlers,
+        matchFromStart,
+        toggleMatchFromStart
     });
     const renderRowActions = createRenderRowActions({ getCanInsertDelete, deleteOne: deleteSync });
     const constants = useTableConstants();
     const defaultColumn = useDefaultColumn<T>();
+    
     return {
         dataUpdatedAt,
         options: {
@@ -120,9 +126,9 @@ export function useMUIItemReactTable<T extends MRT_RowData>({
 
             muiToolbarAlertBannerProps: isError
                 ? {
-                    color: 'error' as AlertColor,
-                    children: 'NETWORK ERROR - COLLECTION FAILED TO LOAD.'
-                }
+                      color: 'error' as AlertColor,
+                      children: 'NETWORK ERROR - COLLECTION FAILED TO LOAD.'
+                  }
                 : undefined
         },
         invalidator

@@ -2,8 +2,8 @@ import { createMRTColumnHelper } from 'material-react-table';
 import { IApparelDetails, IMeasurementDictionary } from '../../dal/types';
 import { $metas } from '../../components/Table/metas';
 import { enableWhen } from './enableWhen';
-import { ChestFitTypes } from '../../dal/enums/chestFitTypes';
 import { toEnableDependency } from '../../components/Table/toDependency';
+import { ChestFitTypesKeyLabelMap } from '../../dal/enums/chestFitTypes';
 
 export const measurementsHelper = createMRTColumnHelper<IApparelDetails['measurements']>();
 
@@ -15,7 +15,7 @@ export const measurementsColumns = {
                 $metas.float<IMeasurementDictionary>('chestInches', { header: 'Chest (in)', uom: 'in', precision: 2, min: 0 }, true, enableWhen('taxon.klass', 'tops')),
                 $metas.enum<IMeasurementDictionary>(
                     'chestFit',
-                    { header: 'Chest Fit', enumMap: ChestFitTypes },
+                    { header: 'Chest Fit', enumMap: ChestFitTypesKeyLabelMap },
                     true,
                     toEnableDependency('chestInches', (x: number) => x != null && x > 0)
                 ),

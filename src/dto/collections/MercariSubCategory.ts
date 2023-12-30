@@ -3,39 +3,14 @@
 import Realm, { BSON } from 'realm';
 import { $db } from '../../dal/db';
 import { IHashTag, IMercariCategory, IMercariSubCategory, IProductTaxonomy } from '../../dal/types';
-import { ApparelGroups } from '../../dal/enums/apparelGroups';
-import { ApparelTypes } from '../../dal/enums/apparelType';
-import { ItemGroups } from '../../dal/enums/itemGroups';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
-import { $$queryClient } from '../../components/App';
-import { mergeProductTaxonomy } from '../../util/mergeProductTaxonomy';
-import { prependText } from '../../common/text/prependText';
 import { HashTag } from './HashTag';
+import { $$queryClient } from '../../components/$$queryClient';
+import { effective } from './effective';
+import { distinctBy } from '../../common/array/distinctBy';
+import { fromOID } from '../../dal/fromOID';
 
 export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implements IMercariSubCategory {
-    constructor(realm: Realm, args: any) {
-        super(realm, args);
-        setImmediate(() =>
-            Promise.resolve(this.update()).then(() => {
-                $$queryClient
-                    .invalidateQueries({
-                        queryKey: [MercariSubCategory.schema.name]
-                    })
-                    .then(() => {
-                        $$queryClient.refetchQueries({
-                            queryKey: [MercariSubCategory.schema.name]
-                        });
-                    });
-            })
-        );
-    }
-
-    get categoryID(): Optional<string> {
-        return this.parent?.id;
-    }
-    get fullname(): string {
-        return [this.parent?.name, this.name].filter((x) => x != null).join('::');
-    }
     @wrapInTransactionDecorator()
     update() {
         if (this.hashTags) {
@@ -70,49 +45,78 @@ export class MercariSubCategory extends Realm.Object<IMercariSubCategory> implem
         if (this.taxon != null && this.taxon.update != null) {
             this.taxon = this.taxon.update();
         }
-        const merged = mergeProductTaxonomy(this.taxon, this.parent?.taxon);
-        if (merged) {
-            this.taxon = merged as any;
-        }
+        // const merged = mergeProductTaxonomy(this.taxon, this.parent?.taxon);
+        // if (merged) {
+        //     this.taxon = merged as any;
+        // }
         return this;
+    }
+    constructor(realm: Realm, args: any) {
+        super(realm, args);
+        setImmediate(() =>
+            Promise.resolve(this.update()).then(() => {
+                $$queryClient
+                    .invalidateQueries({
+                        queryKey: [MercariSubCategory.schema.name]
+                    })
+                    .then(() => {
+                        $$queryClient.refetchQueries({
+                            queryKey: [MercariSubCategory.schema.name]
+                        });
+                    });
+            })
+        );
+    }
+
+    get categoryID(): Optional<string> {
+        return this.parent?.id;
+    }
+    get fullname(): string {
+        return [this.parent?.name, this.name].filter((x) => x != null).join('::');
     }
     get effectiveShipWeightPercent(): Optional<number> {
         return this.shipWeightPercent ?? this.parent?.effectiveShipWeightPercent;
     }
-
-    get allHashTags(): Entity<IHashTag>[] {
-        return [...(this.parent?.allHashTags ?? []), ...Array.from(this.hashTags.values() ?? [])];
+    get effectiveHashTags(): Entity<IHashTag>[] {
+        return distinctBy<Entity<IHashTag>>((x) => (y) => fromOID(x._id) === fromOID(y._id))([...(this.parent?.effectiveHashTags ?? []), ...this.hashTags.values()]);
     }
-    apparelType: Optional<keyof ApparelTypes>;
-    apparelGroup: Optional<keyof ApparelGroups>;
-    itemGroup: Optional<keyof ItemGroups>;
-    // _id: BSON.ObjectId = new BSON.ObjectId();
-    // name = '';
-    // id = '';
-    // parent: OptObj<IMercariCategory>;
-    // apparelType: Optional<ApparelTypeKeys>;
-    // apparelGroup: Optional<ApparelGroupKeys>;
-    // itemGroup: Optional<ItemGroupKeys>;
+    get effectiveFamily() {
+        return effective<IProductTaxonomy, string>('family', this.taxon, this.parent?.taxon);
+    }
+    get effectiveKingdom() {
+        return effective<IProductTaxonomy, string>('kingdom', this.taxon, this.parent?.taxon);
+    }
+    get effectivePhylum() {
+        return effective<IProductTaxonomy, string>('phylum', this.taxon, this.parent?.taxon);
+    }
+    get effectiveKlass() {
+        return effective<IProductTaxonomy, string>('klass', this.taxon, this.parent?.taxon);
+    }
+    get effectiveOrder() {
+        return effective<IProductTaxonomy, string>('order', this.taxon, this.parent?.taxon);
+    }
+    get effectiveGenus() {
+        return effective<IProductTaxonomy, string>('genus', this.taxon, this.parent?.taxon);
+    }
+    get effectiveSpecies() {
+        return effective<IProductTaxonomy, string>('species', this.taxon, this.parent?.taxon);
+    }
     _id: BSON.ObjectId = new BSON.ObjectId();
-    name = '';
-    id = '';
-    parent: OptionalEntity<IMercariCategory>;
     hashTags: DBSet<Entity<IHashTag>> = [] as any;
+    id = '';
+    name = '';
+    parent: OptionalEntity<IMercariCategory>;
     shipWeightPercent: Optional<number>;
     taxon: OptionalEntity<IProductTaxonomy>;
-
     static schema: Realm.ObjectSchema = {
         name: $db.mercariSubCategory(),
         primaryKey: '_id',
         properties: {
             _id: $db.objectId,
-            name: $db.string.empty,
-            id: $db.string.empty,
-            parent: $db.mercariCategory.opt,
-            apparelType: $db.string.opt,
-            apparelGroup: $db.string.opt,
-            itemGroup: $db.string.opt,
             hashTags: $db.hashTag.set,
+            id: $db.string.empty,
+            name: $db.string.empty,
+            parent: $db.mercariCategory.opt,
             shipWeightPercent: { type: $db.float() as any, optional: true },
             taxon: $db.productTaxonomy.opt
         }

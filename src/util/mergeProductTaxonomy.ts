@@ -27,11 +27,11 @@ export function mergeProductTaxonomy(left?: IProductTaxonomy, right?: IProductTa
     const waistType = left?.waistType ?? right?.waistType;
     const lock = (left?.lock ?? false) || (right?.lock ?? false);
     const bookType = left?.bookType ?? right?.bookType;
-    const mediaType = left?.mediaType ?? right?.mediaType;
+    const mediaFormatType = left?.mediaFormatType ?? right?.mediaFormatType;
     const videoType = left?.videoType ?? right?.videoType;
     const gameRating = left?.gameRating ?? right?.gameRating;
     const movieRating = left?.movieRating ?? right?.movieRating;
-    
+    const sizeGroup = left?.sizeGroup ?? right?.sizeGroup;
     const result = Object.fromEntries(
         ([
             ['apparelType', apparelType],
@@ -45,11 +45,12 @@ export function mergeProductTaxonomy(left?: IProductTaxonomy, right?: IProductTa
             ['itemGroup', itemGroup],
             ['necklineType', necklineType],
             ['size', size],
+            ['sizeGroup', sizeGroup],
             ['sleeveType', sleeveType],
             ['topAdornment', topAdornment],
             ['waistType', waistType],
             ['bookType', bookType],
-            ['mediaType', mediaType],
+            ['mediaType', mediaFormatType],
             ['videoType', videoType],
             ['gameRating', gameRating],
             ['movieRating', movieRating],

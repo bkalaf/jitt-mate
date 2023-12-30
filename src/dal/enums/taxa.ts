@@ -181,7 +181,7 @@ export const taxonomy = {
                     overcoat: toNode('overcoat'),
                     poncho: toNode('poncho'),
                     blazer: toNode('blazer'),
-                    'sport-coat': toNode('sport-coat')
+                    'sports-coat': toNode('sports-coat')
                 }),
                 'button-front': toNode('button-front', {
                     'button-down': toNode('button-down'),
@@ -328,7 +328,7 @@ export const taxonomy = {
                 'track-suit': toNode('track-suit'),
                 sweatpants: toNode('sweatpants')
             }),
-            outfits: toNode('outfit', {
+            outfits: toNode('outfits', {
                 suits: toNode('suits', {
                     tuxedo: toNode('tuxedo'),
                     'double-breasted': toNode('double-breasted'),
@@ -580,7 +580,7 @@ export const taxonomy = {
                 }),
                 jewelry: toNode('jewelry', {})
             }),
-            outfits: toNode('outfit', {
+            outfits: toNode('outfits', {
                 dresses: toNode('dresses', {
                     'above-knee': toNode('above-knee'),
                     'knee-length': toNode('knee-length'),

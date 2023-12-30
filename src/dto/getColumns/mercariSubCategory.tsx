@@ -13,9 +13,9 @@ export const mercariSubCategoryColumns = {
                 $metas.string('fullname', { readOnly: true }, false),
                 $metas.string('id', { maxLength: 50, required: true }, false),
                 $metas.lookup<IMercariSubCategory, IMercariCategory>('parent', { objectType: 'mercariCategory', labelPropertyName: 'name' }),
-                $metas.percent<IMercariSubCategory>('shipWeightPercent', { min: 1, max: 2 }, false),
                 $metas.embed<IMercariSubCategory>('taxon', { getColumnsKey: 'productTaxonomy' }, false),
-                $metas.set<IMercariSubCategory, IHashTag, 'hashTags'>('hashTags', 'brand', 'hashTag', 'name', {}, false)
+                $metas.set<IMercariSubCategory, IHashTag, 'hashTags'>('hashTags', 'brand', 'hashTag', 'name', {}, false),
+                $metas.list('effectiveHashTags', { readOnly: true, header: 'All Tags', labelProperty: 'name', objectType: 'mercariSubCategory', ofObjectType: 'hashTag' }, false)
             ] as DefinedMRTColumns<IMercariSubCategory>
         ).map((x) =>
             x.columnDefType === 'group' ? x : x.accessorKey != null ? { ...x, accessorKey: [...pre, x.accessorKey].join('.') } : x.id != null ? { ...x, id: [...pre, x.id].join('.') } : x

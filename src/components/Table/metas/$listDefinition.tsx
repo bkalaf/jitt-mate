@@ -8,7 +8,7 @@ import { getProperty } from '../../Contexts/getProperty';
 
 export const listDefinition = function <T extends IRealmObject<T>, TListOf, TName extends Path<T>>(
     name: TName,
-    opts: { header?: string; labelProperty: (Path<TListOf> & string) | React.FunctionComponent<{ data: TListOf }>; objectType: RealmObjects; ofObjectType: RealmObjects | RealmPrimitives },
+    opts: { readOnly?: boolean; header?: string; labelProperty: (Path<TListOf> & string) | React.FunctionComponent<{ data: TListOf }>; objectType: RealmObjects; ofObjectType: RealmObjects | RealmPrimitives },
     initialDisable = false,
     ...dependencies: IDependency[]
 ) {
@@ -21,9 +21,10 @@ export const listDefinition = function <T extends IRealmObject<T>, TListOf, TNam
     return {
         accessorKey: name,
         header: toHeader(opts, name),
+        enabledEditing: !(opts.readOnly ?? false),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: DBSetDetailCell<Entity<TListOf>, T>(ItemComponent as any),
-        Edit: JITTMultiControl<T, TListOf, TName & Path<TListOf>>(
+        Edit: (opts.readOnly ?? false) ? JITTMultiControl<T, TListOf, TName & Path<TListOf>>(
             {
                 listType: 'list',
                 objectType: opts.objectType,
@@ -33,7 +34,7 @@ export const listDefinition = function <T extends IRealmObject<T>, TListOf, TNam
             },
             initialDisable,
             ...dependencies
-        )
+        ) : undefined
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as MRT_ColumnDef<T, any>;
 };

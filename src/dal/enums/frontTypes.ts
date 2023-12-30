@@ -1,4 +1,4 @@
-import { enumColors } from './sleeveTypes';
+import { enumColors } from './enumColors';
 
 export const FrontTypesInfos = {
     halfButton: { key: 'half-button', color: enumColors.rose2 },
@@ -10,5 +10,6 @@ export const FrontTypesInfos = {
     snaps: { key: 'button-snaps', color: enumColors.slate2 }
 };
 
-export const FrontTypes = Object.fromEntries(Object.entries(FrontTypesInfos).map(([k, v]) => [k, v.key] as [string, string]));
-export const FrontTypesColors = Object.fromEntries(Object.entries(FrontTypesInfos).map(([k, v]) => [k, v.color] as [string, string]));
+export type FrontTypesKeys = keyof typeof FrontTypesInfos;
+export const FrontTypesEnumMap = Object.fromEntries(Object.entries(FrontTypesInfos).map(([k, v]) => [k, v.key] as [FrontTypesKeys, string])) as Record<FrontTypesKeys, string>;
+export const FrontTypesColorMap = Object.fromEntries(Object.entries(FrontTypesInfos).map(([k, v]) => [k, v.color] as [FrontTypesKeys, string])) as Record<FrontTypesKeys, string>;

@@ -37,7 +37,7 @@ export function LeftDrawer(props: { open: boolean; toggleOpen: () => void; setCl
                         <ListItem key={ix} className='flex flex-col px-1 py-2' disableGutters disablePadding>
                             <Accordion className='w-full' disableGutters>
                                 <AccordionSummary className='w-full'>
-                                    <Typography sx={{}} variant='h6' component='div' className={`${classes} whitespace-pre w-full indent-2 text-lg font-bold`}>
+                                    <Typography sx={{}} variant='h6' component='div' className={`${classes} whitespace-pre w-full indent-2 text-lg font-bold font-`}>
                                         {toProperFromCamel(groupName)}
                                     </Typography>
                                 </AccordionSummary>

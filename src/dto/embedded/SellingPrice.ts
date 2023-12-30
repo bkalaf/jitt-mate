@@ -1,10 +1,10 @@
 import { $db } from '../../dal/db';
-import { ShippingVersions } from '../../dal/enums/shippingVersions';
+import { ShippingVersionsKeys } from '../../dal/enums/shippingVersions';
 import { ISellingPrice, IShippingService, ISku } from '../../dal/types';
 import { ShippingService } from './ShippingService';
 
 export class SellingPrice extends Realm.Object<ISellingPrice> implements ISellingPrice {
-    static ctor(sku: ISku, maxWeightLbs: number, itemPrice: number, shippingPayor: 'buyer' | 'seller' = 'buyer', version: ShippingVersions = '09252023', floorPrice?: number) {
+    static ctor(sku: ISku, maxWeightLbs: number, itemPrice: number, shippingPayor: 'buyer' | 'seller' = 'buyer', version: ShippingVersionsKeys = '09252023', floorPrice?: number) {
         const result = {
             itemPrice,
             floorPrice,

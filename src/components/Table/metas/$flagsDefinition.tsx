@@ -10,12 +10,12 @@ export const flagsDefinition = function <T extends MRT_RowData>(name: Path<T>, {
     return {
         accessorKey: name,
         header: 'Flags',
-        Cell: (props: Parameters<Exclude<MRT_ColumnDef<T, DBSet<FlagsKeys>>['Cell'], undefined>>[0]) => {
+        Cell: (props: Parameters<Exclude<MRT_ColumnDef<T, DBSet<FlagsKeys<any>>>['Cell'], undefined>>[0]) => {
             const values = props.cell.getValue();
             const output = Array.from(values.values()).map(toProperFromCamel).join('\n');
             return <span className='whitespace-pre'>{output}</span>;
         },
-        Edit: function (props: Parameters<Exclude<MRT_ColumnDef<T, DBSet<FlagsKeys>>['Edit'], undefined>>[0]) {
+        Edit: function (props: Parameters<Exclude<MRT_ColumnDef<T, DBSet<FlagsKeys<any>>>['Edit'], undefined>>[0]) {
             const { disabled, control, name, onBlur, label } = useDependencies(props as any, initialDisable, ...dependencies);
             return (
                 disabled ?? false ? null : (

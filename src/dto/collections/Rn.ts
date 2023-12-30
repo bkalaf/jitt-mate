@@ -1,16 +1,15 @@
 import Realm, { BSON, PropertyTypeName } from 'realm';
-import { RnNumberTypes, RnNumberTypesKey } from '../../dal/enums/rnNumberType';
-import { IAddress, IBrand, IRn, RnTypesFlags } from '../../dal/types';
+import { RnNumberTypesInfos, RnNumberTypesKeys } from '../../dal/enums/rnNumberType';
+import { FlagsKeys, IAddress, IBrand, IRn, RnTypes } from '../../dal/types';
 import { dateFromNow } from '../../common/date/dateFromNow';
 import { Selector } from '../../dal/$css';
-import { lookupByLongName } from '../../dal/enums/provinces';
 import { $db } from '../../dal/db';
 import { checkTransaction } from '../../util/checkTransaction';
 import { toOID } from '../../dal/toOID';
 import { checkWS } from '../../common/text/checkWS';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
-import { $$queryClient } from '../../components/App';
-
+import { $$queryClient } from '../../components/$$queryClient';
+import * as Config from './../../config.json'
 export const FTC_RN_LOOKUP = 'https://rn.ftc.gov/Account/BasicSearch';
 export const RN_INPUT = Selector({ tagName: 'input', id: 'SearchText' });
 export const RN_SEARCH_BTN = Selector({ tagName: 'input', id: 'btnBasicSearch' });
@@ -43,21 +42,21 @@ export const DATA_LABELS = [
     'Zip',
     'URL' // ex "No_Internet_Addr"
 ];
+export function lookupCountryByLongName(name: string) {
+    return Object.fromEntries(Object.entries(Config.enums.country).map(([k, v]) => [v.text, v.key] as [string, string]))[name];
+}
+export function lookupProvinceByLongName(name: string) {
+    return Object.fromEntries(Object.entries(Config.enums.province).map(([k, v]) => [v.text, v.key] as [string, string]))[name];
+}
 export class Rn extends Realm.Object<IRn> implements IRn {
-    @wrapInTransactionDecorator()
-    update() {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if (this.addresses == null) this.addresses = [] as any;
-        return this;
-    }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     addresses: DBList<IAddress> = [] as any;
     companyName = '';
     rnNo = 0;
     legalBusinessName: Optional<string>;
     companyType: Optional<string>;
-    flags!: DBSet<RnTypesFlags>;
-    noType: Optional<keyof RnNumberTypes> = 'rn';
+    flags!: DBSet<FlagsKeys<RnTypes, []>>;
+    noType: Optional<RnNumberTypesKeys> = 'rn';
     productLine: Optional<string>;
     material: Optional<string>;
     url: Optional<string>;
@@ -83,6 +82,33 @@ export class Rn extends Realm.Object<IRn> implements IRn {
                     });
             })
         );
+    }
+    @wrapInTransactionDecorator()
+    update() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if (this.addresses == null) this.addresses = [] as any;
+        return this;
+    }
+    get isImporter(): boolean {
+        return this.flags.has('isImporter')
+    }
+    get isOther(): boolean {
+        return this.flags.has('isOther')
+    }
+    get isMailOrder(): boolean {
+        return this.flags.has('isMailOrder')
+    }
+    get isRetailer(): boolean {
+        return this.flags.has('isRetailer')
+    }
+    get isWholesale(): boolean {
+        return this.flags.has('isWholesale')
+    }
+    get isManufacturing(): boolean {
+        return this.flags.has('isManufacturing')
+    }
+    get isInternet(): boolean {
+        return this.flags.has('isInternet');
     }
     static schema: Realm.ObjectSchema = {
         name: $db.rn(),
@@ -115,7 +141,7 @@ export class Rn extends Realm.Object<IRn> implements IRn {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             products: undefined as any,
             _id: new BSON.ObjectId(),
-            noType: (checkWS(data[0]) ?? 'rn') as RnNumberTypesKey,
+            noType: checkWS(data[0]) ?? 'rn',
             rnNo: parseInt(checkWS(data[1]) ?? '0', 10),
             legalBusinessName: checkWS(data[2]),
             companyName: checkWS(data[3]) ?? 'n/a',
@@ -144,14 +170,14 @@ export class Rn extends Realm.Object<IRn> implements IRn {
                     line1: checkWS(data[9]),
                     line2: checkWS(data[10]),
                     city: checkWS(data[11]),
-                    province: checkWS(data[12] ?? '') ? lookupByLongName(checkWS(data[12] ?? '')) : undefined,
-                    postalCode: checkWS(data[13])
+                    province: checkWS(data[12] ?? '') ? lookupProvinceByLongName(checkWS(data[12]) ?? '') : undefined,
+                    postalCode: checkWS(data[13] ?? '')
                 },
                 {
                     line1: checkWS(data[15]),
                     line2: checkWS(data[16]),
                     city: checkWS(data[17]),
-                    province: checkWS(data[18] ?? '') ? lookupByLongName(checkWS(data[18] ?? '')) : undefined,
+                    province: checkWS(data[18] ?? '') ? lookupProvinceByLongName(checkWS(data[18]) ?? '') : undefined,
                     postalCode: checkWS(data[20]),
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     country: checkWS(data[19]) as any

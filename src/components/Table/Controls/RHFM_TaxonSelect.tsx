@@ -10,6 +10,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/pro-solid-svg-icons';
 import { toProperFromCamel } from '../../../common/text/toProperCase';
 import { useDependencies } from '../../../hooks/useDependencies';
+import { checkTransaction } from '../../../util/checkTransaction';
+import { useLocalRealm } from '../../../hooks/useLocalRealm';
+import { setProperty } from '../../../common/object/setProperty';
 
 export function getOptions(fullname: string) {
     const count = fullname.split('.').length;
@@ -49,9 +52,14 @@ export function RHFM_TaxonSelect<T extends MRT_RowData>(props: Parameters<Exclud
         .sort((a, b) => a.label.localeCompare(b.label));
     const { getValues } = context;
     const value = getValues(name);
+    const db = useLocalRealm();
     return (
         <Stack direction='row'>
-            <RadioButtonGroup name={name} label={label} control={control} options={options} row onChange={(newValue) => context.setValue(name, newValue)} disabled={disabled} emptyOptionLabel='(null)'/>
+            <RadioButtonGroup name={name} label={label} control={control} options={options} row onChange={(newValue) => {
+                context.setValue(name, newValue);
+                // checkTransaction(db)(() => setProperty(name)(props.row.original)(newValue))
+                onBlur({ target: { name, value: newValue }} as any);
+            }} disabled={disabled} emptyOptionLabel='(null)' />
             {/* <AutocompleteElement
                 name={name}
                 label={header}

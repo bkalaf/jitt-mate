@@ -1,14 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// ///<reference path="./../../global.d.ts" />
-(Symbol as any).metadata ??= Symbol('Symbol.metadata');
-
 import Realm, { BSON } from 'realm';
 import { $db } from '../../dal/db';
 import { IHashTag, IMercariBrand } from '../../dal/types';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
-import { $$queryClient } from '../../components/App';
 import { HashTag } from './HashTag';
+import { $$queryClient } from '../../components/$$queryClient';
 
 export class MercariBrand extends Realm.Object<IMercariBrand> implements IMercariBrand {
     constructor(realm: Realm, args: any) {
@@ -27,15 +22,14 @@ export class MercariBrand extends Realm.Object<IMercariBrand> implements IMercar
             })
         );
     }
-    get allHashTags(): Entity<IHashTag>[] {
-        return Array.from(this.hashTags.values() ?? []);
-    }
-
     @wrapInTransactionDecorator()
     update() {
         if (this.hashTags == null) this.hashTags = [] as any;
         HashTag.pruneList(this.hashTags);
         return this;
+    }
+    get effectiveHashTags(): Entity<IHashTag>[] {
+        return Array.from(this.hashTags.values() ?? []);
     }
 
     _id: BSON.ObjectId = new BSON.ObjectId();

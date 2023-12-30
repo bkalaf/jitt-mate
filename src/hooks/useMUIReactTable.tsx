@@ -1,4 +1,4 @@
-import { MRT_Row, MRT_RowData, MRT_TableInstance } from 'material-react-table';
+import { MRT_Row, MRT_RowData, MRT_TableInstance, MRT_TableOptions } from 'material-react-table';
 import { useMemo } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { IRealmEntity } from '../dal/types';
@@ -17,6 +17,9 @@ import { createRenderCreateRowDialogContentRHF } from '../components/Table/creat
 import { useLocalRealm } from './useLocalRealm';
 import { updateRecord } from './updateRecord';
 import { createDetailSubComponent } from '../components/Table/creators/createDetailSubComponent';
+import { useToggler } from './useToggler';
+import { useJITTCollectionContext } from '../components/Contexts/useJITTCollectionContext';
+import { getFacetedUniqueValues } from '@tanstack/react-table';
 export function useMUIReactTable<T extends MRT_RowData>({
     type,
     objectType,
@@ -112,15 +115,17 @@ export function useMUIReactTable<T extends MRT_RowData>({
     const fieldInfos = useMemo(() => getFieldInfos(collection), [collection, getFieldInfos]);
     const getRowCanExpand = useMemo(() => toGetRowCanExpand(fieldInfos), [fieldInfos, toGetRowCanExpand]);
     const renderDetailPanel = (createDetailSubComponent ?? konst(konst(<></>)))(fieldInfos);
-    const renderToolbarInternalActions = createRenderToolbarInternalActions({ onClickDumpsterFire, resetState, onClickLightning, getCanInsertDelete, objectType, propertyName, parentRow, type, state, handlers });
+    const { matchFromStart, toggleMatchFromStart } = useJITTCollectionContext();
     const renderRowActions = createRenderRowActions({ getCanInsertDelete, deleteOne: deleteSync });
     const constants = useTableConstants();
     const defaultColumn = useDefaultColumn<T>();
+    const renderToolbarInternalActions = createRenderToolbarInternalActions({ onClickDumpsterFire, resetState, onClickLightning, getCanInsertDelete, objectType, propertyName, parentRow, type, state, handlers, matchFromStart, toggleMatchFromStart });
     return {
         dataUpdatedAt,
         options: {
             ...constants,
             renderDetailPanel,
+            getFacetedUniqueValues: getFacetedUniqueValues(),
             renderToolbarInternalActions,
             renderRowActions,
             renderCreateRowDialogContent: createRenderCreateRowDialogContentRHF(collection),
@@ -147,7 +152,7 @@ export function useMUIReactTable<T extends MRT_RowData>({
                       children: 'NETWORK ERROR - COLLECTION FAILED TO LOAD.'
                   }
                 : undefined
-        },
+        } as MRT_TableOptions<any>,
         invalidator
     };
 }

@@ -11,10 +11,10 @@ export const mercariSubSubCategoryColumns = {
                 $metas.string('name', { maxLength: 50, required: true }, false),
                 $metas.string('fullname', { readOnly: true }, false),
                 $metas.string('id', { maxLength: 50, required: true }, false),
-                $metas.lookup<IMercariSubSubCategory, IMercariSubCategory>('parent', { objectType: 'mercariSubCategory', labelPropertyName: 'fullname' }),
-                $metas.percent<IMercariSubSubCategory>('shipWeightPercent', { min: 1, max: 2 }, false),
+                $metas.lookup<IMercariSubSubCategory, IMercariSubCategory>('parent', { objectType: 'mercariSubCategory', labelPropertyName: (x: IMercariSubCategory) => x.fullname }),
                 $metas.embed<IMercariSubSubCategory>('taxon', { getColumnsKey: 'productTaxonomy' }, false),
-                $metas.set<IMercariSubSubCategory, IHashTag, 'hashTags'>('hashTags', 'brand', 'hashTag', 'name', {}, false)
+                $metas.set<IMercariSubSubCategory, IHashTag, 'hashTags'>('hashTags', 'brand', 'hashTag', 'name', {}, false),
+                $metas.list('effectiveHashTags', { readOnly: true, header: 'All Tags', labelProperty: 'name', objectType: 'mercariSubSubCategory', ofObjectType: 'hashTag' }, false)
             ] as DefinedMRTColumns<IMercariSubSubCategory>
         ).map((x) =>
             x.columnDefType === 'group' ? x : x.accessorKey != null ? { ...x, accessorKey: [...pre, x.accessorKey].join('.') } : x.id != null ? { ...x, id: [...pre, x.id].join('.') } : x

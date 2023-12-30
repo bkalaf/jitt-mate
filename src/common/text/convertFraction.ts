@@ -1,3 +1,5 @@
+import { getSiginifcantDigits } from '../../dto/embedded/getSiginifcantDigits';
+
 export const decimalData = [
     { value: 0.0625, numerator: 1, denominator: 16 },
     { value: 0.0714, numerator: 1, denominator: 14 },

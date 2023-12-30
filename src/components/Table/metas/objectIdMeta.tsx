@@ -8,5 +8,6 @@ export const objectIdMeta = {
     enableEditing: false,
     maxSize: 100,
     muiTableBodyCellProps: { style: { justifyContent: 'center' } },
-    Edit: () => null
-};
+    Edit: () => null,
+    enableClickToCopy: true
+} as DefinedMRTColumn<any>;

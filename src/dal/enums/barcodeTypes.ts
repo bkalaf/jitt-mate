@@ -1,28 +1,17 @@
-export type BarcodeTypes = {
-    upcA: string;
-    upcE: string;
-    ean13: string;
-    isbn10: string;
-    isbn13: string;
-    locator: string;
-    sku: string;
+import { enumColors } from './enumColors';
+
+export const BarcodeTypesInfos = {
+    upcA: { key: 'upc-a', label: 'UPC', color: enumColors.red2 },
+    upcE: { key: 'upc-e', label: 'UPC', color: enumColors.pink2 },
+    ean13: { key: 'ean-13', label: 'UPC', color: enumColors.cyan2 },
+    isbn10: { key: 'isbn-10', label: 'ISBN', color: enumColors.yellow2 },
+    isbn13: { key: 'isbn-13', label: 'ISBN', color: enumColors.amber2 },
+    locator: { key: 'locator', label: 'LOCATOR', color: enumColors.lime2 },
+    sku: { key: 'sku', label: 'SKU', color: enumColors.purple2 }
 };
-export const BarcodeTypes = {
-    upcA: 'upc-a',
-    upcE: 'upc-e',
-    ean13: 'ean-13',
-    isbn10: 'isbn-10',
-    isbn13: 'isbn-13',
-    locator: 'locator',
-    sku: 'sku'
-};
-export const BarcodeTypesColors = {
-    upcA: 'bg-red-500 text-white',
-    upcE: 'bg-pink-500 text-white',
-    ean13: 'bg-cyan-500 text-black',
-    isbn10: 'bg-yellow-500 text-black',
-    isbn13: 'bg-amber-500 text-black',
-    locator: 'bg-lime-500 text-white',
-    sku: 'bg-purple-500 text-white'
-};
-export type BarcodeTypesKey = keyof BarcodeTypes;
+
+export type BarcodeTypesKeys = keyof typeof BarcodeTypesInfos;
+
+export const BarcodeTypesLabelMap = Object.fromEntries(Object.entries(BarcodeTypesInfos).map(([k, v]) => [k, v.label] as [BarcodeTypesKeys, string])) as Record<BarcodeTypesKeys, string>;
+export const BarcodeTypesEnumMap = Object.fromEntries(Object.entries(BarcodeTypesInfos).map(([k, v]) => [k, v.key] as [BarcodeTypesKeys, string])) as Record<BarcodeTypesKeys, string>;
+export const BarcodeTypesColorMap = Object.fromEntries(Object.entries(BarcodeTypesInfos).map(([k, v]) => [k, v.color] as [BarcodeTypesKeys, string])) as Record<BarcodeTypesKeys, string>;
