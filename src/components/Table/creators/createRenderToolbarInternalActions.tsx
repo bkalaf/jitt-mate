@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { MRT_Row, MRT_ShowHideColumnsButton, MRT_ToggleDensePaddingButton, MRT_ToggleFullScreenButton, createRow } from 'material-react-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBoltLightning, faDumpsterFire, faFilterSlash, faFilters, faLeftRight, faLeftToLine, faMagnifyingGlass, faMagnifyingGlassMinus, faRedoAlt, faSquarePlus } from '@fortawesome/pro-solid-svg-icons';
+import { faBoltLightning, faDraftingCompass, faDumpsterFire, faFilterSlash, faFilters, faLeftRight, faLeftToLine, faMagnifyingGlass, faMagnifyingGlassMinus, faRedoAlt, faSquarePlus } from '@fortawesome/pro-solid-svg-icons';
 import { IconButton } from '@mui/material';
 import { useCallback } from 'react';
 import { BSON } from 'mongodb';
@@ -10,6 +10,8 @@ import { useReflectionContext } from '../../../hooks/useReflectionContext';
 import { usePersistedState } from '../../../hooks/usePersistedState';
 import { JITTIconButton } from '../JITTIconButton';
 import { pullNextUPC } from './pullNextUPC';
+import { ignore } from '../../../common/functions/ignore';
+import { useCollectionRoute } from '../../../hooks/useCollectionRoute';
 
 export const $pullNext = {
     sku: pullNextUPC('sku'),
@@ -68,6 +70,7 @@ export function createRenderToolbarInternalActions<T extends AnyObject>(outerPro
         // const onClick_pullUPC_disabled = useCallback((row: MRT_Row<IUPC>, table: MRT_TableInstance<IUPC>, formContext: UseFormReturn<FieldValues>) => {
         //     return () => table.getState().creatingRow != null ? ((formContext.getValues()?.upcs ?? [])?.length ?? 0) > 0 : table.getState().editingRow != null ? (row.original?.upcs?.length ?? 0) > 0 : false
         // }, []);
+        const collectionRoute = useCollectionRoute()
         return (
             <>
                 {!enableLink && (
@@ -76,8 +79,7 @@ export function createRenderToolbarInternalActions<T extends AnyObject>(outerPro
                     </IconButton>
                 )}
 
-                <JITTIconButton title='Create draft' color='primary' onClick={ignore} type='button' Icon={faDraft} />
-
+                {collectionRoute === 'sku' && <JITTIconButton title='Create draft' color='primary' onClick={ignore} type='button' Icon={faDraftingCompass} disabled={props.table.getSelectedRowModel().rows.length === 0} />}
                 <IconButton color='warning' className='flex' title='Update a record' onClick={() => outerProps.onClickLightning(props.table)} disabled={noRowsSelected}>
                     <FontAwesomeIcon icon={faBoltLightning} className='inline-block object-cover' />
                 </IconButton>
@@ -94,9 +96,9 @@ export function createRenderToolbarInternalActions<T extends AnyObject>(outerPro
                     onClick={toggleShowColumnFilters}
                     type='button'
                 />
-                <JITTIconButton 
+                <JITTIconButton
                     title='Toggle matching location'
-                    Icon={outerProps.matchFromStart ? faLeftRight : faLeftToLine} 
+                    Icon={outerProps.matchFromStart ? faLeftRight : faLeftToLine}
                     color='caution'
                     onClick={outerProps.toggleMatchFromStart}
                     type='button'

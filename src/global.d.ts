@@ -80,6 +80,7 @@ declare global {
         | 'clothingCare'
         | 'cloudLink'
         | 'customItemField'
+        | 'decorDetails'
         | 'dimensions'
         | 'draft'
         | 'flags'
@@ -182,6 +183,7 @@ declare global {
 
     export interface Window {
         $$store: Realm | undefined;
+        $$pullNextUPC: (key: string) => any;
     }
 
     export type ShippingServiceInfo = {

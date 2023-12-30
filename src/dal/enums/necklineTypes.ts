@@ -28,5 +28,4 @@ export const NecklineTypesInfos = {
 };
 
 export type NecklineTypesKeys = keyof typeof NecklineTypesInfos;
-export const NecklineTypesEnumMap = Object.fromEntries(Object.entries(NecklineTypesInfos).map(([k, v]) => [k, v.key] as [NecklineTypesKeys, string])) as Record<NecklineTypesKeys, string>;
-export const NecklineTypesColorMap = Object.fromEntries(Object.entries(NecklineTypesInfos).map(([k, v]) => [k, v.color] as [NecklineTypesKeys, string])) as Record<NecklineTypesKeys, string>;
+export const NecklineTypesEnumMap = Object.fromEntries(Object.entries(NecklineTypesInfos).map(([k, v]) => [k, v.key] as [NecklineTypesKeys, string])) as Record<NecklineTypesKeys, string>

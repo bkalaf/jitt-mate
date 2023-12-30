@@ -15,8 +15,6 @@ export const LegTypesInfos = {
 
 export type LegTypesKeys = keyof typeof LegTypesInfos;
 export const LegTypesEnumMap = Object.fromEntries(Object.entries(LegTypesInfos).map(([k, v]) => [k, v.key] as [LegTypesKeys, string])) as Record<LegTypesKeys, string>;
-export const LegTypesColorMap = Object.fromEntries(Object.entries(LegTypesInfos).map(([k, v]) => [k, v.color] as [LegTypesKeys, string])) as Record<LegTypesKeys, string>;
-
 
 // {
 // 	"batwing": "batwing",

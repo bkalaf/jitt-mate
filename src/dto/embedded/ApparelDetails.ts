@@ -1,4 +1,4 @@
-import { ObjectSchema } from 'realm';
+import Realm, { ObjectSchema } from 'realm';
 import { BacklineTypesEnumMap, BacklineTypesKeys } from '../../dal/enums/backlineTypes';
 import { CollarTypesEnumMap, CollarTypesKeys } from '../../dal/enums/collarTypes';
 import { CuffTypesEnumMap, CuffTypesKeys } from '../../dal/enums/cuffTypes';
@@ -6,14 +6,13 @@ import { NecklineTypesEnumMap, NecklineTypesKeys } from '../../dal/enums/necklin
 import { SleeveTypesEnumMap, SleeveTypesKeys } from '../../dal/enums/sleeveTypes';
 import { TopAdornmentsEnumMap, TopAdornmentsKeys } from '../../dal/enums/topAdornments';
 import { WaistTypesEnumMap, WaistTypesKeys } from '../../dal/enums/waistTypes';
-import { IApparelProperties, IDetails, IMeasurementDictionary, IProduct, IRn, ISku } from '../../dal/types';
+import { IApparelProperties, IDetails, IMaterialComposition, IMeasurementDictionary, IProduct, IRn, ISku } from '../../dal/types';
 import { $db } from '../../dal/db';
 import * as LaundryCare from '../../../laundry-care.json';
 import { ApparelTypesInfos, ApparelTypesKeys } from '../../dal/enums/apparelType';
 import { IApparelEnums } from '../../dal/types/enumTypes';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { FrontTypesEnumMap, FrontTypesKeys } from '../../dal/enums/frontTypes';
-import { ItemGroupsKeys } from '../../dal/enums/itemGroups';
 import { LegTypesEnumMap, LegTypesKeys } from '../../dal/enums/legTypes';
 import { toProperCase, toProperFromCamel } from '../../common/text/toProperCase';
 import { convertFraction } from '../../common/text/convertFraction';
@@ -24,14 +23,14 @@ import { GendersEnumMap, GendersKeys } from '../../dal/enums/genders';
 import { BarcodeTypesKeys, BarcodeTypesLabelMap } from '../../dal/enums/barcodeTypes';
 import { SizeGroupsEnumMap, SizeGroupsKeys, getSizes } from '../../enums/sizes';
 import { getSiginifcantDigits } from './getSiginifcantDigits';
-import { ofEnum } from '../collections/ofEnum';
+import { getEnum, ofEnum } from '../collections/ofEnum';
 
 export function take(qty: number) {
     return function <T>(arr: T[]) {
         return arr.slice(0, qty);
     };
 }
-function ofMaterialComposition(materials?: DBDictionary<IMaterialComposition>) {
+export function ofMaterialComposition(materials?: DBDictionary<IMaterialComposition>) {
     if (materials == null || Object.entries(materials).length === 0) return undefined;
     const materialSections = Object.entries(materials).map(([k, v]) => ({
         sectionName: k,
@@ -98,7 +97,7 @@ export class ApparelDetails extends Realm.Object<IApparelProperties & IApparelEn
         if (this.apparelType) return this.apparelType;
         const product = this.getProduct;
         if (product == null) return;
-        return product.classifier?.shortname as any
+        return product.classifier?.shortname as any;
     }
     backlineType: Optional<BacklineTypesKeys>;
     chestFitType: Optional<ChestFitTypesKeys>;
@@ -113,7 +112,7 @@ export class ApparelDetails extends Realm.Object<IApparelProperties & IApparelEn
         const result = product.checkTaxa('mens') ? 'mens' : product.checkTaxa('womens') ? 'womens' : product.checkTaxa('boys') ? 'boys' : product.checkTaxa('girls') ? 'girls' : undefined;
         return this.gender ?? result;
     }
-   
+
     legType: Optional<LegTypesKeys>;
     get effectiveLegType() {
         const product = this.getProduct;
@@ -220,7 +219,7 @@ export class ApparelDetails extends Realm.Object<IApparelProperties & IApparelEn
             $brandName: brandName,
             $descriptiveText: descriptiveText,
             $color: $color,
-            $apparelType: apparelType ? ApparelTypesInfos[apparelType] : undefined,
+            $apparelType: apparelType,
             $sleeveType: sleeveType ? SleeveTypesEnumMap[sleeveType] : undefined,
             $necklineType: necklineType ? NecklineTypesEnumMap[necklineType] : undefined,
             $backlineType: backlineType ? BacklineTypesEnumMap[backlineType] : undefined,
@@ -233,7 +232,7 @@ export class ApparelDetails extends Realm.Object<IApparelProperties & IApparelEn
             $frontType: frontType ? FrontTypesEnumMap[frontType] : undefined,
             $circa: $format.kvp('CIRCA')(identity<string>)(circa),
             $modelNo: $format.kvp('M/N')(identity<string>)(modelNo),
-            $origin: $format.kvp('MADE IN')(lookupCountry)(origin),
+            $origin: $format.kvp('MADE IN')(getEnum('country'))(origin),
             $styleNo: $format.kvp('STYLE #')(identity<string>)(styleNo2 ?? styleNo),
             $rn: $format.kvp('RN #')((x?: IRn) => x?.companyName)(rn),
             $cutNo: $format.kvp('CUT #')(identity<string>)(cutNo),
@@ -330,7 +329,7 @@ export class ApparelDetails extends Realm.Object<IApparelProperties & IApparelEn
             $$necklineType: ofEnum(NecklineTypesEnumMap)(necklineType),
             $$backlineType: ofEnum(BacklineTypesEnumMap)(backlineType),
             $$waistType: ofEnum(WaistTypesEnumMap)(waistType),
-            $$apparelType: ofEnum(ApparelTypesInfos)(apparelType),
+            $$apparelType: apparelType,
             $$cuffType: ofEnum(CuffTypesEnumMap)(cuffType),
             $$collarType: ofEnum(CollarTypesEnumMap)(collarType),
             $$legType: ofEnum(LegTypesEnumMap)(legType),
@@ -346,7 +345,7 @@ export class ApparelDetails extends Realm.Object<IApparelProperties & IApparelEn
             segmentsMap
         };
     }
-    generateTitle(indexCap?: number): string {
+    generateTitle(ignoreCap = false, indexCap?: number): string {
         const segments = [
             '$$apparelType',
             '$brandName',
@@ -401,11 +400,13 @@ export class ApparelDetails extends Realm.Object<IApparelProperties & IApparelEn
             .filter((x) => x != null)
             .join(' ');
 
-        if (title.length <= 80) {
+        if (ignoreCap || title.length <= 80) {
             return title;
         }
-        console.warn(`generateTitle length exceeded: ${title.length}`);
-        return this.generateTitle((indexCap ?? maxIndex) - 1);
+        console.warn(`generatedTitle length exceeded: ${title.length}: ${title}`);
+        const nextTitle = this.generateTitle(false, (indexCap ?? maxIndex) - 1);
+        console.warn(`nextTitle: ${nextTitle.length} : ${nextTitle}`);
+        return nextTitle;
     }
     generateNarrative(indexCap?: number): string {
         const segments = [
@@ -448,7 +449,7 @@ export class ApparelDetails extends Realm.Object<IApparelProperties & IApparelEn
         const currentOptions = Object.fromEntries(optionLabels.map((k, ix) => [k, ix < takeNormalized] as [string, boolean]));
         console.log(`currentOptions`, currentOptions);
         const { segmentsMap: _segmentsMap } = this.generateSegments(currentOptions);
-        const segmentsMap = { ..._segmentsMap, $title: this.generateTitle() };
+        const segmentsMap = { ..._segmentsMap, $title: this.generateTitle(true) };
         const allowedSegments = indexCap != null && takeNormalized !== -1 ? segments : segments.slice(0, indexCap);
         const $get = (name: keyof typeof segmentsMap) => (allowedSegments.includes(name) ? segmentsMap[name] : undefined);
         const output = [

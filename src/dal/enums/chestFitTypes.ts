@@ -14,5 +14,4 @@ export const ChestFitTypesInfos = {
 };
 
 export type ChestFitTypesKeys = keyof typeof ChestFitTypesInfos;
-export const ChestFitTypesKeyEnumMap = Object.fromEntries(Object.entries(ChestFitTypesInfos).map(([k, v]) => [k, v.key] as [ChestFitTypesKeys, string])) as Record<ChestFitTypesKeys, string>;
 export const ChestFitTypesKeyLabelMap = Object.fromEntries(Object.entries(ChestFitTypesInfos).map(([k, v]) => [k, v.label] as [ChestFitTypesKeys, string])) as Record<ChestFitTypesKeys, string>;

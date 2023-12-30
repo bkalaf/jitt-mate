@@ -1,14 +1,11 @@
 import Realm, { PropertySchema, PropertyTypeName, Types, BSON } from 'realm';
 
 import { toType } from '../common/toType';
-import { ISku } from './types';
 import { MaterialTypesKey } from './enums/materialTypes';
 
 export type MadeOf = Partial<Record<MaterialTypesKey, number>>;
 // export type Optional<T> = T | undefined;
 export type OptObj<T> = (Realm.Object<T> & T) | undefined;
-
-
 
 export interface IRealmType {
     (): string;
@@ -82,6 +79,7 @@ export const $db: DB = {
     clothingCare: toType('clothingCare'),
     cloudLink: toType('cloudLink'),
     customItemField: toType('customItemField'),
+    decorDetails: toType('decorDetails'),
     dimensions: toType('dimensions'),
     draft: toType('draft'),
     flags: toType('flags'),
@@ -123,7 +121,6 @@ $db.backlink = (name: keyof typeof $db, property: string) =>
         property
     } as PropertySchema);
 
-
 export interface IDraft {
     _id: BSON.ObjectId;
     sku: OptObj<ISku>;
@@ -137,32 +134,32 @@ export interface IDraft {
     isReadyToPost: boolean;
     isReady: boolean;
     recommendedPrice: Optional<number>;
-        // readonly getCategoryName: string;
-        // readonly getSubCategoryName: string;
-        // readonly getSubSubCategoryName: string;
-        // readonly isPostable: boolean;
-        // readonly isNoBrand: boolean;
-        // readonly getBrandName: string | undefined;
-        // readonly getMercariBrandName: string | undefined;
-        // readonly getBrandFolder: string | undefined;
-        // readonly getCategoryId: string;
-        // readonly getSubCategoryId: string;
-        // readonly getSubSubCategoryId: string;
-        // readonly getCondition: ConditionKeys;
-        // readonly getColor: ColorKeys | undefined;
-        // readonly getMercariColor: MercariColor | undefined;
-        // readonly getWeight: number;
-        // readonly getShipWeight: EnglishWeight;
-        // readonly getDimensions: LWH | undefined;
-        // readonly hasDimensions: boolean;
-        // readonly getShippingService: ShippingServiceKeys;
-        // readonly getCarrier: string;
-        // readonly getCarrierId: number;
-        // readonly isListed: boolean;
-        // readonly getFullBrandFolder: string;
-        // readonly getFullItemFolder: string;
-        // readonly getFullFinalFolder: string;
-        // readonly getImages: string[];
+    // readonly getCategoryName: string;
+    // readonly getSubCategoryName: string;
+    // readonly getSubSubCategoryName: string;
+    // readonly isPostable: boolean;
+    // readonly isNoBrand: boolean;
+    // readonly getBrandName: string | undefined;
+    // readonly getMercariBrandName: string | undefined;
+    // readonly getBrandFolder: string | undefined;
+    // readonly getCategoryId: string;
+    // readonly getSubCategoryId: string;
+    // readonly getSubSubCategoryId: string;
+    // readonly getCondition: ConditionKeys;
+    // readonly getColor: ColorKeys | undefined;
+    // readonly getMercariColor: MercariColor | undefined;
+    // readonly getWeight: number;
+    // readonly getShipWeight: EnglishWeight;
+    // readonly getDimensions: LWH | undefined;
+    // readonly hasDimensions: boolean;
+    // readonly getShippingService: ShippingServiceKeys;
+    // readonly getCarrier: string;
+    // readonly getCarrierId: number;
+    // readonly isListed: boolean;
+    // readonly getFullBrandFolder: string;
+    // readonly getFullItemFolder: string;
+    // readonly getFullFinalFolder: string;
+    // readonly getImages: string[];
     autofill(realm: Realm): Realm.Object<IDraft> & IDraft;
 }
 export interface IListing {
@@ -172,11 +169,6 @@ export interface IListing {
     listingId: string;
     createdOn: Date;
 }
-
-
-
-
-
 
 export interface IListing2 {
     _id: BSON.ObjectId;

@@ -23,6 +23,7 @@ import { MaterialComposition } from '../embedded/MaterialComposition';
 import { Product } from './Product';
 import { ShippingService } from '../embedded/ShippingService';
 import { SellingPrice } from '../embedded/SellingPrice';
+import { DecorDetails } from '../embedded/DecorDetails';
 
 const $$schema: Realm.ObjectClass<any>[] = [
     Address,
@@ -32,6 +33,7 @@ const $$schema: Realm.ObjectClass<any>[] = [
     Brand,
     Classifier,
     CustomItemField,
+    DecorDetails,
     Draft,
     HashTag,
     HashTagUsage,

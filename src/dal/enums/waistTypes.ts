@@ -10,4 +10,3 @@ export const WaistTypesInfos = {
 
 export type WaistTypesKeys = keyof typeof WaistTypesInfos;
 export const WaistTypesEnumMap = Object.fromEntries(Object.entries(WaistTypesInfos).map(([k, v]) => [k, v.key] as [WaistTypesKeys, string])) as Record<WaistTypesKeys, string>;
-export const WaistTypesColorMap = Object.fromEntries(Object.entries(WaistTypesInfos).map(([k, v]) => [k, v.color] as [WaistTypesKeys, string])) as Record<WaistTypesKeys, string>;

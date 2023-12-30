@@ -8,8 +8,4 @@ export const MediaFormatTypesInfos = {
 };
 
 export type MediaFormatTypesKeys = keyof typeof MediaFormatTypesInfos;
-export const MediaFormatTypesEnumMap = Object.fromEntries(Object.entries(MediaFormatTypesInfos).map(([k, v]) => [k, v.key] as [MediaFormatTypesKeys, string])) as Record<MediaFormatTypesKeys, string>;
-export const MediaFormatTypesColorMap = Object.fromEntries(Object.entries(MediaFormatTypesInfos).map(([k, v]) => [k, v.color] as [MediaFormatTypesKeys, string])) as Record<
-    MediaFormatTypesKeys,
-    string
->;
+

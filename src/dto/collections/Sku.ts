@@ -3,12 +3,13 @@ import { $db } from '../../dal/db';
 import { IBarcode, IHashTag, ILocationSegment, IProduct, IScan, ISku } from '../../dal/types';
 import { wrapInTransactionDecorator } from '../../dal/transaction';
 import { Scan } from '../embedded/Scan';
-import { pullNextUPC } from '../../components/Table/creators/pullNextUPC';
 import { $$queryClient } from '../../components/$$queryClient';
+import { IAppConfigContext } from '../../components/Contexts/AppConfigContext';
 
 export class Sku extends Realm.Object<ISku> implements ISku {
     @wrapInTransactionDecorator()
     update() {
+        if (window.$$pullNextUPC == null) throw new Error('no pullnext');
         if (this.hashTags == null) this.hashTags = [] as any;
         if (this.defects == null) this.defects = [] as any;
         if (this.condition == null) this.condition = 'good';
@@ -16,7 +17,7 @@ export class Sku extends Realm.Object<ISku> implements ISku {
         if (this.price == null) this.price = 0;
         if (this.upcs == null) this.upcs = [] as any;
         if (this.upcs.length === 0) {
-            this.addSKU();
+            this.addSKU(window.$$pullNextUPC);
         }
         if (this.skuPrinted == null) this.skuPrinted = false;
         return this;
@@ -42,8 +43,8 @@ export class Sku extends Realm.Object<ISku> implements ISku {
     };
     
     @wrapInTransactionDecorator()
-    addSKU(bc?: string): ISku {
-        const barcode = bc ?? pullNextUPC('sku')();
+    addSKU(pullNextUPC: IAppConfigContext['pullNextUPC'], bc?: string): ISku {
+        const barcode = bc ?? pullNextUPC('sku');
         if (this.upcs == null) this.upcs = [] as any;
         this.upcs.push(barcode as Entity<IBarcode>);
         return this;

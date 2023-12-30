@@ -14,6 +14,7 @@ import { LocationLabelColorsKeys } from '../enums/locationLabelColors';
 import { LocationKindsKeys } from '../enums/locationKinds';
 import { BarcodeTypesKeys } from '../enums/barcodeTypes';
 import { SizeGroupsKeys } from '../../enums/sizes';
+import { IAppConfigContext } from '../../components/Contexts/AppConfigContext';
 
 export type LaundryCareOptions = keyof typeof LaundryCare;
 
@@ -26,7 +27,7 @@ export interface IRealmEntity<T> extends IRealmObject<T> {
 export interface IDetails<T, TEnum> extends IRealmObject<T & TEnum> {
     readonly getProduct: OptionalEntity<IProduct>;
     readonly getSku: OptionalEntity<ISku>;
-    generateTitle(indexCap?: number): string;
+    generateTitle(ignoreCap?: boolean, indexCap?: number): string;
     generateNarrative(indexCap?: number): string;
 }
 
@@ -297,6 +298,8 @@ export interface IMediaProperties {
 export type IApparelDetails = IDetails<IApparelProperties, IApparelEnums>;
 export type IMediaDetails = IDetails<IMediaProperties, IMediaEnums>;
 
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type IDecorDetails = IDetails<{}, {}>
 
 export interface IMaterialComposition extends IRealmObject<IMaterialComposition> {
     acrylic: Optional<number>;
@@ -337,6 +340,7 @@ export interface IProduct extends IRealmEntity<IProduct>, IProductAttributes, IH
     circa: Optional<string>;
     classifier: OptionalEntity<IClassifier>;
     color: Optional<keyof typeof ColorsInfos>;
+    decorDetails: OptionalEntity<IDecorDetails>;
     descriptiveText: Optional<string>;
     dimensions: IDimensions & DBDictionary<number>;
     features: DBList<string>;
@@ -378,7 +382,7 @@ export interface IBarcode extends IRealmObject<IBarcode> {
     readonly isTruncated: boolean;
 }
 export interface ISku extends IRealmEntity<ISku>, IHashTagged, IUPC {
-    addSKU(bc?: string): ISku;
+    addSKU(pullNextUPC: IAppConfigContext['pullNextUPC'], bc?: string): ISku;
     readonly isNoBrand: boolean;
     readonly effectiveBrand: OptionalEntity<IBrand>;
     product: OptionalEntity<IProduct>;

@@ -8,6 +8,3 @@ export const ItemGroupsInfos = {
 };
 
 export type ItemGroupsKeys = keyof typeof ItemGroupsInfos;
-export const ItemGroupsEnumMap = Object.fromEntries(Object.entries(ItemGroupsInfos).map(([k, v]) => [k, v.key] as [ItemGroupsKeys, string])) as Record<ItemGroupsKeys, string>;
-export const ItemGroupsColorMap = Object.fromEntries(Object.entries(ItemGroupsInfos).map(([k, v]) => [k, v.color] as [ItemGroupsKeys, string])) as Record<ItemGroupsKeys, string>;
-

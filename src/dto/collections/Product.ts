@@ -1,5 +1,5 @@
 import { ColorsInfos } from '../../dal/enums/colors';
-import { IApparelDetails, IApparelProperties, IBarcode, IBrand, IClassifier, IDimensions, IHashTag, IMaterialComposition, IMediaProperties, IProduct, IProductLine, IProductTaxonomy } from '../../dal/types';
+import { IApparelDetails, IApparelProperties, IBarcode, IBrand, IClassifier, IDecorDetails, IDimensions, IHashTag, IMaterialComposition, IMediaProperties, IProduct, IProductLine, IProductTaxonomy } from '../../dal/types';
 import { BSON } from 'realm';
 import { $db } from '../../dal/db';
 import { HashTag } from './HashTag';
@@ -90,7 +90,7 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
         return (this.upcs?.length ?? 0) > 0 ? this.upcs[0] : undefined;
     }
     get effectiveDiscriminator() {
-        const result = this.checkTaxa('apparel') ? 'apparel' : this.checkTaxa('media') ? 'media' : this.checkTaxa('bags') ? 'bags' : this.checkTaxa('jewelry') ? 'jewelry' : undefined;
+        const result = this.checkTaxa('apparel') ? 'apparel' : this.checkTaxa('media') ? 'media' : this.checkTaxa('bags') ? 'bags' : this.checkTaxa('jewelry') ? 'jewelry' : this.checkTaxa('decor') ? 'decor' : undefined;
         return result ?? 'unknown';
     }
     get isDecorative() {
@@ -102,6 +102,9 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
         if (this._id == null) this._id = new BSON.ObjectId();
         if (this.apparelDetails == null) {
             $initialCollection['apparelDetails']().then((ad) => (this.apparelDetails = ad as any));
+        }
+        if (this.decorDetails == null) {
+            this.decorDetails = {} as any;
         }
         if (this.folder == null) this.folder = new BSON.UUID();
         if (this.dimensions == null) this.dimensions = {} as any;
@@ -183,7 +186,9 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
     get summaryName(): string {
         switch (this.effectiveDiscriminator) {
             case 'apparel':
-                return this.apparelDetails.generateTitle();
+                return this.apparelDetails.generateTitle(false);
+            case 'decor': 
+                return this.decorDetails?.generateTitle(false) ?? 'unknown';
             case 'media':
             case 'bags':
             case 'jewelry':
@@ -248,6 +253,7 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
     circa: Optional<string>;
     classifier: OptionalEntity<IClassifier>;
     color: Optional<keyof typeof ColorsInfos>;
+    decorDetails: OptionalEntity<IDecorDetails>;
     descriptiveText: Optional<string>;
     dimensions: IDimensions & DBDictionary<number> = {} as any;
     features: DBList<string> = [] as any;
@@ -272,6 +278,7 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
             circa: $db.string.opt,
             classifier: $db.classifier.opt,
             color: $db.string.opt,
+            decorDetails: $db.decorDetails.opt,
             descriptiveText: $db.string.opt,
             dimensions: $db.float.dictionary,
             features: $db.string.list,

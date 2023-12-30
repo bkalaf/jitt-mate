@@ -13,7 +13,8 @@ export const skuColumns = {
                 {
                     objectType: 'product',
                     labelPropertyName: (x: IProduct) =>
-                        ([x.productLine?.brand?.name, x.brand?.name, x.taxon?.name, x.descriptiveText].filter((x) => x != null) as string[]).join('-').replaceAll(' ', '-').toLowerCase() as string
+                        x.summaryName
+                        // ([x.productLine?.brand?.name, x.brand?.name, x.taxon?.name, x.descriptiveText].filter((x) => x != null) as string[]).join('-').replaceAll(' ', '-').toLowerCase() as string
                 },
                 false
             ),

@@ -11,4 +11,3 @@ export const CuffTypesInfos = {
 
 export type CuffTypesKeys = keyof typeof CuffTypesInfos;
 export const CuffTypesEnumMap = Object.fromEntries(Object.entries(CuffTypesInfos).map(([k, v]) => [k, v.key] as [CuffTypesKeys, string])) as Record<CuffTypesKeys, string>;
-export const CuffTypesColorMap = Object.fromEntries(Object.entries(CuffTypesInfos).map(([k, v]) => [k, v.color] as [CuffTypesKeys, string])) as Record<CuffTypesKeys, string>;

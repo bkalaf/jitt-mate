@@ -9,5 +9,3 @@ export const MovieRatingsInfos = {
 };
 
 export type MovieRatingsKeys = keyof typeof MovieRatingsInfos;
-export const MovieRatingsEnumMap = Object.fromEntries(Object.entries(MovieRatingsInfos).map(([k, v]) => [k, v.key] as [MovieRatingsKeys, string])) as Record<MovieRatingsKeys, string>;
-export const MovieRatingsColorMap = Object.fromEntries(Object.entries(MovieRatingsInfos).map(([k, v]) => [k, v.color] as [MovieRatingsKeys, string])) as Record<MovieRatingsKeys, string>;

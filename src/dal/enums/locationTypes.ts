@@ -5,5 +5,3 @@ export const LocationTypesInfos = {
 };
 
 export type LocationTypesKeys = keyof typeof LocationTypesInfos;
-export const LocationTypesEnumMap = Object.fromEntries(Object.entries(LocationTypesInfos).map(([k, v]) => [k, v.key] as [LocationTypesKeys, string])) as Record<LocationTypesKeys, string>;
-export const LocationTypesColorMap = Object.fromEntries(Object.entries(LocationTypesInfos).map(([k, v]) => [k, v.color] as [LocationTypesKeys, string])) as Record<LocationTypesKeys, string>;

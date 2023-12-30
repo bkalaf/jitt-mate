@@ -8,6 +8,3 @@ export const DraftStatusInfos = {
 }
 
 export type DraftStatusKeys = keyof typeof DraftStatusInfos;
-export const DraftStatusEnumMap = Object.fromEntries(Object.entries(DraftStatusInfos).map(([k, v]) => [k, v.key] as [DraftStatusKeys, string])) as Record<DraftStatusKeys, string>;
-export const DraftStatusColorMap = Object.fromEntries(Object.entries(DraftStatusInfos).map(([k, v]) => [k, v.color] as [DraftStatusKeys, string])) as Record<DraftStatusKeys, string>;
-export const DraftStatusLabelMap = Object.fromEntries(Object.entries(DraftStatusInfos).map(([k, v]) => [k, v.label] as [DraftStatusKeys, string])) as Record<DraftStatusKeys, string>;

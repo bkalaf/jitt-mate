@@ -6,5 +6,4 @@ export const TopAdornmentsInfos = {
 };
 
 export type TopAdornmentsKeys = keyof typeof TopAdornmentsInfos;
-export const TopAdornmentsEnumMap = Object.fromEntries(Object.entries(TopAdornmentsInfos).map(([k, v]) => [k, v.key] as [TopAdornmentsKeys, string])) as Record<TopAdornmentsKeys, string>;
-export const TopAdornmentsColorMap = Object.fromEntries(Object.entries(TopAdornmentsInfos).map(([k, v]) => [k, v.color] as [TopAdornmentsKeys, string])) as Record<TopAdornmentsKeys, string>;
+export const TopAdornmentsEnumMap = Object.fromEntries(Object.entries(TopAdornmentsInfos).map(([k, v]) => [k, v.key] as [TopAdornmentsKeys, string])) as Record<TopAdornmentsKeys, string>

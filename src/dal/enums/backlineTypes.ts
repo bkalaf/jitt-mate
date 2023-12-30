@@ -12,4 +12,3 @@ export const BacklineTypesInfos = {
 
 export type BacklineTypesKeys = keyof typeof BacklineTypesInfos;
 export const BacklineTypesEnumMap = Object.fromEntries(Object.entries(BacklineTypesInfos).map(([k, v]) => [k, v.key] as [BacklineTypesKeys, string])) as Record<BacklineTypesKeys, string>;
-export const BacklineTypesColorMap = Object.fromEntries(Object.entries(BacklineTypesInfos).map(([k, v]) => [k, v.color] as [BacklineTypesKeys, string])) as Record<BacklineTypesKeys, string>;

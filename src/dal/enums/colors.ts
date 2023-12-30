@@ -1,10 +1,4 @@
 // ///<reference path="./../../global.d.ts" />
-export interface IColorInfo {
-    key: string;
-    aliases?: string[];
-    selector: string;
-    color: string;
-}
 export const ColorsInfos = {
     black: {
         key: 'black',
@@ -99,14 +93,4 @@ export const AliasColorsMainColorMap = Object.fromEntries(
         .reduce((pv, cv) => [...pv, ...cv], [])
 );
 export const aliasesToSelectors = (x: string) => MainColorsSelectorsMap[AliasColorsMainColorMap[x]]
-export const MainColorsColorsMap = Object.fromEntries(Object.entries(ColorsInfos).map(([k, v]) => [k, v.color] as [CoreColorsKeys, string]));
-export const aliasesToColorClasses = (x: string) => MainColorsColorsMap[AliasColorsMainColorMap[x]];
-export const AliasColorsColorMap = Object.fromEntries(Object.keys(AliasColorsMainColorMap).map((k) => [k, aliasesToColorClasses(k)] as [string, string]));
 
-// console.log(JSON.stringify($colorNameMap, null, '\t'));
-// console.log(JSON.stringify($colorSelectorMap, null, '\t'));
-
-// console.log(lookupColor('blue'))
-// console.log(lookupColorSelector('navy'));
-
-// Object.keys(linkedColor).map((x) => console.log(lookupColorSelector(x)));

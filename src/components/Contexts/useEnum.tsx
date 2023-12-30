@@ -7,7 +7,7 @@ import { useAppConfigContext } from './AppConfigContext';
 
 export function useEnum(type: string) {
     const { config, setConfig } = useAppConfigContext();
-    const enums = config.enums as Record<string, Record<string, { key: string; text: string; color: keyof typeof enumColors; selector?: string; aliases?: string[]; }>>;
+    const enums = config.enums as Record<string, Record<string, { key: string; text: string; color?: keyof typeof enumColors; selector?: string; aliases?: string[]; }>>;
     const $enum = useMemo(() => enums[type] ?? {}, [enums, type]);
     const aliasMap = useMemo(
         () => Object.fromEntries(

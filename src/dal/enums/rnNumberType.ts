@@ -6,5 +6,3 @@ export const RnNumberTypesInfos = {
 }
 
 export type RnNumberTypesKeys = keyof typeof RnNumberTypesInfos;
-export const RnNumberTypesEnumMap = Object.fromEntries(Object.entries(RnNumberTypesInfos).map(([k, v]) => [k, v.key] as [RnNumberTypesKeys, string])) as Record<RnNumberTypesKeys, string>;
-export const RnNumberTypesColorMap = Object.fromEntries(Object.entries(RnNumberTypesInfos).map(([k, v]) => [k, v.color] as [RnNumberTypesKeys, string])) as Record<RnNumberTypesKeys, string>;

@@ -7,5 +7,3 @@ export const VideoTypesInfos = {
 };
 
 export type VideoTypesKeys = keyof typeof VideoTypesInfos;
-export const VideoTypesEnumMap = Object.fromEntries(Object.entries(VideoTypesInfos).map(([k, v]) => [k, v.key] as [VideoTypesKeys, string])) as Record<VideoTypesKeys, string>;
-export const VideoTypesColorMap = Object.fromEntries(Object.entries(VideoTypesInfos).map(([k, v]) => [k, v.color] as [VideoTypesKeys, string])) as Record<VideoTypesKeys, string>;

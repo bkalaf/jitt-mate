@@ -68,10 +68,10 @@ export class Classifier extends Realm.Object<IClassifier> implements IClassifier
     static generateName(classifier: IClassifier) {
         const { family, genus, kingdom, phylum, klass, order, species } = classifier.taxon ?? {};
         const extra = classifier.shortname ? surroundText(' (')(')')(classifier.shortname) : '';
-        return [kingdom, phylum, klass, order, family, genus, species, classifier.isAthletic ? 'athletic' : undefined]
+        return [kingdom, phylum, klass, order, family, genus, species]
+            .map((x) => x?.toLowerCase())
             .filter((x) => x != null && x.length > 0)
-            .join('-')
-            .concat(extra);
+            .join('-');
     }
     get effectiveFamily() {
         return effective<IProductTaxonomy, string>('family', this.taxon, this.mercariSubSubCategory?.taxon);

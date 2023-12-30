@@ -9,5 +9,3 @@ export const LocationLabelColorsInfos = {
 };
 
 export type LocationLabelColorsKeys = keyof typeof LocationLabelColorsInfos;
-export const LocationLabelColorsEnumMap = Object.fromEntries(Object.entries(LocationLabelColorsInfos).map(([k, v]) => [k, v.key] as [LocationLabelColorsKeys, string])) as Record<LocationLabelColorsKeys, string>;
-export const LocationLabelColorsColorMap = Object.fromEntries(Object.entries(LocationLabelColorsInfos).map(([k, v]) => [k, v.color] as [LocationLabelColorsKeys, string])) as Record<LocationLabelColorsKeys, string>;

@@ -13,5 +13,3 @@ export const BarcodeTypesInfos = {
 export type BarcodeTypesKeys = keyof typeof BarcodeTypesInfos;
 
 export const BarcodeTypesLabelMap = Object.fromEntries(Object.entries(BarcodeTypesInfos).map(([k, v]) => [k, v.label] as [BarcodeTypesKeys, string])) as Record<BarcodeTypesKeys, string>;
-export const BarcodeTypesEnumMap = Object.fromEntries(Object.entries(BarcodeTypesInfos).map(([k, v]) => [k, v.key] as [BarcodeTypesKeys, string])) as Record<BarcodeTypesKeys, string>;
-export const BarcodeTypesColorMap = Object.fromEntries(Object.entries(BarcodeTypesInfos).map(([k, v]) => [k, v.color] as [BarcodeTypesKeys, string])) as Record<BarcodeTypesKeys, string>;

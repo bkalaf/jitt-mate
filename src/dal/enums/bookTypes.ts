@@ -7,5 +7,3 @@ export const BookTypesInfos = {
 };
 
 export type BookTypesKeys = keyof typeof BookTypesInfos;
-export const BookTypesEnumMap = Object.fromEntries(Object.entries(BookTypesInfos).map(([k, v]) => [k, v.key] as [BookTypesKeys, string])) as Record<BookTypesKeys, string>;
-export const BookTypesColorMap = Object.fromEntries(Object.entries(BookTypesInfos).map(([k, v]) => [k, v.color] as [BookTypesKeys, string])) as Record<BookTypesKeys, string>;

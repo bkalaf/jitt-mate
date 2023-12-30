@@ -12,4 +12,3 @@ export const FrontTypesInfos = {
 
 export type FrontTypesKeys = keyof typeof FrontTypesInfos;
 export const FrontTypesEnumMap = Object.fromEntries(Object.entries(FrontTypesInfos).map(([k, v]) => [k, v.key] as [FrontTypesKeys, string])) as Record<FrontTypesKeys, string>;
-export const FrontTypesColorMap = Object.fromEntries(Object.entries(FrontTypesInfos).map(([k, v]) => [k, v.color] as [FrontTypesKeys, string])) as Record<FrontTypesKeys, string>;

@@ -1,4 +1,3 @@
-import { LocationKinds } from './../../../dist/jitt/jitt/src/dal/enums/locationKinds.d';
 import { enumColors } from './enumColors';
 
 export const LocationKindsInfos = {
@@ -18,5 +17,3 @@ export const LocationKindsInfos = {
 };
 
 export type LocationKindsKeys = keyof typeof LocationKindsInfos;
-export const LocationKindsEnumMap = Object.fromEntries(Object.entries(LocationKindsInfos).map(([k, v]) => [k, v.key] as [LocationKindsKeys, string])) as Record<LocationKindsKeys, string>;
-export const LocationKindsColorMap = Object.fromEntries(Object.entries(LocationKindsInfos).map(([k, v]) => [k, v.color] as [LocationKindsKeys, string])) as Record<LocationKindsKeys, string>;

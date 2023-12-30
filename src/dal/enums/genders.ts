@@ -45,4 +45,3 @@ export const GendersInfos = {
 
 export type GendersKeys = keyof typeof GendersInfos;
 export const GendersEnumMap = Object.fromEntries(Object.entries(GendersInfos).map(([k, v]) => [k, v.key] as [GendersKeys, string])) as Record<GendersKeys, string>;
-export const GendersColorMap = Object.fromEntries(Object.entries(GendersInfos).map(([k, v]) => [k, v.color] as [GendersKeys, string])) as Record<GendersKeys, string>;
