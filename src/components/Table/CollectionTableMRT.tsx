@@ -32,9 +32,9 @@ export function CollectionTableMRT<T extends MRT_RowData & EntityBase & IRealmEn
     const params = useParams();
     useEffect(() => {
         if (params.collection === 'sku') {
-            (options.data as ISku[]).map((item) => {
-                console.log(`title`, item.product?.apparelDetails.generateTitle(true));
-                console.log(`narrative`, item.product?.apparelDetails.generateNarrative());
+            (options.data as ISku[]).map((item): any => {
+                console.log(`title`, item.product?.summaryName);
+                console.log(`narrative`, item.product?.apparelDetails.narrativeGenerator(item));
             });
         }
     }, [options.data, params.collection]);

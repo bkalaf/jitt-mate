@@ -43,3 +43,16 @@ export interface IMediaEnums {
     gameRating: Optional<GameRatingsKeys>;
     movieRating: Optional<MovieRatingsKeys>;
 }
+export interface IDecorEnums {
+    holiday: Optional<string>;
+    readonly effectiveHoliday: Optional<string>;
+}
+export interface IBatteryPowered {
+    qty: number;
+    batteryType: string;
+}
+
+export interface IHomeEnums {
+    batteries: OptionalEntity<IBatteryPowered>;
+    testedOn: Optional<Date>;
+}

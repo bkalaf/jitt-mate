@@ -59,6 +59,9 @@ export function useProvideAppConfigContext(): IAppConfigContext {
     useEffect(() => {
         window.$$pullNextUPC = pullNextUPC as (key: string) => any;
     }, [pullNextUPC])
+    useEffect(() => {
+        window.$$config = config;
+    }, [config])
     return {
         filename,
         config,

@@ -1,10 +1,10 @@
-import Realm, { BSON } from 'realm';
+import { BSON } from 'realm';
 import { LocationTypesKeys } from '../enums/locationTypes';
 import { MaterialTypes } from '../enums/materialTypes';
 import { ColorsInfos } from '../enums/colors';
 import * as LaundryCare from '../../../laundry-care.json';
 import { ItemConditionsInfos } from '../enums/itemConditions';
-import { IApparelEnums, IMediaEnums } from './enumTypes';
+import { IApparelEnums, IDecorEnums, IHomeEnums, IMediaEnums } from './enumTypes';
 import { MarketplacesInfos } from '../enums/marketplaces';
 import { DraftStatusInfos } from '../enums/draftStatus';
 import { ShippingVersionsKeys } from '../enums/shippingVersions';
@@ -13,7 +13,6 @@ import { ChestFitTypesKeys } from '../enums/chestFitTypes';
 import { LocationLabelColorsKeys } from '../enums/locationLabelColors';
 import { LocationKindsKeys } from '../enums/locationKinds';
 import { BarcodeTypesKeys } from '../enums/barcodeTypes';
-import { SizeGroupsKeys } from '../../enums/sizes';
 import { IAppConfigContext } from '../../components/Contexts/AppConfigContext';
 
 export type LaundryCareOptions = keyof typeof LaundryCare;
@@ -27,8 +26,10 @@ export interface IRealmEntity<T> extends IRealmObject<T> {
 export interface IDetails<T, TEnum> extends IRealmObject<T & TEnum> {
     readonly getProduct: OptionalEntity<IProduct>;
     readonly getSku: OptionalEntity<ISku>;
-    generateTitle(ignoreCap?: boolean, indexCap?: number): string;
-    generateNarrative(indexCap?: number): string;
+    titleGenerator(sku: ISku, extraCharacters?: boolean, showMetric?: boolean, ignoreCap?: boolean): string;
+    narrativeGenerator(sku: ISku, extraCharacters?: boolean, showMetric?: boolean, ignoreCap?: boolean): string;
+    // generateTitle(ignoreCap?: boolean, indexCap?: number): string;
+    // generateNarrative(indexCap?: number): string;
 }
 
 export interface IHashTagged {
@@ -50,7 +51,7 @@ export interface IProductAttributes extends IHashTagged {
 }
 
 export type Measurements = 'chest' | 'neck' | 'inseam' | 'length' | 'sleeve' | 'torso' | 'waist' | 'hip' | 'foot' | 'bust' | 'head' | 'heel';
-export type ProductFlags = 'decorative' | 'rare' | 'vintage' | 'collectible' | 'discontinued'  | 'missingTags';
+export type ProductFlags = 'decorative' | 'rare' | 'vintage' | 'collectible' | 'discontinued' | 'missingTags';
 
 export const Flags = ['isAthletic', 'isDecorative', 'isGraphic', 'isRare', 'isVintage', 'isCollectible', 'isDiscontinued', 'isMediaMail', 'isMissingTags'];
 export type MeasurementKeys = `${Measurements}Inches`;
@@ -111,7 +112,7 @@ export type Flagged<TFlags extends string, TExtends extends Array<{ flags: DBSet
 } & {
     flags: DBSet<FlagsKeys<TFlags, TExtends>>;
 };
-    
+
 export interface IRn extends IRealmEntity<IRn>, Flagged<RnTypes, []> {
     companyName: string;
     rnNo: number;
@@ -133,8 +134,6 @@ export interface IRn extends IRealmEntity<IRn>, Flagged<RnTypes, []> {
     readonly scrapedOn: Date;
     addresses: DBList<IAddress>;
 }
-
-
 
 export interface IMeasurementDictionary {
     chestInches: Optional<number>;
@@ -297,9 +296,14 @@ export interface IMediaProperties {
 }
 export type IApparelDetails = IDetails<IApparelProperties, IApparelEnums>;
 export type IMediaDetails = IDetails<IMediaProperties, IMediaEnums>;
+export type IHomeDetails = IDetails<AnyObject, IHomeEnums>;
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export type IDecorDetails = IDetails<{}, {}>
+export type IDecorDetails = IDetails<
+    AnyObject,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    IDecorEnums
+>;
 
 export interface IMaterialComposition extends IRealmObject<IMaterialComposition> {
     acrylic: Optional<number>;
@@ -353,17 +357,34 @@ export interface IProduct extends IRealmEntity<IProduct>, IProductAttributes, IH
     styleNo: Optional<string>;
     taxon: OptionalEntity<IProductTaxonomy>;
     shipWeightPercent: Optional<number>;
+    attachments: DBDictionary<IAttachment>;
+    links: DBDictionary<ILinkedItem>;
+    compatibleWith: DBList<string>;
     readonly isNoBrand: boolean;
     readonly effectiveBrand: OptionalEntity<IBrand>;
     readonly effectiveMercariBrandName: Optional<string>;
     readonly effectiveBrandName: Optional<string>;
     readonly effectiveBrandFolder: Optional<string>;
     readonly effectiveCategoryID: Optional<string>;
+    readonly effectiveCategoryName: Optional<string>;
     readonly effectiveSubCategoryID: Optional<string>;
+    readonly effectiveSubCategoryName: Optional<string>;
+    readonly effectiveSubSubCategoryName: Optional<string>;
+
     readonly effectiveSubSubCategoryID: Optional<string>;
     // readonly effectiveApparelDetails: Optional<IApparelEnums>;
 }
-
+export interface IAttachment extends IRealmEntity<IAttachment> {
+    uploadedFrom: string;
+    fullpath: string;
+    file: IBinaryFile<'manual' | 'video' | 'doc'>;
+    product: OptionalEntity<IProduct>;
+}
+export interface ILinkedItem {
+    type: string;
+    attachment: OptionalEntity<IAttachment>;
+    url: Optional<string>;
+}
 export interface IBarcode extends IRealmObject<IBarcode> {
     rawValue: string;
     type: Optional<BarcodeTypesKeys>;
@@ -422,7 +443,7 @@ export interface ISku extends IRealmEntity<ISku>, IHashTagged, IUPC {
     // }
 }
 
-export interface IBinaryFile<T extends 'original' | 'remove-bg'> extends IRealmObject<IBinaryFile<T>> {
+export interface IBinaryFile<T extends string> extends IRealmObject<IBinaryFile<T>> {
     mimeType: string;
     data: ArrayBuffer;
     type: T;

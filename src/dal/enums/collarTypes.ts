@@ -10,4 +10,4 @@ export const CollarTypesInfos = {
 };
 
 export type CollarTypesKeys = keyof typeof CollarTypesInfos;
-export const CollarTypesEnumMap = Object.fromEntries(Object.entries(CollarTypesInfos).map(([k, v]) => [k, v.key] as [CollarTypesKeys, string])) as Record<CollarTypesKeys, string>
+export const CollarTypesEnumMap = Object.fromEntries(Object.entries(CollarTypesInfos).map(([k, v]) => [k, v.key] as [CollarTypesKeys, string])) as Record<CollarTypesKeys, string>  

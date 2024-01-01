@@ -5,6 +5,7 @@ import { UseMutateFunction } from '@tanstack/react-query';
 import { RankingInfo } from '@tanstack/match-sorter-utils';
 import { MRT_ColumnDef, MRT_Row, MRT_RowData, MRT_TableOptions } from 'material-react-table';
 import { UseFormReturn } from 'react-hook-form-mui';
+import * as Config from './config.json';
 
 declare global {
     export type IDependency = [action: 'enable' | 'disable', property: string, predicate: (value: any) => boolean];
@@ -71,6 +72,7 @@ declare global {
         | 'auction'
         | 'auctionLot '
         | 'barcode'
+        | 'batteryPowered'
         | 'binaryFile'
         | 'brand'
         | 'branding'
@@ -87,6 +89,8 @@ declare global {
         | 'fulfillment'
         | 'hashTag'
         | 'hashTagUsage'
+        | 'homeDetails'
+        | 'linkedItem'
         | 'listing'
         | 'locationSegment'
         | 'madeOf'
@@ -184,6 +188,7 @@ declare global {
     export interface Window {
         $$store: Realm | undefined;
         $$pullNextUPC: (key: string) => any;
+        $$config: typeof Config;
     }
 
     export type ShippingServiceInfo = {

@@ -119,3 +119,8 @@
 // );
 
 // fs.writeFileSync('e.json', JSON.stringify(output, null, '\t'));
+
+console.log('test'.split(/[- ]/))
+console.log('test-test'.split(/[- ]/));
+console.log('test test'.split(/[- ]/));
+console.log('testtest'.split(/[- ]/));

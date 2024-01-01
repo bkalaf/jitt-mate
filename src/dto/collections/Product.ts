@@ -1,5 +1,5 @@
 import { ColorsInfos } from '../../dal/enums/colors';
-import { IApparelDetails, IApparelProperties, IBarcode, IBrand, IClassifier, IDecorDetails, IDimensions, IHashTag, IMaterialComposition, IMediaProperties, IProduct, IProductLine, IProductTaxonomy } from '../../dal/types';
+import { IApparelDetails, IApparelProperties, IAttachment, IBarcode, IBrand, IClassifier, IDecorDetails, IDimensions, IHashTag, ILinkedItem, IMaterialComposition, IMediaProperties, IProduct, IProductLine, IProductTaxonomy } from '../../dal/types';
 import { BSON } from 'realm';
 import { $db } from '../../dal/db';
 import { HashTag } from './HashTag';
@@ -81,6 +81,18 @@ import { fromOID } from '../../dal/fromOID';
 // }
 
 export class Product extends Realm.Object<IProduct> implements IProduct {
+    attachments!: DBDictionary<IAttachment>;
+    compatibleWith!: DBList<string>;
+    links!: DBDictionary<ILinkedItem>;
+    get effectiveCategoryName(): Optional<string> {
+        return this.classifier?.mercariSubSubCategory?.parent?.parent?.name;
+    }
+    get effectiveSubCategoryName(): Optional<string>{
+        return this.classifier?.mercariSubSubCategory?.parent?.name;
+    }
+    get effectiveSubSubCategoryName(): Optional<string>{
+        return this.classifier?.mercariSubSubCategory?.name;
+    }
     get effectiveMediaDetails(): Optional<Partial<IMediaEnums & IMediaProperties>> {
         return undefined;
     }
@@ -106,6 +118,9 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
         if (this.decorDetails == null) {
             this.decorDetails = {} as any;
         }
+        if (this.attachments == null) this.attachments = {} as any;
+        if (this.compatibleWith == null) this.compatibleWith = [] as any;
+        if (this.links == null) this.links = {} as any;
         if (this.folder == null) this.folder = new BSON.UUID();
         if (this.dimensions == null) this.dimensions = {} as any;
         if (this.features == null) this.features = [] as any;
@@ -186,9 +201,9 @@ export class Product extends Realm.Object<IProduct> implements IProduct {
     get summaryName(): string {
         switch (this.effectiveDiscriminator) {
             case 'apparel':
-                return this.apparelDetails.generateTitle(false);
+                return this.apparelDetails.getSku ? this.apparelDetails.titleGenerator(this.apparelDetails.getSku) : 'unknown'
             case 'decor': 
-                return this.decorDetails?.generateTitle(false) ?? 'unknown';
+                return this.decorDetails?.getSku ? this.decorDetails?.titleGenerator(this.decorDetails?.getSku) : 'unknown';
             case 'media':
             case 'bags':
             case 'jewelry':

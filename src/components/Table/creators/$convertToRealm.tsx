@@ -3,12 +3,10 @@ import { BSON } from 'realm';
 import { dateFromNow } from '../../../common/date/dateFromNow';
 import { BacklineTypesKeys } from '../../../dal/enums/backlineTypes';
 import { CollarTypesKeys } from '../../../dal/enums/collarTypes';
-import { Countries } from '../../../dal/enums/countries';
 import { CuffTypesKeys } from '../../../dal/enums/cuffTypes';
 import { LocationLabelColorsKeys } from '../../../dal/enums/locationLabelColors';
 import { LocationTypesKeys } from '../../../dal/enums/locationTypes';
 import { NecklineTypesKeys } from '../../../dal/enums/necklineTypes';
-import { ProvincesKey } from '../../../dal/enums/provinces';
 import { RnNumberTypesKeys } from '../../../dal/enums/rnNumberType';
 import { SleeveTypesKeys } from '../../../dal/enums/sleeveTypes';
 import { TopAdornmentsKeys } from '../../../dal/enums/topAdornments';
@@ -36,7 +34,9 @@ import {
     IScan,
     IProduct,
     IMaterialComposition,
-    IApparelProperties
+    IApparelProperties,
+    IDecorDetails,
+    IAttachment
 } from '../../../dal/types';
 import { Barcode } from '../../../dto/collections/Barcode';
 import { ItemConditionsInfos } from '../../../dal/enums/itemConditions';
@@ -129,27 +129,7 @@ const toProductTaxonomy: ConvertToRealmFunction<IProductTaxonomy> = ({
     name,
     lock,
     phylum,
-    species,
-    apparelType,
-    backlineType,
-    bookType,
-    chestFitType,
-    collarType,
-    cuffType,
-    frontType,
-    gameRating,
-    gender,
-    itemGroup,
-    legType,
-    sizeGroup,
-    mediaFormatType,
-    movieRating,
-    necklineType,
-    size,
-    sleeveType,
-    topAdornment,
-    waistType,
-    videoType
+    species
 }) => ({
     kingdom: kingdom ?? undefined,
     phylum: phylum ?? undefined,
@@ -159,27 +139,7 @@ const toProductTaxonomy: ConvertToRealmFunction<IProductTaxonomy> = ({
     genus: genus ?? undefined,
     species: species ?? undefined,
     name: name ?? undefined,
-    lock: lock != null ? (typeof lock === 'boolean' ? lock : typeof lock === 'string' ? (lock === 'true' ? true : lock === 'false' ? false : undefined) : undefined) : undefined,
-    apparelType: (apparelType as ApparelTypesKeys) ?? undefined,
-    backlineType: (backlineType as BacklineTypesKeys) ?? undefined,
-    bookType: (bookType as BookTypesKeys) ?? undefined,
-    chestFitType: (chestFitType as ChestFitTypesKeys) ?? undefined,
-    collarType: (collarType as CollarTypesKeys) ?? undefined,
-    cuffType: (cuffType as CuffTypesKeys) ?? undefined,
-    frontType: (frontType as FrontTypesKeys) ?? undefined,
-    gameRating: (gameRating as GameRatingsKeys) ?? undefined,
-    gender: (gender as GendersKeys) ?? undefined,
-    itemGroup: (itemGroup as ItemGroupsKeys) ?? undefined,
-    mediaFormatType: (mediaFormatType as MediaFormatTypesKeys) ?? undefined,
-    movieRating: (movieRating as MovieRatingsKeys) ?? undefined,
-    videoType: (videoType as VideoTypesKeys) ?? undefined,
-    sleeveType: (sleeveType as SleeveTypesKeys) ?? undefined,
-    necklineType: (necklineType as NecklineTypesKeys) ?? undefined,
-    size: size ?? undefined,
-    sizeGroup: (sizeGroup as SizeGroupsKeys) ?? undefined,
-    topAdornment: (topAdornment as TopAdornmentsKeys) ?? undefined,
-    waistType: (waistType as WaistTypesKeys) ?? undefined,
-    legType: (legType as LegTypesKeys) ?? undefined
+    lock: lock != null ? (typeof lock === 'boolean' ? lock : typeof lock === 'string' ? (lock === 'true' ? true : lock === 'false' ? false : undefined) : undefined) : undefined
 });
 const toMercariCategory: ConvertToRealmFunction<IMercariCategory> = ({ _id, hashTags, id, name, shipWeightPercent, taxon }) => ({
     _id: toNotNullOID(_id),
@@ -212,11 +172,10 @@ const toMercariSubSubCategory: ConvertToRealmFunction<IMercariSubSubCategory> = 
     parent: unserializedLookup<IMercariSubCategory>('mercariSubCategory')(parent),
     fullname
 });
-const toClassifier: ConvertToRealmFunction<IClassifier> = ({ _id, hashTags, mercariSubSubCategory, isAthletic, name, notes, shipWeightPercent, shortname, taxon }) => ({
+const toClassifier: ConvertToRealmFunction<IClassifier> = ({ _id, hashTags, mercariSubSubCategory, name, notes, shipWeightPercent, shortname, taxon }) => ({
     _id: toNotNullOID(_id),
     name,
     notes: unserializeString(notes),
-    isAthletic: unserializeBool(isAthletic) ?? false,
     hashTags: hashTags.map((x) => window.$$store?.objectForPrimaryKey<IHashTag>('hashTag', toOID(x))) as Entity<IHashTag>[],
     shortname: unserializeString(shortname),
     taxon: (taxon == null ? { lock: false } : toProductTaxonomy(taxon)) as any,
@@ -259,7 +218,6 @@ const toApparelDetails: ConvertToRealmFunction<IApparelEnums & IApparelPropertie
     chestFitType,
     frontType,
     gender,
-    itemGroup,
     legType
 }) => ({
     discriminator: 'apparel' as const,
@@ -267,7 +225,6 @@ const toApparelDetails: ConvertToRealmFunction<IApparelEnums & IApparelPropertie
     chestFitType: unserializeEnum<ChestFitTypesKeys>(chestFitType),
     frontType: unserializeEnum<FrontTypesKeys>(frontType),
     gender: unserializeEnum<GendersKeys>(gender),
-    itemGroup: unserializeEnum<ItemGroupsKeys>(itemGroup),
     legType: unserializeEnum<LegTypesKeys>(legType),
     apparelType: unserializeEnum<ApparelTypesKeys>(apparelType),
     backlineType: unserializeEnum<BacklineTypesKeys>(backlineType),
@@ -289,8 +246,8 @@ export const toAddress: ConvertToRealmFunction<IAddress> = ({ city, country, lin
     line1: unserializeString(line1),
     line2: unserializeString(line2),
     city: unserializeString(city),
-    country: unserializeEnum<keyof Countries>(country),
-    province: unserializeEnum<ProvincesKey>(province),
+    country: unserializeString(country),
+    province: unserializeString(province),
     postalCode: unserializeString(postalCode)
 });
 export const toLocationSegment: ConvertToRealmFunction<ILocationSegment> = ({ _id, color, kind, name, notes, type, upcs }) => ({
@@ -358,11 +315,36 @@ const toScan: ConvertToRealmFunction<IScan> = ({ bin, fixture, shelf, timestamp 
     bin: unserializedLookup<ILocationSegment>('locationSegment')(bin),
     timestamp: unserializeDate(timestamp)
 });
+// eslint-disable-next-line no-empty-pattern
+const toDecorDetails: ConvertToRealmFunction<IDecorDetails> = ({ 
+    
+}) => ({});
+const toAttachment: ConvertToRealmFunction<IAttachment> = ({
+    _id,
+    file,
+    fullpath,
+    product,
+    uploadedFrom
+}) => ({
+    _id: toNotNullOID(_id),
+    fullpath: $unserialize.string(fullpath) as any,
+    uploadedFrom: $unserialize.string(uploadedFrom) as any,
+    file: {
+        data: $unserialize.data(file.data as ArrayBuffer),
+        mimeType: $unserialize.string(file.mimeType),
+        type: $unserialize.string(file.type)
+    } as any,
+    product: $unserialize.lookup<IProduct>('product')(product)
+})
 const toProduct: ConvertToRealmFunction<IProduct> = ({
     _id,
+    attachments,
+    compatibleWith,
+    links,
     brand,
     circa,
     classifier,
+    decorDetails,
     color,
     descriptiveText,
     dimensions,
@@ -385,6 +367,7 @@ const toProduct: ConvertToRealmFunction<IProduct> = ({
     return {
         _id: toNotNullOID(_id),
         brand: $unserialize.lookup<IBrand>('brand')(brand),
+        decorDetails: toDecorDetails(decorDetails ?? {}) as any,
         productLine: $unserialize.lookup<IProductLine>('productLine')(productLine),
         classifier: $unserialize.lookup<IClassifier>('classifier')(classifier),
         folder: folder == null ? new BSON.UUID() : typeof folder === 'string' ? new BSON.UUID(folder) : folder instanceof BSON.UUID ? folder : new BSON.UUID(),
@@ -398,7 +381,7 @@ const toProduct: ConvertToRealmFunction<IProduct> = ({
         features: features ?? [],
         upcs: (upcs ?? []).map(toBarcode) as Entity<IBarcode>[],
         shipWeightPercent: $unserialize.float(shipWeightPercent),
-        origin: $unserialize.enum<keyof Countries>(origin),
+        origin: $unserialize.string(origin),
         taxon: taxon ? (toProductTaxonomy(taxon) as Entity<IProductTaxonomy>) : ({ lock: false } as Entity<IProductTaxonomy>),
         hashTags: hashTags.map((x) => window.$$store?.objectForPrimaryKey<IHashTag>('hashTag', toOID(x))) as Entity<IHashTag>[],
         flags: (flags ? flags : []) as any,

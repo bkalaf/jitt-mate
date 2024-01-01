@@ -15,17 +15,17 @@ export const apparelDetailsColumns = {
     getColumns: (...pre: string[]): DefinedMRTColumns<IApparelProperties & IApparelEnums> =>
         (
             [
-                $metas.enum('backlineType', { header: 'Backline', enumMap: BacklineTypesEnumMap }, true, enableWhen('taxon.klass', 'tops')),
-                $metas.enum('collarType', { enumMap: CollarTypesEnumMap, header: 'Collar' }, true, enableWhen('taxon.klass', 'tops')),
-                $metas.enum('cuffType', { enumMap: CuffTypesEnumMap, header: 'Cuff' }, true, enableWhen('taxon.klass', 'tops')),
+                $metas.singleSelect('backlineType', { header: 'Backline', enumType: 'backlineType' }, true, enableWhen('taxon.klass', 'tops')),
+                $metas.singleSelect('collarType', { enumType: 'collarType', header: 'Collar' }, true, enableWhen('taxon.klass', 'tops')),
+                $metas.singleSelect('cuffType', { enumType: 'cuffType', header: 'Cuff' }, true, enableWhen('taxon.klass', 'tops')),
                 $metas.string('cutNo', { header: 'Cut #' }, true, enableWhen('taxon.kingdom', 'apparel')),
-                $metas.enum('necklineType', { enumMap: NecklineTypesEnumMap, header: 'Neckline' }, true, enableWhen('taxon.klass', 'tops')),
+                $metas.singleSelect('necklineType', { enumType: 'necklineType', header: 'Neckline' }, true, enableWhen('taxon.klass', 'tops')),
                 // $metas.int('pocketCount', { header: 'Pocket Count', min: 0 }, true, enableWhen('taxon.kingdom', 'apparel')),
                 $metas.enum('sizeGroup', { enumMap: SizeGroupsEnumMap, colorMap: SizeGroupsColorMap }, true, enableWhen('taxon.kingdom', 'apparel')),
-                $metas.enum('size', { enumMap: ['apparelDetails.sizeGroup', (x: string) => x == null ? {} : SizesLabelMap(x as SizeGroupsKeys)] }, true, enableWhen('taxon.kingdom', 'apparel')),
-                $metas.enum('sleeveType', { enumMap: SleeveTypesEnumMap, colorMap: SleeveTypesColorMap, header: 'Sleeves' }, true, enableWhen('taxon.klass', 'tops')),
+                $metas.enum('size', { enumMap: ['apparelDetails.sizeGroup', (x: string) => (x == null ? {} : SizesLabelMap(x as SizeGroupsKeys))] }, true, enableWhen('taxon.kingdom', 'apparel')),
+                $metas.singleSelect('sleeveType', { enumType: 'sleeveType', header: 'Sleeves' }, true, enableWhen('taxon.klass', 'tops')),
                 $metas.enum<IApparelEnums & IApparelProperties>('topAdornment', { header: 'Top Adornment', enumMap: TopAdornmentsEnumMap }, true, enableWhen('taxon.klass', 'tops')),
-                $metas.enum<IApparelEnums & IApparelProperties>('waistType', { header: 'Waist', enumMap: WaistTypesEnumMap }, true, enableWhen('taxon.klass', 'bottoms')),
+                $metas.singleSelect<IApparelEnums & IApparelProperties>('waistType', { header: 'Waist', enumType: 'waistType' }, true, enableWhen('taxon.klass', 'bottoms')),
                 $metas.embed<IApparelEnums & IApparelProperties>('measurements', { getColumnsKey: 'measurements' }, true, enableWhen('taxon.kingdom', 'apparel')),
                 $metas.lookup<any, IRn>('rn', { objectType: 'rn', header: 'RN', labelPropertyName: 'companyName' }, true, enableWhen('taxon.family', 'apparel')),
                 $metas.clothingCare<IApparelEnums & IApparelProperties>('clothingCare', {}, true, enableWhen('taxon.family', 'apparel'))

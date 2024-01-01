@@ -7,6 +7,7 @@ import { identity } from '../../common/functions/identity';
 import { BarcodeTypesKeys, BarcodeTypesLabelMap } from '../../dal/enums/barcodeTypes';
 import { getEnum } from '../collections/ofEnum';
 import { $format, ofMaterialComposition } from './ApparelDetails';
+import { decorGenerateTitle, generateNarrative, generateTitle } from '../generateSegments';
 
 const builder = <T extends Partial<Record<string, string>>>($g: (s: (keyof BaseSegments['segmentsMap'] | keyof T) & string) => string) => [
     $g('$brandName'),
@@ -26,8 +27,7 @@ export function buildBaseGenerateTitle<T extends Partial<Record<string, string>>
         additionalSegments: T = {} as T,
         getSegmentsMap: ($options: Record<string, boolean>, additionalSegments: T) => BaseSegments & { segmentsMap: T } = baseGenerateSegments<T>
     ): string {
-        const recurse = (_ignoreCap?: boolean | undefined,
-        _indexCap?: number | undefined) => baseGenerateTitle(_ignoreCap, _indexCap, $options, additionalSegments, getSegmentsMap);
+        const recurse = (_ignoreCap?: boolean | undefined, _indexCap?: number | undefined) => baseGenerateTitle(_ignoreCap, _indexCap, $options, additionalSegments, getSegmentsMap);
         // const segments = ['$brandName', '$descriptiveText', '$holiday', '$itemType', '$circa', '$isVintage', '$isRare'];
         const maxIndex = segments.length + optionLabels.length;
         const takeQty = (indexCap ?? maxIndex) - segments.length;
@@ -50,7 +50,6 @@ export function buildBaseGenerateTitle<T extends Partial<Record<string, string>>
         //             .join(' ')
         //     )
         // ]
-        
 
         if (ignoreCap || title.length <= 80) {
             return title;
@@ -132,7 +131,16 @@ export function baseGenerateSegments<T extends Partial<Record<string, string>>>(
     };
 }
 export type BaseSegments = ReturnType<typeof baseGenerateSegments>;
+
 export class DecorDetails extends Realm.Object<{}> implements IDetails<{}, {}> {
+    titleGenerator(sku: ISku, extraCharacters = true, showMetric = true, ignoreCap = false) {
+        return generateTitle(sku, extraCharacters, showMetric, ignoreCap)('$brandName', '$productLineName', '$color', '$descriptiveText', '$holiday', '$itemType');
+    }
+        
+    narrativeGenerator(sku: ISku, extraCharacters = true, showMetric = true, ignoreCap = false) {
+        const title = this.titleGenerator(sku, extraCharacters, showMetric, ignoreCap);
+        return generateNarrative(sku, extraCharacters, showMetric, ignoreCap)(title);
+    };
     static schema: Realm.ObjectSchema = {
         name: $db.decorDetails(),
         embedded: true,
@@ -163,64 +171,63 @@ export class DecorDetails extends Realm.Object<{}> implements IDetails<{}, {}> {
         return result;
     }
 
-    generateSegments($options: Record<string, boolean>) {
-        return baseGenerateSegments.bind(this, $options, { $holiday: this.effectiveHoliday })
-    }
-    generateTitle(ignoreCap?: boolean | undefined, indexCap?: number | undefined): string {
-        const segments = ['$brandName', '$descriptiveText', '$holiday', '$itemType', '$circa', '$isVintage', '$isRare'];
-        const optionLabels = ['showMetric', 'extraCharacters'];
-        const maxIndex = segments.length + optionLabels.length;
-        const takeQty = (indexCap ?? maxIndex) - segments.length;
-        const takeNormalized = takeQty > 0 ? takeQty : -1;
-        const currentOptions = Object.fromEntries(optionLabels.map((k, ix) => [k, ix < takeNormalized] as [string, boolean]));
-        console.log(`currentOptions`, currentOptions);
-        const { segmentsMap } = this.generateSegments(currentOptions);
+    // generateTitle(ignoreCap?: boolean | undefined): string {
+    //     if (this.getSku == null) return 'unknown';
+    //     return decorGenerateTitle(this.getSku, true, true, ignoreCap);
+    //     // const segments = ['$brandName', '$descriptiveText', '$holiday', '$itemType', '$circa', '$isVintage', '$isRare'];
+    //     // const optionLabels = ['showMetric', 'extraCharacters'];
+    //     // const maxIndex = segments.length + optionLabels.length;
+    //     // const takeQty = (indexCap ?? maxIndex) - segments.length;
+    //     // const takeNormalized = takeQty > 0 ? takeQty : -1;
+    //     // const currentOptions = Object.fromEntries(optionLabels.map((k, ix) => [k, ix < takeNormalized] as [string, boolean]));
+    //     // console.log(`currentOptions`, currentOptions);
+    //     // const { segmentsMap } = this.generateSegments(currentOptions);
 
-        const allowedSegments = indexCap != null && takeNormalized !== -1 ? segments : segments.slice(0, indexCap);
-        const $get = (name: keyof typeof segmentsMap) => (allowedSegments.includes(name) ? segmentsMap[name] : undefined);
+    //     // const allowedSegments = indexCap != null && takeNormalized !== -1 ? segments : segments.slice(0, indexCap);
+    //     // const $get = (name: keyof typeof segmentsMap) => (allowedSegments.includes(name) ? segmentsMap[name] : undefined);
 
-        const title = [
-            $get('$brandName'),
-            toProperCase(
-                [$get('$circa'), $get('$isRare') ? 'RARE' : undefined, $get('$isVintage') ? 'VINTAGE' : undefined, $get('$descriptiveText'), $get('$holiday'), $get('$itemType')]
-                    .filter((x) => x != null)
-                    .join(' ')
-            )
-        ]
-            .filter((x) => x != null)
-            .join(' ');
+    //     // const title = [
+    //     //     $get('$brandName'),
+    //     //     toProperCase(
+    //     //         [$get('$circa'), $get('$isRare') ? 'RARE' : undefined, $get('$isVintage') ? 'VINTAGE' : undefined, $get('$descriptiveText'), $get('$holiday'), $get('$itemType')]
+    //     //             .filter((x) => x != null)
+    //     //             .join(' ')
+    //     //     )
+    //     // ]
+    //     //     .filter((x) => x != null)
+    //     //     .join(' ');
 
-        if (ignoreCap || title.length <= 80) {
-            return title;
-        }
-        console.warn(`generatedTitle length exceeded: ${title.length}: ${title}`);
-        const nextTitle = this.generateTitle(false, (indexCap ?? maxIndex) - 1);
-        console.warn(`nextTitle: ${nextTitle.length} : ${nextTitle}`);
-        return nextTitle;
-    }
-    generateNarrative(indexCap?: number | undefined): string {
-        const segments = ['$title', '$modelNo', '$barcodes', '$origin', '$length', '$width', '$height', '$weight', '$materials', '$flags', '$features', '$defects'];
-        const optionLabels = ['showMetric', 'extraCharacters'];
-        const maxIndex = segments.length + optionLabels.length;
-        const takeQty = (indexCap ?? maxIndex) - segments.length;
-        const takeNormalized = takeQty > 0 ? takeQty : -1;
-        const currentOptions = Object.fromEntries(optionLabels.map((k, ix) => [k, ix < takeNormalized] as [string, boolean]));
-        console.log(`currentOptions`, currentOptions);
-        const { segmentsMap: _segmentsMap } = this.generateSegments(currentOptions);
-        const segmentsMap = { ..._segmentsMap, $title: this.generateTitle(true) };
-        const allowedSegments = indexCap != null && takeNormalized !== -1 ? segments : segments.slice(0, indexCap);
-        const $get = (name: keyof typeof segmentsMap) => (allowedSegments.includes(name) ? segmentsMap[name] : undefined);
-        const output = [
-            $get('$title'),
-            ([$get('$circa'), $get('$modelNo'), $get('$length'), $get('$width'), $get('$height'), $get('$weight'), $get('$origin')].filter((x) => x != null) as string[]).join('\n'),
-            ([$get('$barcodes'), $get('$materials'), $get('$flags'), $get('$features'), $get('$defects')].filter((x) => x != null) as string[]).join('\n')
-        ].join('\n');
-        if (output.length <= 1000) {
-            return output;
-        }
-        console.warn(`generateNarrative length exceeded: ${output.length}`);
-        return this.generateNarrative((indexCap ?? maxIndex) - 1);
-    }
+    //     // if (ignoreCap || title.length <= 80) {
+    //     //     return title;
+    //     // }
+    //     // console.warn(`generatedTitle length exceeded: ${title.length}: ${title}`);
+    //     // const nextTitle = this.generateTitle(false, (indexCap ?? maxIndex) - 1);
+    //     // console.warn(`nextTitle: ${nextTitle.length} : ${nextTitle}`);
+    //     // return nextTitle;
+    // }
+    // generateNarrative(indexCap?: number | undefined): string {
+    //     const segments = ['$title', '$modelNo', '$barcodes', '$origin', '$length', '$width', '$height', '$weight', '$materials', '$flags', '$features', '$defects'];
+    //     const optionLabels = ['showMetric', 'extraCharacters'];
+    //     const maxIndex = segments.length + optionLabels.length;
+    //     const takeQty = (indexCap ?? maxIndex) - segments.length;
+    //     const takeNormalized = takeQty > 0 ? takeQty : -1;
+    //     const currentOptions = Object.fromEntries(optionLabels.map((k, ix) => [k, ix < takeNormalized] as [string, boolean]));
+    //     console.log(`currentOptions`, currentOptions);
+    //     const { segmentsMap: _segmentsMap } = this.generateSegments(currentOptions);
+    //     const segmentsMap = { ..._segmentsMap, $title: this.generateTitle(true) };
+    //     const allowedSegments = indexCap != null && takeNormalized !== -1 ? segments : segments.slice(0, indexCap);
+    //     const $get = (name: keyof typeof segmentsMap) => (allowedSegments.includes(name) ? segmentsMap[name] : undefined);
+    //     const output = [
+    //         $get('$title'),
+    //         ([$get('$circa'), $get('$modelNo'), $get('$length'), $get('$width'), $get('$height'), $get('$weight'), $get('$origin')].filter((x) => x != null) as string[]).join('\n'),
+    //         ([$get('$barcodes'), $get('$materials'), $get('$flags'), $get('$features'), $get('$defects')].filter((x) => x != null) as string[]).join('\n')
+    //     ].join('\n');
+    //     if (output.length <= 1000) {
+    //         return output;
+    //     }
+    //     console.warn(`generateNarrative length exceeded: ${output.length}`);
+    //     return this.generateNarrative((indexCap ?? maxIndex) - 1);
+    // }
     update() {
         return this;
     }
