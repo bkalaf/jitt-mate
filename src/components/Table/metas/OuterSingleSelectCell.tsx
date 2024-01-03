@@ -1,13 +1,13 @@
 import { MRT_ColumnDef } from 'material-react-table';
-import { createFrom } from '../../../common/array/createFrom';
 import { Chip } from '@mui/material';
-import { justcolors } from './justcolors';
-import { kebabToProperCase } from './kebabToProperCase';
 import { useEnum } from '../../Contexts/useEnum';
 
 export function OuterSingleSelectCell({ enumType }: { enumType?: string }) {
     return function EnumCell<T extends EntityBase>(props: Parameters<Exclude<MRT_ColumnDef<T, Optional<string>>['Cell'], undefined>>[0]) {
         const value = (props.cell.getValue() as Optional<string>) ?? '';
+        console.log(`field: ${props.cell.id}`);
+        const uniqueValues = props.column._getFacetedUniqueValues ?? (() => (new Map<string, number>()))
+        console.log(`values: ${(Array.from(uniqueValues().keys()).join(', '))}`);
         // const uniqueValues = props.column.getFacetedUniqueValues();
         // const ordered = Object.entries(uniqueValues)
         //     .sort((a, b) => (a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0))

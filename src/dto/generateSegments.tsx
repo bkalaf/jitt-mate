@@ -166,8 +166,18 @@ export function generateSegments(sku: ISku, extraCharacters = true, showMetric =
         addTitlePart('$waistType', waistType);
         addTitlePart('$legType', $legType ?? legType);
         if ($sizeGroup && size) {
-            const s = Config.enums.sizes[$sizeGroup ?? sizeGroup] as { key: string; selector: string; text: string }[];
-            const result = s.find((x) => x.key === size);
+            const $sizes = Object.fromEntries(
+                ['inches', 'youth', 'men-letter', 'men-footwear', 'men-suits', 'women-letter', 'women-footwear', 'women-bust'].map((group) => [
+                    group,
+                    Object.fromEntries(
+                        Object.values(Config.sizes)
+                            .filter((x) => x.sizingType === group)
+                            .map((item) => [item.key, item])
+                    )
+                ])
+            );
+            const s = $sizes[$sizeGroup ?? sizeGroup] as Record<string, { key: string; selector: string; text: string }>;
+            const result = s[size];
             process.stdout.write(`SIZE LOOKUP: ${$sizeGroup} ${size} ${result?.text ?? 'not-found'}`);
             if (result) {
                 addTitlePart('$size', surroundText('[')(']')(result.text.includes('"') ? result.text : result.key));
@@ -597,7 +607,7 @@ export function generateNarrative(sku: ISku, extraCharacters = true, showMetric 
             lists.size > 0 ? Array.from(lists.entries()).map(([k, v]) => [k, ...v.map(x => x)].join('\n')).join('\n') : undefined,
             callouts.size > 0 ? Array.from(callouts.values()).join('\n') : undefined,
             Array.from(freeText.values()).join('\n')
-        ].filter(x => x != null && x.length > 0).join('\n');
+        ].filter(x => x != null && x.length > 0).join('\n').replaceAll('     ', '    ').replaceAll('    ', '  ');
 
         if (ignoreCap || narrative.length <= 1000) {
             process.stdout.write(`NARRATIVE PASSED: \n${narrative}\n`);

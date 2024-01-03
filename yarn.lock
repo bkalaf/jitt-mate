@@ -1796,12 +1796,12 @@
   dependencies:
     "@fortawesome/fontawesome-common-types" "6.4.2"
 
-"@fortawesome/pro-duotone-svg-icons@file:../../../.cache/yarn/v6/npm-@fortawesome-pro-duotone-svg-icons-6.2.0-fab2b0c8b83a64036845bca07f3943f3df6165e6-integrity/node_modules/@fortawesome/pro-duotone-svg-icons":
+"@fortawesome/pro-duotone-svg-icons@/home/bobby/Downloads/pro-duotone-svg-icons":
   version "6.2.0"
   dependencies:
     "@fortawesome/fontawesome-common-types" "6.2.0"
 
-"@fortawesome/pro-solid-svg-icons@file:../../../.cache/yarn/v6/npm-@fortawesome-pro-solid-svg-icons-6.2.1-6e2e85357412b8d9ec5620376155642b273bf13a-integrity/node_modules/@fortawesome/pro-solid-svg-icons":
+"@fortawesome/pro-solid-svg-icons@file:../../Downloads/pro-solid-svg-icons":
   version "6.2.1"
   dependencies:
     "@fortawesome/fontawesome-common-types" "6.2.1"

@@ -1,21 +1,8 @@
-import { $db } from '../../dal/db';
-import { IHomeDetails, IProduct, ISku } from '../../dal/types';
+import { IBinaryFile, IHomeDetails, IProduct, IRealmEntity, ISku } from '../../dal/types';
 import { IBatteryPowered, IHomeEnums } from '../../dal/types/enumTypes';
 
-export class BatteryPowered extends Realm.Object<IBatteryPowered> implements IBatteryPowered {
-    qty = 0;
-    batteryType = 'AA';
-    static schema: Realm.ObjectSchema = {
-        name: $db.batteryPowered(),
-        embedded: true,
-        properties: {
-            qty: $db.int.zero,
-            batteryType: $db.string.opt
-        }
-    }
-}
 export class HomeDetails extends Realm.Object<IHomeDetails> implements IHomeDetails, IHomeEnums {
-    batteries: IBatteryPowered;
+    batteries: OptionalEntity<IBatteryPowered>;
     testedOn: Optional<Date>;
     getProduct: OptionalEntity<IProduct>;
     getSku: OptionalEntity<ISku>;
@@ -28,5 +15,4 @@ export class HomeDetails extends Realm.Object<IHomeDetails> implements IHomeDeta
     update(this: Entity<IHomeEnums>): Entity<IHomeEnums> {
         return this;
     }
-
 }

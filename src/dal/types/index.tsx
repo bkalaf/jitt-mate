@@ -303,7 +303,7 @@ export type IDecorDetails = IDetails<
     AnyObject,
     // eslint-disable-next-line @typescript-eslint/ban-types
     IDecorEnums
->;
+> & IDecorEnums;
 
 export interface IMaterialComposition extends IRealmObject<IMaterialComposition> {
     acrylic: Optional<number>;
@@ -333,7 +333,17 @@ export interface IDetailed {
     readonly effectiveApparelDetails: Optional<Partial<IApparelEnums & IApparelProperties>>;
     readonly effectiveMediaDetails: Optional<Partial<IMediaEnums & IMediaProperties>>;
 }
-
+export interface IAttachment extends IRealmEntity<IAttachment> {
+    uploadedFrom: string;
+    fullpath: string;
+    file: Optional<IBinaryFile<'manual' | 'video' | 'doc'>>;
+    product: OptionalEntity<IProduct>;
+}
+export interface ILinkedItem {
+    type: string;
+    attachment: OptionalEntity<IAttachment>;
+    url: Optional<string>;
+}
 export interface IProduct extends IRealmEntity<IProduct>, IProductAttributes, IHashTagged, IUPC, IDetailed {
     checkTaxa(...items: string[]): boolean;
     readonly summaryName: string;
@@ -374,17 +384,7 @@ export interface IProduct extends IRealmEntity<IProduct>, IProductAttributes, IH
     readonly effectiveSubSubCategoryID: Optional<string>;
     // readonly effectiveApparelDetails: Optional<IApparelEnums>;
 }
-export interface IAttachment extends IRealmEntity<IAttachment> {
-    uploadedFrom: string;
-    fullpath: string;
-    file: IBinaryFile<'manual' | 'video' | 'doc'>;
-    product: OptionalEntity<IProduct>;
-}
-export interface ILinkedItem {
-    type: string;
-    attachment: OptionalEntity<IAttachment>;
-    url: Optional<string>;
-}
+
 export interface IBarcode extends IRealmObject<IBarcode> {
     rawValue: string;
     type: Optional<BarcodeTypesKeys>;

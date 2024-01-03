@@ -233,8 +233,7 @@ export class ApparelDetails extends Realm.Object<IApparelProperties & IApparelEn
             sleeveType: $db.string.opt,
             styleNo: $db.string.opt,
             topAdornment: $db.string.opt,
-            waistType: $db.string.opt,
-            discriminator: { type: 'string', optional: false, default: 'apparel' }
+            waistType: $db.string.opt
         }
     };
 }

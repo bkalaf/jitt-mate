@@ -8,7 +8,7 @@
       "ecmaFeatures": {
           "jsx": true
       },
-      "project": "/home/bobby/Desktop/jitt/jitt/tsconfig.json",
+      "project": "/home/bobby/Desktop/jitt-mate/tsconfig.json",
       "ecmaVersion": "latest",
       "sourceType": "module",
       "exclude": ["./tailwind.config.js"]

@@ -5831,11 +5831,11 @@
         "appID": "jittmate-zhrrc"
     },
     "productImages": {
-        "imageRoot": "/media/bobby/jitt-mate/jitt-mate/products",
+        "imageRoot": "/home/bobby/Public/jitt-mate-data/products",
         "removeBGSuffix": "-removebg-preview.png"
     },
     "filesystem": {
-        "fsRoot": "/media/bobby/jitt-mate/jitt-mate",
+        "fsRoot": "/home/bobby/Public/jitt-mate-data",
         "downloadsFolder": "/home/bobby/Downloads"
     },
     "labels": {
